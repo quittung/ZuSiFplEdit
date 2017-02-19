@@ -1,0 +1,8 @@
+C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.csprojResolveAssemblyReference.cache
+C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.Form1.resources
+C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.Properties.Resources.resources
+C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.csproj.GenerateResource.Cache
+C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\bin\Debug\ZuSiFplEdit.exe
+C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\bin\Debug\ZuSiFplEdit.pdb
+C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.exe
+C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.pdb

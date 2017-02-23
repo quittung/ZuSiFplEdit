@@ -1,14 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-
-
-using System.Drawing.Drawing2D;
 
 
 namespace ZuSiFplEdit
@@ -17,6 +9,7 @@ namespace ZuSiFplEdit
     {
         modContainer Module;
         Graphics ModulKarte;
+        mapDraw kartenZeichner;
 
         float mapScale = 1;
         float pixelScale = 1;
@@ -40,7 +33,9 @@ namespace ZuSiFplEdit
             {
                 ModText.Text += modul.modName + "\r\n";
             }
-            karteZeichnen();
+            kartenZeichner = new mapDraw(mMap.CreateGraphics(), mMap.Width, mMap.Height, Module.mSammlung);
+            kartenZeichner.draw();
+            //karteZeichnen();
         }
 
 

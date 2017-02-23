@@ -17,11 +17,13 @@ namespace ZuSiFplEdit
             public char UTM_Z2;
             public List<string> VerbindungenStr;
             public streckenModul[] Verbindungen;
+            public bool NetzGrenze;
 
             public streckenModul(string moduleName)
             {
                 modName = moduleName;
                 VerbindungenStr = new List<string>();
+                NetzGrenze = false;
             }
         }
 
@@ -104,23 +106,52 @@ namespace ZuSiFplEdit
             return aktMod;
         }
 
+        //Wandelt die als String gespeicherten Verbindungen in Pointer um.
         void moduleVerlinken()
         {
             //MessageBox.Show("Module werden jetzt verlinkt.", "Debugnachricht", MessageBoxButtons.OK);
             foreach (streckenModul aktModul in mSammlung)
             {
+                int missingConnections = 0;
                 aktModul.Verbindungen = new streckenModul[aktModul.VerbindungenStr.Count];
                 for (int i = 0; i < aktModul.VerbindungenStr.Count; i++)
                 {
                     aktModul.VerbindungenStr[i] = speicherortZuName(aktModul.VerbindungenStr[i], '\\');
                     for (int n = 0; n < mSammlung.Count; n++)
                     {
-                        if (mSammlung[i].modName == aktModul.VerbindungenStr[i]) aktModul.Verbindungen[i] = mSammlung[i];
+                        if (mSammlung[n].modName.Equals(aktModul.VerbindungenStr[i]))
+                        {
+                            aktModul.Verbindungen[i] = mSammlung[n];
+                            break;
+                        }
                     }
+                    if (aktModul.Verbindungen[i] == null)
+                    {
+                        aktModul.NetzGrenze = true;
+                        missingConnections++;
+                    }
+                }
+
+                //Fehlende Module aus Links löschen:
+                if (aktModul.NetzGrenze)
+                {
+                    streckenModul[] tmp_Verbindungen = new streckenModul[aktModul.Verbindungen.Length - missingConnections];
+                    int verbindungen_count = 0;
+                    for (int i = 0; i < aktModul.Verbindungen.Length; i++)
+                    {
+                        if (aktModul.Verbindungen[i] != null)
+                        {
+                            tmp_Verbindungen[verbindungen_count] = aktModul.Verbindungen[i];
+                            verbindungen_count++;
+                        }
+                    }
+                    aktModul.Verbindungen = tmp_Verbindungen;
                 }
             }
         }
 
+
+        //Extrahiert den Namen eines Moduls aus dem Speicherort. 
         string speicherortZuName(string Speicherort, char DirSeparator)
         {
             //MessageBox.Show(Speicherort, DirSeparator.ToString(), MessageBoxButtons.OK);

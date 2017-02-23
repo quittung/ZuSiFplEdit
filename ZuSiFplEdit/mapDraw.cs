@@ -15,6 +15,10 @@ namespace ZuSiFplEdit
         int map_width_p;
         int map_height_p;
 
+        double center_NS;
+        double center_WE;
+        double pixPerGrad;
+
         double border_north;
         double border_east;
         double border_south;
@@ -27,7 +31,7 @@ namespace ZuSiFplEdit
             map_height_p = height;
             modulList = mList;
 
-            setInitialBorders();
+            setInitPos();
         }
 
         int coordToPix(double coord, bool isNS)
@@ -41,7 +45,7 @@ namespace ZuSiFplEdit
             }
         }
 
-        void setInitialBorders()
+        void setInitPos()
         {
             border_north = modulList[0].UTM_NS;
             border_south = modulList[0].UTM_NS;
@@ -54,22 +58,44 @@ namespace ZuSiFplEdit
                 if (mod.UTM_WE > border_east) border_east = mod.UTM_WE;
                 if (mod.UTM_WE < border_west) border_west = mod.UTM_WE;
             }
-            
-            if (map_width_p > map_height_p)
-            {
-                double coord_length = (border_north - border_south) / 2;
-                coord_length = coord_length / (double)map_height_p * (double)map_width_p;
-                double coord_center = (border_west + border_east) / 2;
-                border_west = coord_center - coord_length;
-                border_east = coord_center + coord_length;
-            } else
-            {
-                double coord_length = (border_east - border_west) / 2;
-                coord_length = coord_length / (double)map_height_p * (double)map_width_p;
-                double coord_center = (border_south + border_north) / 2;
-                border_south = coord_center - coord_length;
-                border_north = coord_center + coord_length;
-            }
+
+            center_NS = (border_north + border_south) / 2f;
+            center_WE = (border_west + border_east) / 2f;
+
+            if (map_width_p > map_height_p) pixPerGrad = map_height_p / (border_north - border_south);
+            else pixPerGrad = map_width_p / (border_east - border_west);
+
+            pixPerGrad = pixPerGrad * 0.9;
+
+            updateBorders();
+        }
+
+        public void updateScale (double factor)
+        {
+            pixPerGrad = pixPerGrad * factor;
+            updateBorders();
+
+            draw();
+        }
+
+        public void move (int pix_NS, int pix_WE)
+        {
+            center_NS += (double)pix_NS / pixPerGrad;
+            center_WE -= (double)pix_WE / pixPerGrad;
+
+            updateBorders();
+            draw();
+        }
+
+        void updateBorders()
+        {
+            double halfLen_NS = (double)map_height_p / (pixPerGrad * 2f);
+            double halfLen_WE = (double)map_width_p / (pixPerGrad * 2f);
+
+            border_north = center_NS + halfLen_NS;
+            border_east = center_WE + halfLen_WE;
+            border_south = center_NS - halfLen_NS;
+            border_west = center_WE - halfLen_NS;
         }
          
         bool isVisible (modContainer.streckenModul mod)
@@ -80,6 +106,8 @@ namespace ZuSiFplEdit
         public void draw()
         {
             map.Clear(Color.White);
+
+            map.DrawString("N" + center_NS.ToString("F2") + " - E" + center_WE.ToString("F2") + " - 1:" + pixPerGrad.ToString("F1"), new Font("Verdana", 10), new SolidBrush(Color.Red), 20, map_height_p - 20);
 
             Pen pn = new Pen(Color.Blue);
 

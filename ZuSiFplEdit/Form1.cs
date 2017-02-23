@@ -17,9 +17,28 @@ namespace ZuSiFplEdit
         public Form1()
         {
             InitializeComponent();
+
+            appInit();
+
+            this.MouseWheel += new MouseEventHandler(mMap_MouseWheel);
+
+            mMap.Update();
+        }
+
+        private void mMap_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (e.Delta > 0)
+                kartenZeichner.updateScale(1.25);
+            if (e.Delta < 0)
+                kartenZeichner.updateScale(0.8);
         }
 
         private void ModulButton_Click(object sender, EventArgs e)
+        {
+            appInit();
+        }
+
+        private void appInit()
         {
             //Module einlesen
             Module = new modContainer();
@@ -35,30 +54,41 @@ namespace ZuSiFplEdit
             kartenZeichner.draw();
         }
 
-        private void ScaleButton_Click(object sender, EventArgs e)
-        {
-            if (sender == MapScaleUp)
-                kartenZeichner.updateScale(1.25);
-            else
-                kartenZeichner.updateScale(0.8);
-        }
-
         private void mMap_MouseDown(object sender, MouseEventArgs e)
         {
-            mouseDown = true;
-            mouseDownX = e.X;
-            mouseDownY = e.Y;
+            mMap.Focus();
+
+            if (e.Button == MouseButtons.Left)
+            {
+                mouseDown = true;
+                mouseDownX = e.X;
+                mouseDownY = e.Y;
+            }
+
+            if (e.Button == MouseButtons.Right)
+            {
+                
+            }
         }
 
         private void mMap_MouseUp(object sender, MouseEventArgs e)
         {
-            if (mouseDown)
+            if (mouseDown && (e.Button == MouseButtons.Left))
             {
                 mouseDown = false;
                 int deltaX = e.X - mouseDownX;
                 int deltaY = e.Y - mouseDownY;
 
                 kartenZeichner.move(deltaY, deltaX);
+            }
+
+            if (e.Button == MouseButtons.Right)
+            {
+                MenuItem[] menuItems = new MenuItem[]{new MenuItem("X: " + e.X),
+                new MenuItem("Y: " + e.Y)};
+
+                ContextMenu buttonMenu = new ContextMenu(menuItems);
+                buttonMenu.Show(mMap, new System.Drawing.Point(e.X, e.Y));
             }
         }
     }

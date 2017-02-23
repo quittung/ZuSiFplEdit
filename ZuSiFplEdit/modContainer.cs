@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using System.Xml;
 using System.IO;
-using System.Windows.Forms;
 
 namespace ZuSiFplEdit
 {
@@ -109,7 +106,7 @@ namespace ZuSiFplEdit
 
         void moduleVerlinken()
         {
-            MessageBox.Show("Module werden jetzt verlinkt.", "Debugnachricht", MessageBoxButtons.OK);
+            //MessageBox.Show("Module werden jetzt verlinkt.", "Debugnachricht", MessageBoxButtons.OK);
             foreach (streckenModul aktModul in mSammlung)
             {
                 aktModul.Verbindungen = new streckenModul[aktModul.VerbindungenStr.Count];

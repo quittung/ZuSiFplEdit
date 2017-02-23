@@ -31,8 +31,6 @@
             this.ModulButton = new System.Windows.Forms.Button();
             this.ModText = new System.Windows.Forms.TextBox();
             this.mMap = new System.Windows.Forms.PictureBox();
-            this.MapScaleUp = new System.Windows.Forms.Button();
-            this.MapScaleDown = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.mMap)).BeginInit();
             this.SuspendLayout();
             // 
@@ -52,6 +50,7 @@
             this.ModText.Location = new System.Drawing.Point(12, 57);
             this.ModText.Multiline = true;
             this.ModText.Name = "ModText";
+            this.ModText.ReadOnly = true;
             this.ModText.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.ModText.Size = new System.Drawing.Size(260, 474);
             this.ModText.TabIndex = 1;
@@ -66,33 +65,11 @@
             this.mMap.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mMap_MouseDown);
             this.mMap.MouseUp += new System.Windows.Forms.MouseEventHandler(this.mMap_MouseUp);
             // 
-            // MapScaleUp
-            // 
-            this.MapScaleUp.Location = new System.Drawing.Point(278, 12);
-            this.MapScaleUp.Name = "MapScaleUp";
-            this.MapScaleUp.Size = new System.Drawing.Size(23, 23);
-            this.MapScaleUp.TabIndex = 3;
-            this.MapScaleUp.Text = "+";
-            this.MapScaleUp.UseVisualStyleBackColor = true;
-            this.MapScaleUp.Click += new System.EventHandler(this.ScaleButton_Click);
-            // 
-            // MapScaleDown
-            // 
-            this.MapScaleDown.Location = new System.Drawing.Point(307, 12);
-            this.MapScaleDown.Name = "MapScaleDown";
-            this.MapScaleDown.Size = new System.Drawing.Size(23, 23);
-            this.MapScaleDown.TabIndex = 4;
-            this.MapScaleDown.Text = "-";
-            this.MapScaleDown.UseVisualStyleBackColor = true;
-            this.MapScaleDown.Click += new System.EventHandler(this.ScaleButton_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(839, 543);
-            this.Controls.Add(this.MapScaleDown);
-            this.Controls.Add(this.MapScaleUp);
             this.Controls.Add(this.mMap);
             this.Controls.Add(this.ModText);
             this.Controls.Add(this.ModulButton);
@@ -109,8 +86,6 @@
         private System.Windows.Forms.Button ModulButton;
         private System.Windows.Forms.TextBox ModText;
         private System.Windows.Forms.PictureBox mMap;
-        private System.Windows.Forms.Button MapScaleUp;
-        private System.Windows.Forms.Button MapScaleDown;
     }
 }
 

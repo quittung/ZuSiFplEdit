@@ -123,7 +123,8 @@ namespace ZuSiFplEdit
                         }
                         
                     }
-                    map.DrawEllipse(pn, coordToPix(mod.UTM_WE, false), coordToPix(mod.UTM_NS, true), 5, 5);
+                    int circleSize = 6;
+                    map.DrawEllipse(pn, coordToPix(mod.UTM_WE, false) - circleSize / 2, coordToPix(mod.UTM_NS, true) - circleSize / 2, circleSize, circleSize);
                 }
             }
         }

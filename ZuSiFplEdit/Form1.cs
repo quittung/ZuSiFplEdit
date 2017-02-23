@@ -18,11 +18,9 @@ namespace ZuSiFplEdit
         {
             InitializeComponent();
 
-            appInit();
-
             this.MouseWheel += new MouseEventHandler(mMap_MouseWheel);
 
-            mMap.Update();
+            appInit();
         }
 
         private void mMap_MouseWheel(object sender, MouseEventArgs e)

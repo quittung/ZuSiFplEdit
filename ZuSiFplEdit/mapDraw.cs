@@ -121,7 +121,11 @@ namespace ZuSiFplEdit
                         {
                             map.DrawLine(pn, coordToPix(mod.UTM_WE, false), coordToPix(mod.UTM_NS, true), coordToPix(connection.UTM_WE, false), coordToPix(connection.UTM_NS, true));
                         }
-                        
+
+                        if (pixPerGrad > 12)
+                        {
+                            map.DrawString(mod.modName, new Font("Verdana", 8), Brushes.Black, coordToPix(mod.UTM_WE, false) + 10, coordToPix(mod.UTM_NS, true) + 10);
+                        }
                     }
                     int circleSize = 6;
                     map.DrawEllipse(pn, coordToPix(mod.UTM_WE, false) - circleSize / 2, coordToPix(mod.UTM_NS, true) - circleSize / 2, circleSize, circleSize);

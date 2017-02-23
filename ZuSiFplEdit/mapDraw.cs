@@ -103,6 +103,7 @@ namespace ZuSiFplEdit
             return ((mod.UTM_NS < border_north) && (mod.UTM_NS > border_south) && (mod.UTM_WE < border_east) && (mod.UTM_WE > border_west));
         }
 
+
         public void draw()
         {
             map.Clear(Color.White);
@@ -114,6 +115,14 @@ namespace ZuSiFplEdit
             foreach (modContainer.streckenModul mod in modulList)
             {
                 if (isVisible(mod)) {
+                    if (pixPerGrad > 1.5)
+                    {
+                        foreach (modContainer.streckenModul connection in mod.Verbindungen)
+                        {
+                            map.DrawLine(pn, coordToPix(mod.UTM_WE, false), coordToPix(mod.UTM_NS, true), coordToPix(connection.UTM_WE, false), coordToPix(connection.UTM_NS, true));
+                        }
+                        
+                    }
                     map.DrawEllipse(pn, coordToPix(mod.UTM_WE, false), coordToPix(mod.UTM_NS, true), 5, 5);
                 }
             }

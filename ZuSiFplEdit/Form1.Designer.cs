@@ -72,8 +72,10 @@
             this.Controls.Add(this.modListBox);
             this.Controls.Add(this.mMap);
             this.Controls.Add(this.ButtonExport);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "modSelForm";
-            this.Text = "ZuSi 3 Modulauswahl#";
+            this.Text = "ZuSi 3 Modulauswahl";
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.modSelForm_Paint);
             ((System.ComponentModel.ISupportInitialize)(this.mMap)).EndInit();
             this.ResumeLayout(false);
 

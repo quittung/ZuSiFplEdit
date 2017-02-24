@@ -67,9 +67,7 @@ namespace ZuSiFplEdit
             }
             moduleVerlinken();
         }
-
-
-
+        
 
         void grenzenEinlesen(streckenModul aktModul)
         {

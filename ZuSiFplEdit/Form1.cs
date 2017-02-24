@@ -35,7 +35,7 @@ namespace ZuSiFplEdit
         private void ModulButton_Click(object sender, EventArgs e)
         {
             Module.writeToFile();
-        }
+        }    
 
         private void appInit()
         {
@@ -50,7 +50,6 @@ namespace ZuSiFplEdit
 
             //Modulekarte vorbereiten
             kartenZeichner = new mapDraw(mMap.CreateGraphics(), mMap.Width, mMap.Height, Module.mSammlung);
-            kartenZeichner.draw();
         }
 
         private void mMap_MouseDown(object sender, MouseEventArgs e)
@@ -99,8 +98,8 @@ namespace ZuSiFplEdit
             {
                 var nächsteStation = kartenZeichner.getNearestStation(e.X, e.Y);
 
-                MenuItem[] menuItems = new MenuItem[]{new MenuItem("X: " + e.X + " - Y: " + e.Y),
-                new MenuItem("X: " + kartenZeichner.pixToCoord(e.X, false).ToString("F1") + " - Y: " + kartenZeichner.pixToCoord(e.Y, true).ToString("F1")),
+                MenuItem[] menuItems = new MenuItem[]{new MenuItem("Pixel: X" + e.X + " - Y" + e.Y),
+                new MenuItem("Koordinaten: X" + kartenZeichner.pixToCoord(e.X, false).ToString("F1") + " - Y" + kartenZeichner.pixToCoord(e.Y, true).ToString("F1")),
                 new MenuItem("Nächste Station: " + nächsteStation.modName + "; Distanz: " + kartenZeichner.getStationDistance(nächsteStation, e.X, e.Y).ToString())};
 
                 ContextMenu buttonMenu = new ContextMenu(menuItems);
@@ -120,6 +119,11 @@ namespace ZuSiFplEdit
                     Module.mSammlung[i].selected = false;
                 }
             }
+            kartenZeichner.draw();
+        }
+
+        private void modSelForm_Paint(object sender, PaintEventArgs e)
+        {
             kartenZeichner.draw();
         }
     }

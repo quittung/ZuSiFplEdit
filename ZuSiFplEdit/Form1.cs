@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace ZuSiFplEdit
 {
-    public partial class Form1 : Form
+    public partial class modSelForm : Form
     {
         modContainer Module;
         mapDraw kartenZeichner;
@@ -14,7 +14,7 @@ namespace ZuSiFplEdit
         int mouseDownY = 0;
         bool mouseDown = false;
 
-        public Form1()
+        public modSelForm()
         {
             InitializeComponent();
 
@@ -34,7 +34,7 @@ namespace ZuSiFplEdit
 
         private void ModulButton_Click(object sender, EventArgs e)
         {
-            appInit();
+            Module.writeToFile();
         }
 
         private void appInit()

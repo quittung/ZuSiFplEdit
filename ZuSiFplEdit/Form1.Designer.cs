@@ -1,6 +1,6 @@
 ﻿namespace ZuSiFplEdit
 {
-    partial class Form1
+    partial class modSelForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,21 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.ModulButton = new System.Windows.Forms.Button();
             this.mMap = new System.Windows.Forms.PictureBox();
             this.modListBox = new System.Windows.Forms.ListBox();
+            this.ButtonExport = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.mMap)).BeginInit();
             this.SuspendLayout();
-            // 
-            // ModulButton
-            // 
-            this.ModulButton.Location = new System.Drawing.Point(12, 12);
-            this.ModulButton.Name = "ModulButton";
-            this.ModulButton.Size = new System.Drawing.Size(260, 39);
-            this.ModulButton.TabIndex = 0;
-            this.ModulButton.Text = "Module Lesen";
-            this.ModulButton.UseVisualStyleBackColor = true;
-            this.ModulButton.Click += new System.EventHandler(this.ModulButton_Click);
             // 
             // mMap
             // 
@@ -57,22 +47,32 @@
             // modListBox
             // 
             this.modListBox.FormattingEnabled = true;
-            this.modListBox.Location = new System.Drawing.Point(12, 57);
+            this.modListBox.Location = new System.Drawing.Point(12, 12);
             this.modListBox.Name = "modListBox";
             this.modListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.modListBox.Size = new System.Drawing.Size(260, 472);
             this.modListBox.TabIndex = 3;
             this.modListBox.SelectedValueChanged += new System.EventHandler(this.modListBox_SelectedValueChanged);
             // 
-            // Form1
+            // ButtonExport
+            // 
+            this.ButtonExport.Location = new System.Drawing.Point(12, 490);
+            this.ButtonExport.Name = "ButtonExport";
+            this.ButtonExport.Size = new System.Drawing.Size(260, 39);
+            this.ButtonExport.TabIndex = 0;
+            this.ButtonExport.Text = ".fpn ausgeben";
+            this.ButtonExport.UseVisualStyleBackColor = true;
+            this.ButtonExport.Click += new System.EventHandler(this.ModulButton_Click);
+            // 
+            // modSelForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(839, 543);
             this.Controls.Add(this.modListBox);
             this.Controls.Add(this.mMap);
-            this.Controls.Add(this.ModulButton);
-            this.Name = "Form1";
+            this.Controls.Add(this.ButtonExport);
+            this.Name = "modSelForm";
             this.Text = "ZuSi 3 Modulauswahl#";
             ((System.ComponentModel.ISupportInitialize)(this.mMap)).EndInit();
             this.ResumeLayout(false);
@@ -80,10 +80,9 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Button ModulButton;
         private System.Windows.Forms.PictureBox mMap;
         private System.Windows.Forms.ListBox modListBox;
+        private System.Windows.Forms.Button ButtonExport;
     }
 }
 

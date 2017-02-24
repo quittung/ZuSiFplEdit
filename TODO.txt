@@ -1,0 +1,9 @@
+TODO - ZuSi 3 - Fahrplaneditor 
+
+V0.1
+Text besser ausrichten.
+
+V1
+Modulauswahl nach Anfangs- und Endpunkt
+Richtiger Gleisplan
+Vollständige Möglichkeiten zur Fahrplanerstellung

@@ -45,9 +45,12 @@ namespace ZuSiFplEdit
                 {
                     foreach (string st3 in Directory.GetFiles(mod, "*.st3"))
                     {
-                        streckenModul aktModul = modulEinlesen(st3);
-                        grenzenEinlesen(aktModul);
-                        mSammlung.Add(aktModul);
+                        if (! st3.Contains("ummy"))
+                        {
+                            streckenModul aktModul = modulEinlesen(st3);
+                            grenzenEinlesen(aktModul);
+                            mSammlung.Add(aktModul);
+                        }
                     }
                 }
             }

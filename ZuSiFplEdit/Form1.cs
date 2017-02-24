@@ -82,8 +82,8 @@ namespace ZuSiFplEdit
 
             if (e.Button == MouseButtons.Right)
             {
-                MenuItem[] menuItems = new MenuItem[]{new MenuItem("X: " + e.X),
-                new MenuItem("Y: " + e.Y)};
+                MenuItem[] menuItems = new MenuItem[]{new MenuItem("X: " + e.X + " - Y: " + e.Y),
+                new MenuItem("X: " + kartenZeichner.pixToCoord(e.X, false).ToString("F1") + " - Y: " + kartenZeichner.pixToCoord(e.Y, true).ToString("F1"))};
 
                 ContextMenu buttonMenu = new ContextMenu(menuItems);
                 buttonMenu.Show(mMap, new System.Drawing.Point(e.X, e.Y));

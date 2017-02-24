@@ -155,7 +155,10 @@ namespace ZuSiFplEdit
 
                 foreach (modContainer.streckenModul connection in mod.Verbindungen)
                 {
-                    map.DrawLine(pen_unselected, mod.PIX_X, mod.PIX_Y, coordToPix(connection.UTM_WE, false), coordToPix(connection.UTM_NS, true));
+                    if (connection.Verbindungen.Contains(mod)) //TODO: Diese Abfrage sollte nur einmal beim Einlesen und Verlinken ausgeführt werden.
+                    {
+                        map.DrawLine(pen_unselected, mod.PIX_X, mod.PIX_Y, coordToPix(connection.UTM_WE, false), coordToPix(connection.UTM_NS, true));
+                    }
                 }
                 if (pixPerGrad > 11)
                 {

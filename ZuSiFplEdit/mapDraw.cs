@@ -34,7 +34,7 @@ namespace ZuSiFplEdit
             setInitPos();
         }
 
-        int coordToPix(double coord, bool isNS)
+        public int coordToPix(double coord, bool isNS)
         {
             if (isNS)
             {
@@ -42,6 +42,18 @@ namespace ZuSiFplEdit
             } else
             {
                 return (int)((coord - border_west) / (border_east - border_west) * map_width_p);
+            }
+        }
+
+        public double pixToCoord(int pix, bool isNS)
+        {
+            if (isNS)
+            {
+                return (border_north - ((double)pix * (border_north - border_south) / (double)map_height_p));
+            }
+            else
+            {
+                return (((double)pix * (border_east - border_west) / (double)map_width_p) + border_west);
             }
         }
 

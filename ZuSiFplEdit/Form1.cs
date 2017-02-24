@@ -50,7 +50,6 @@ namespace ZuSiFplEdit
 
             //Modulekarte vorbereiten
             kartenZeichner = new mapDraw(mMap.CreateGraphics(), mMap.Width, mMap.Height, Module.mSammlung);
-            kartenZeichner.draw();
         }
 
         private void mMap_MouseDown(object sender, MouseEventArgs e)
@@ -120,6 +119,11 @@ namespace ZuSiFplEdit
                     Module.mSammlung[i].selected = false;
                 }
             }
+            kartenZeichner.draw();
+        }
+
+        private void modSelForm_Paint(object sender, PaintEventArgs e)
+        {
             kartenZeichner.draw();
         }
     }

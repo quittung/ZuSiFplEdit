@@ -11,10 +11,15 @@ namespace ZuSiFplEdit
         public class streckenModul
         {
             public string modName;
+
             public int UTM_NS;
             public int UTM_WE;
             public int UTM_Z1;
             public char UTM_Z2;
+
+            public int PIX_X;
+            public int PIX_Y;
+
             public List<string> VerbindungenStr;
             public streckenModul[] Verbindungen;
             public bool NetzGrenze;

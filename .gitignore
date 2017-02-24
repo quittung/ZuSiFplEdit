@@ -2,3 +2,5 @@
 ZuSiFplEdit/bin/
 .vs/
 *.pdb
+
+*.resources

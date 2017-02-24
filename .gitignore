@@ -1,4 +1,4 @@
-
 *.exe
-
 ZuSiFplEdit/bin/
+.vs/
+*.pdb

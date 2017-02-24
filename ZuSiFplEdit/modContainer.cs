@@ -29,8 +29,9 @@ namespace ZuSiFplEdit
 
             public streckenModul(string modulePath)
             {
-                modPath = modulePath;
-                modName = speicherortZuName(modPath, '/');
+                modPath = modulePath.Replace('/', '\\');
+                modPath = modPath.Substring(modPath.IndexOf("Routes"));
+                modName = speicherortZuName(modPath, '\\');
                 VerbindungenStr = new List<string>();
                 NetzGrenze = false;
                 selected = false;
@@ -175,6 +176,42 @@ namespace ZuSiFplEdit
             string modName = modNameAr[modNameAr.Length - 1];
             modName = modName.Substring(0, modName.Length - 4);
             return (modName);
+        }
+
+        public void writeToFile()
+        {
+            int mod_Count = 0;
+            int UTM_NS_avg = 0;
+            int UTM_WE_avg = 0;
+
+            int UTM_Z1 = 0;
+            char UTM_Z2 = ' ';
+
+            var fpn_file = new System.IO.StreamWriter("Fragment.fpn", false);
+            foreach (var mod in mSammlung)
+            {
+                if (mod.selected)
+                {
+                    mod_Count++;
+                    UTM_NS_avg += mod.UTM_NS;
+                    UTM_WE_avg += mod.UTM_WE;
+
+                    UTM_Z1 = mod.UTM_Z1;
+                    UTM_Z2 = mod.UTM_Z2;
+
+                    fpn_file.WriteLine("<StrModul>");
+                    fpn_file.WriteLine("<Datei Dateiname=\"" + mod.modPath + "\"/>");
+                    fpn_file.WriteLine("<p/>");
+                    fpn_file.WriteLine("<phi/>");
+                    fpn_file.WriteLine("</StrModul>");
+                }
+            }
+            UTM_NS_avg = UTM_NS_avg / mod_Count;
+            UTM_WE_avg = UTM_WE_avg / mod_Count;
+
+            fpn_file.WriteLine("<UTM UTM_WE=\"" + UTM_WE_avg + "\" UTM_NS=\"" + UTM_NS_avg + "\" UTM_Zone=\"" + UTM_Z1 + "\" UTM_Zone2=\"" + UTM_Z2 + "\"/>\"");
+
+            fpn_file.Close();
         }
     }
 }

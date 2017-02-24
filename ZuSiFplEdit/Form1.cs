@@ -34,7 +34,7 @@ namespace ZuSiFplEdit
 
         private void ModulButton_Click(object sender, EventArgs e)
         {
-            appInit();
+            Module.writeToFile();
         }
 
         private void appInit()

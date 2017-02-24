@@ -23,7 +23,9 @@ namespace ZuSiFplEdit
 
             public List<string> VerbindungenStr;
             public streckenModul[] Verbindungen;
+
             public bool NetzGrenze;
+            public bool selected;
 
             public streckenModul(string modulePath)
             {
@@ -31,6 +33,7 @@ namespace ZuSiFplEdit
                 modName = speicherortZuName(modPath, '/');
                 VerbindungenStr = new List<string>();
                 NetzGrenze = false;
+                selected = false;
             }
         }
 

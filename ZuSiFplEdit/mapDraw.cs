@@ -125,7 +125,9 @@ namespace ZuSiFplEdit
 
             map.DrawString("N" + center_NS.ToString("F2") + " - E" + center_WE.ToString("F2") + " - 1:" + pixPerGrad.ToString("F1"), new Font("Verdana", 10), new SolidBrush(Color.Red), 20, map_height_p - 20);
 
-            Pen pn = new Pen(Color.Blue);
+            Pen pen_unselected = new Pen(Color.Black);
+            Pen pen_selected = new Pen(Color.Green);
+            Pen pen_act;
 
             modVisible.Clear();
             foreach (modContainer.streckenModul mod in modList)
@@ -136,11 +138,21 @@ namespace ZuSiFplEdit
 
                     modVisible.Add(mod);
 
+
+
+                    if (mod.selected)
+                    {
+                        pen_act = pen_selected;
+                    } else
+                    {
+                        pen_act = pen_unselected; 
+                    }
+
                     if (pixPerGrad > 1.5)
                     {
                         foreach (modContainer.streckenModul connection in mod.Verbindungen)
                         {
-                            map.DrawLine(pn, mod.PIX_X, mod.PIX_Y, coordToPix(connection.UTM_WE, false), coordToPix(connection.UTM_NS, true));
+                            map.DrawLine(pen_unselected, mod.PIX_X, mod.PIX_Y, coordToPix(connection.UTM_WE, false), coordToPix(connection.UTM_NS, true));
                         }
 
                         if (pixPerGrad > 12)
@@ -148,8 +160,18 @@ namespace ZuSiFplEdit
                             map.DrawString(mod.modName, new Font("Verdana", 8), Brushes.Black, mod.PIX_X + 10, mod.PIX_Y + 10);
                         }
                     }
-                    int circleSize = 6;
-                    map.DrawEllipse(pn, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                    int circleSize = 8;
+                    if (mod.selected)
+                    {
+                        map.FillEllipse(Brushes.Red, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                        map.DrawEllipse(pen_act, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                    }
+                    else
+                    {
+                        map.DrawEllipse(pen_act, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                    }
+                    
+                    
                 }
             }
         }

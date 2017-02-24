@@ -1,6 +1,6 @@
 ﻿namespace ZuSiFplEdit
 {
-    partial class Form1
+    partial class modSelForm
     {
         /// <summary>
         /// Required designer variable.

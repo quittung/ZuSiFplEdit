@@ -19,6 +19,7 @@ namespace ZuSiFplEdit
             InitializeComponent();
 
             this.MouseWheel += new MouseEventHandler(mMap_MouseWheel);
+            modListBox.SelectedIndexChanged += new EventHandler(modListBox_SelectedValueChanged);
 
             appInit();
         }
@@ -44,7 +45,7 @@ namespace ZuSiFplEdit
             //Module ausgeben
             foreach (modContainer.streckenModul modul in Module.mSammlung)
             {
-                ModText.Text += modul.modName + "\r\n";
+                modListBox.Items.Add(modul.modName);
             }
 
             //Modulekarte vorbereiten
@@ -77,7 +78,21 @@ namespace ZuSiFplEdit
                 int deltaX = e.X - mouseDownX;
                 int deltaY = e.Y - mouseDownY;
 
-                kartenZeichner.move(deltaY, deltaX);
+                int movementThreshold = 3;
+
+                if ((Math.Abs(deltaX) > movementThreshold) || (Math.Abs(deltaY) > movementThreshold))
+                {
+                    kartenZeichner.move(deltaY, deltaX);
+                } else
+                {
+                    var nächsteStation = kartenZeichner.getNearestStation(e.X, e.Y);
+                    if (kartenZeichner.getStationDistance(nächsteStation, e.X, e.Y) < 10)
+                    {
+                        nächsteStation.selected = !nächsteStation.selected;
+                        kartenZeichner.draw();
+                        modListBox.SetSelected(Module.mSammlung.IndexOf(nächsteStation), nächsteStation.selected);
+                    }
+                }
             }
 
             if (e.Button == MouseButtons.Right)
@@ -91,6 +106,21 @@ namespace ZuSiFplEdit
                 ContextMenu buttonMenu = new ContextMenu(menuItems);
                 buttonMenu.Show(mMap, new Point(e.X, e.Y));
             }
+        }
+
+        private void modListBox_SelectedValueChanged(object sender, EventArgs e)
+        {
+            for (int i = 0; i < Module.mSammlung.Count; i++)
+            {
+                if (modListBox.SelectedIndices.Contains(i))
+                {
+                    Module.mSammlung[i].selected = true;
+                } else
+                {
+                    Module.mSammlung[i].selected = false;
+                }
+            }
+            kartenZeichner.draw();
         }
     }
 }

@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.ModulButton = new System.Windows.Forms.Button();
-            this.ModText = new System.Windows.Forms.TextBox();
             this.mMap = new System.Windows.Forms.PictureBox();
+            this.modListBox = new System.Windows.Forms.ListBox();
             ((System.ComponentModel.ISupportInitialize)(this.mMap)).BeginInit();
             this.SuspendLayout();
             // 
@@ -44,17 +44,6 @@
             this.ModulButton.UseVisualStyleBackColor = true;
             this.ModulButton.Click += new System.EventHandler(this.ModulButton_Click);
             // 
-            // ModText
-            // 
-            this.ModText.AcceptsReturn = true;
-            this.ModText.Location = new System.Drawing.Point(12, 57);
-            this.ModText.Multiline = true;
-            this.ModText.Name = "ModText";
-            this.ModText.ReadOnly = true;
-            this.ModText.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.ModText.Size = new System.Drawing.Size(260, 474);
-            this.ModText.TabIndex = 1;
-            // 
             // mMap
             // 
             this.mMap.Location = new System.Drawing.Point(278, 12);
@@ -65,27 +54,36 @@
             this.mMap.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mMap_MouseDown);
             this.mMap.MouseUp += new System.Windows.Forms.MouseEventHandler(this.mMap_MouseUp);
             // 
+            // modListBox
+            // 
+            this.modListBox.FormattingEnabled = true;
+            this.modListBox.Location = new System.Drawing.Point(12, 57);
+            this.modListBox.Name = "modListBox";
+            this.modListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.modListBox.Size = new System.Drawing.Size(260, 472);
+            this.modListBox.TabIndex = 3;
+            this.modListBox.SelectedValueChanged += new System.EventHandler(this.modListBox_SelectedValueChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(839, 543);
+            this.Controls.Add(this.modListBox);
             this.Controls.Add(this.mMap);
-            this.Controls.Add(this.ModText);
             this.Controls.Add(this.ModulButton);
             this.Name = "Form1";
-            this.Text = "ZuSi 3 Fahrplaneditor++";
+            this.Text = "ZuSi 3 Modulauswahl#";
             ((System.ComponentModel.ISupportInitialize)(this.mMap)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
         private System.Windows.Forms.Button ModulButton;
-        private System.Windows.Forms.TextBox ModText;
         private System.Windows.Forms.PictureBox mMap;
+        private System.Windows.Forms.ListBox modListBox;
     }
 }
 

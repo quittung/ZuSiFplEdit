@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+
 using System.Drawing;
 
 namespace ZuSiFplEdit
 {
     class mapDraw
     {
-        List<modContainer.streckenModul> modulList;
-
+        List<modContainer.streckenModul> modList;
+        List<modContainer.streckenModul> modVisible;
         Graphics map;
+
         int map_width_p;
         int map_height_p;
 
@@ -29,12 +31,13 @@ namespace ZuSiFplEdit
             map = map_gr;
             map_width_p = width;
             map_height_p = height;
-            modulList = mList;
+            modList = mList;
+            modVisible = new List<modContainer.streckenModul>();
 
             setInitPos();
         }
 
-        int coordToPix(double coord, bool isNS)
+        public int coordToPix(double coord, bool isNS)
         {
             if (isNS)
             {
@@ -45,13 +48,25 @@ namespace ZuSiFplEdit
             }
         }
 
+        public double pixToCoord(int pix, bool isNS)
+        {
+            if (isNS)
+            {
+                return (border_north - ((double)pix * (border_north - border_south) / (double)map_height_p));
+            }
+            else
+            {
+                return (((double)pix * (border_east - border_west) / (double)map_width_p) + border_west);
+            }
+        }
+
         void setInitPos()
         {
-            border_north = modulList[0].UTM_NS;
-            border_south = modulList[0].UTM_NS;
-            border_east = modulList[0].UTM_WE;
-            border_west = modulList[0].UTM_WE;
-            foreach (modContainer.streckenModul mod in modulList)
+            border_north = modList[0].UTM_NS;
+            border_south = modList[0].UTM_NS;
+            border_east = modList[0].UTM_WE;
+            border_west = modList[0].UTM_WE;
+            foreach (modContainer.streckenModul mod in modList)
             {
                 if (mod.UTM_NS > border_north) border_north = mod.UTM_NS;
                 if (mod.UTM_NS < border_south) border_south = mod.UTM_NS;
@@ -110,27 +125,80 @@ namespace ZuSiFplEdit
 
             map.DrawString("N" + center_NS.ToString("F2") + " - E" + center_WE.ToString("F2") + " - 1:" + pixPerGrad.ToString("F1"), new Font("Verdana", 10), new SolidBrush(Color.Red), 20, map_height_p - 20);
 
-            Pen pn = new Pen(Color.Blue);
+            Pen pen_unselected = new Pen(Color.Black);
+            Pen pen_selected = new Pen(Color.Green);
+            Pen pen_act;
 
-            foreach (modContainer.streckenModul mod in modulList)
+            modVisible.Clear();
+            foreach (modContainer.streckenModul mod in modList)
             {
                 if (isVisible(mod)) {
+                    mod.PIX_X = coordToPix(mod.UTM_WE, false);
+                    mod.PIX_Y = coordToPix(mod.UTM_NS, true);
+
+                    modVisible.Add(mod);
+
+
+
+                    if (mod.selected)
+                    {
+                        pen_act = pen_selected;
+                    } else
+                    {
+                        pen_act = pen_unselected; 
+                    }
+
                     if (pixPerGrad > 1.5)
                     {
                         foreach (modContainer.streckenModul connection in mod.Verbindungen)
                         {
-                            map.DrawLine(pn, coordToPix(mod.UTM_WE, false), coordToPix(mod.UTM_NS, true), coordToPix(connection.UTM_WE, false), coordToPix(connection.UTM_NS, true));
+                            map.DrawLine(pen_unselected, mod.PIX_X, mod.PIX_Y, coordToPix(connection.UTM_WE, false), coordToPix(connection.UTM_NS, true));
                         }
 
                         if (pixPerGrad > 12)
                         {
-                            map.DrawString(mod.modName, new Font("Verdana", 8), Brushes.Black, coordToPix(mod.UTM_WE, false) + 10, coordToPix(mod.UTM_NS, true) + 10);
+                            map.DrawString(mod.modName, new Font("Verdana", 8), Brushes.Black, mod.PIX_X + 10, mod.PIX_Y + 10);
                         }
                     }
-                    int circleSize = 6;
-                    map.DrawEllipse(pn, coordToPix(mod.UTM_WE, false) - circleSize / 2, coordToPix(mod.UTM_NS, true) - circleSize / 2, circleSize, circleSize);
+                    int circleSize = 8;
+                    if (mod.selected)
+                    {
+                        map.FillEllipse(Brushes.Red, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                        map.DrawEllipse(pen_act, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                    }
+                    else
+                    {
+                        map.DrawEllipse(pen_act, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                    }
+                    
+                    
                 }
             }
+        }
+
+        public modContainer.streckenModul getNearestStation(int X, int Y)
+        {
+            double dist = -1;
+            modContainer.streckenModul nearestMod = null;
+            foreach (modContainer.streckenModul mod in modVisible)
+            {
+                double modDist = getStationDistance(mod, X, Y);
+                if ((dist > modDist) || (dist == -1))
+                {
+                    dist = modDist;
+                    nearestMod = mod;
+                }                
+            }
+            return (nearestMod);
+        }
+
+        public int getStationDistance(modContainer.streckenModul mod, int X, int Y)
+        {
+            int deltaX = mod.PIX_X - X;
+            int deltaY = mod.PIX_Y - Y;
+
+            int dist = (int)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+            return dist;
         }
     }
 }

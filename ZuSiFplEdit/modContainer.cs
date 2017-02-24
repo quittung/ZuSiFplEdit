@@ -10,20 +10,30 @@ namespace ZuSiFplEdit
     {
         public class streckenModul
         {
+            public string modPath;
             public string modName;
+
             public int UTM_NS;
             public int UTM_WE;
             public int UTM_Z1;
             public char UTM_Z2;
+
+            public int PIX_X;
+            public int PIX_Y;
+
             public List<string> VerbindungenStr;
             public streckenModul[] Verbindungen;
-            public bool NetzGrenze;
 
-            public streckenModul(string moduleName)
+            public bool NetzGrenze;
+            public bool selected;
+
+            public streckenModul(string modulePath)
             {
-                modName = moduleName;
+                modPath = modulePath;
+                modName = speicherortZuName(modPath, '/');
                 VerbindungenStr = new List<string>();
                 NetzGrenze = false;
+                selected = false;
             }
         }
 
@@ -45,9 +55,12 @@ namespace ZuSiFplEdit
                 {
                     foreach (string st3 in Directory.GetFiles(mod, "*.st3"))
                     {
-                        streckenModul aktModul = modulEinlesen(st3);
-                        grenzenEinlesen(aktModul);
-                        mSammlung.Add(aktModul);
+                        if (! st3.Contains("ummy"))
+                        {
+                            streckenModul aktModul = modulEinlesen(st3);
+                            grenzenEinlesen(aktModul);
+                            mSammlung.Add(aktModul);
+                        }
                     }
                 }
             }
@@ -80,7 +93,7 @@ namespace ZuSiFplEdit
             XmlReader aktModXml = XmlReader.Create(Speicherort);
             
 
-            streckenModul aktMod = new streckenModul(speicherortZuName(aktModXml.BaseURI, '/'));
+            streckenModul aktMod = new streckenModul(aktModXml.BaseURI);
 
             while (aktModXml.Read())
             {
@@ -117,14 +130,7 @@ namespace ZuSiFplEdit
                 for (int i = 0; i < aktModul.VerbindungenStr.Count; i++)
                 {
                     aktModul.VerbindungenStr[i] = speicherortZuName(aktModul.VerbindungenStr[i], '\\');
-                    for (int n = 0; n < mSammlung.Count; n++)
-                    {
-                        if (mSammlung[n].modName.Equals(aktModul.VerbindungenStr[i]))
-                        {
-                            aktModul.Verbindungen[i] = mSammlung[n];
-                            break;
-                        }
-                    }
+                    aktModul.Verbindungen[i] = sucheMod(aktModul.VerbindungenStr[i]);
                     if (aktModul.Verbindungen[i] == null)
                     {
                         aktModul.NetzGrenze = true;
@@ -151,8 +157,18 @@ namespace ZuSiFplEdit
         }
 
 
+        streckenModul sucheMod(string modName)
+        {
+            foreach (var mod in mSammlung)
+            {
+                if (mod.modName == modName) return mod;
+            }
+            return null;
+        }
+
+
         //Extrahiert den Namen eines Moduls aus dem Speicherort. 
-        string speicherortZuName(string Speicherort, char DirSeparator)
+        static string speicherortZuName(string Speicherort, char DirSeparator)
         {
             //MessageBox.Show(Speicherort, DirSeparator.ToString(), MessageBoxButtons.OK);
             string[] modNameAr = Speicherort.Split(DirSeparator);

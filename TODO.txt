@@ -1,7 +1,6 @@
 TODO - ZuSi 3 - Fahrplaneditor 
 
 V0.1
-Auswahl des Bibliotheksspeicherortes
 
 V0.2
 Stationsnamen besser platzieren.

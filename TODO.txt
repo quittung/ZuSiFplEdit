@@ -1,9 +1,10 @@
 TODO - ZuSi 3 - Fahrplaneditor 
 
-V0.1
-Text besser ausrichten.
+V0.2
+Stationsnamen besser platzieren.
 
 V1
+Vollständige Code-Doku
 Modulauswahl nach Anfangs- und Endpunkt
 Richtiger Gleisplan
 Vollständige Möglichkeiten zur Fahrplanerstellung

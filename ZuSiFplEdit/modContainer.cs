@@ -10,21 +10,57 @@ namespace ZuSiFplEdit
     {
         public class streckenModul
         {
+            /// <summary>
+            /// Relativer Pfad zum Modul in Zusi-Bibliothek
+            /// </summary>
             public string modPath;
+            /// <summary>
+            /// Name des Moduls
+            /// </summary>
             public string modName;
 
+            /// <summary>
+            /// UMT-Nordwert von Modul
+            /// </summary>
             public int UTM_NS;
+            /// <summary>
+            /// UMT-Ostwert von Modul
+            /// </summary>
             public int UTM_WE;
+            /// <summary>
+            /// UMT-Meridianzone von Modul
+            /// </summary>
             public int UTM_Z1;
+            /// <summary>
+            /// UMT Latitude Band von Modul
+            /// </summary>
             public char UTM_Z2;
 
+            /// <summary>
+            /// Pixel-Position auf X-Achse auf Karte beim letzten Zeichenvorgang
+            /// </summary>
             public int PIX_X;
+            /// <summary>
+            /// Pixel-Position auf Y-Achse auf Karte beim letzten Zeichenvorgang
+            /// </summary>
             public int PIX_Y;
 
+            /// <summary>
+            /// Enthält die umliegenden Module als String. Nach Verlinkung nicht mehr aktuell.
+            /// </summary>
             public List<string> VerbindungenStr;
-            public streckenModul[] Verbindungen;
+            /// <summary>
+            /// Enthält Pointer zu den umliegenden Modulen.
+            /// </summary>
+            public List<streckenModul> Verbindungen;
 
+            /// <summary>
+            /// Wahr, wenn Modul weniger als 2 existierende Verbindungen im Datenbestand hat.
+            /// </summary>
             public bool NetzGrenze;
+            /// <summary>
+            /// Wahr, wenn Modul für Fahrplan ausgewählt wurde.
+            /// </summary>
             public bool selected;
 
             public streckenModul(string modulePath)
@@ -111,7 +147,7 @@ namespace ZuSiFplEdit
                     string Dateiname = aktModXml.GetAttribute("Dateiname");
                     
                     if (!(Dateiname == null || aktMod.VerbindungenStr.Contains(Dateiname)))
-                        aktMod.VerbindungenStr.Add(Dateiname);
+                        aktMod.VerbindungenStr.Add(speicherortZuName(Dateiname, '\\'));
                 }
             }
 
@@ -124,38 +160,40 @@ namespace ZuSiFplEdit
             //MessageBox.Show("Module werden jetzt verlinkt.", "Debugnachricht", MessageBoxButtons.OK);
             foreach (streckenModul aktModul in mSammlung)
             {
-                int missingConnections = 0;
-                aktModul.Verbindungen = new streckenModul[aktModul.VerbindungenStr.Count];
-                for (int i = 0; i < aktModul.VerbindungenStr.Count; i++)
+                aktModul.Verbindungen = new List<streckenModul>();
+                foreach (string connectionString in aktModul.VerbindungenStr)
                 {
-                    aktModul.VerbindungenStr[i] = speicherortZuName(aktModul.VerbindungenStr[i], '\\');
-                    aktModul.Verbindungen[i] = sucheMod(aktModul.VerbindungenStr[i]);
-                    if (aktModul.Verbindungen[i] == null)
+                    streckenModul connectionObj = sucheMod(connectionString);
+                    if (!(connectionObj == null))
+                    {
+                        aktModul.Verbindungen.Add(connectionObj);
+                    } else
                     {
                         aktModul.NetzGrenze = true;
-                        missingConnections++;
+                        //aktModul.VerbindungenStr.Remove(connectionString);
+                    }
+                }
+            }
+
+            //Delete one-sided connections.
+            foreach (streckenModul mod in mSammlung)
+            {
+                foreach (var connection in mod.Verbindungen.ToArray())
+                {
+                    if (! connection.Verbindungen.Contains(mod))
+                    {
+                        mod.Verbindungen.Remove(connection);
                     }
                 }
 
-                //Fehlende Module aus Links löschen:
-                if (aktModul.NetzGrenze)
-                {
-                    streckenModul[] tmp_Verbindungen = new streckenModul[aktModul.Verbindungen.Length - missingConnections];
-                    int verbindungen_count = 0;
-                    for (int i = 0; i < aktModul.Verbindungen.Length; i++)
-                    {
-                        if (aktModul.Verbindungen[i] != null)
-                        {
-                            tmp_Verbindungen[verbindungen_count] = aktModul.Verbindungen[i];
-                            verbindungen_count++;
-                        }
-                    }
-                    aktModul.Verbindungen = tmp_Verbindungen;
-                }
+                if (mod.Verbindungen.Count < 2) mod.NetzGrenze = true;
             }
         }
 
-
+        /// <summary>
+        /// Gibt Modul-Objekt für einen Modulnamen zurück
+        /// </summary>
+        /// <param name="modName">Name des Moduls</param>
         streckenModul sucheMod(string modName)
         {
             foreach (var mod in mSammlung)
@@ -166,16 +204,22 @@ namespace ZuSiFplEdit
         }
 
 
-        //Extrahiert den Namen eines Moduls aus dem Speicherort. 
+        /// <summary>
+        /// Extrahiert den Namen eines Moduls aus seinem Pfad
+        /// </summary>
+        /// <param name="Speicherort">Pfad zum Modul</param>
+        /// /// <param name="DirSeparator">Verzeichnisseparator</param>
         static string speicherortZuName(string Speicherort, char DirSeparator)
         {
-            //MessageBox.Show(Speicherort, DirSeparator.ToString(), MessageBoxButtons.OK);
             string[] modNameAr = Speicherort.Split(DirSeparator);
             string modName = modNameAr[modNameAr.Length - 1];
             modName = modName.Substring(0, modName.Length - 4);
             return (modName);
         }
 
+        /// <summary>
+        /// Erzeugt .fpn-Fragment aus aktuell ausgewählten Modulen.
+        /// </summary>
         public void writeToFile()
         {
             int mod_Count = 0;
@@ -190,6 +234,7 @@ namespace ZuSiFplEdit
             {
                 if (mod.selected)
                 {
+                    //Vorbereitung zur Berechnung vom Referenzpunkt
                     mod_Count++;
                     UTM_NS_avg += mod.UTM_NS;
                     UTM_WE_avg += mod.UTM_WE;
@@ -197,6 +242,7 @@ namespace ZuSiFplEdit
                     UTM_Z1 = mod.UTM_Z1;
                     UTM_Z2 = mod.UTM_Z2;
 
+                    //Schreibe XML für aktuelles Modul
                     fpn_file.WriteLine("<StrModul>");
                     fpn_file.WriteLine("<Datei Dateiname=\"" + mod.modPath + "\"/>");
                     fpn_file.WriteLine("<p/>");
@@ -204,9 +250,12 @@ namespace ZuSiFplEdit
                     fpn_file.WriteLine("</StrModul>");
                 }
             }
+
+            //Berechne UTM-Referenzpunkt
             UTM_NS_avg = UTM_NS_avg / mod_Count;
             UTM_WE_avg = UTM_WE_avg / mod_Count;
 
+            //Schreibe UTM-Referenzpunkt
             fpn_file.WriteLine("<UTM UTM_WE=\"" + UTM_WE_avg + "\" UTM_NS=\"" + UTM_NS_avg + "\" UTM_Zone=\"" + UTM_Z1 + "\" UTM_Zone2=\"" + UTM_Z2 + "\"/>\"");
 
             fpn_file.Close();

@@ -1,6 +1,9 @@
 *.exe
 ZuSiFplEdit/bin/
+ZuSiFplEdit/obj/
 .vs/
 *.pdb
 
 *.resources
+
+*.pfx

@@ -1,11 +1,10 @@
 TODO - ZuSi 3 - Fahrplaneditor 
 
-V0.1
+V0.2
 Stationsnamen besser platzieren.
-Erkennung von einseitigen Verbindungen in modContainer.moduleVerlinken verlagern.
-Icon.
 
 V1
+Vollständige Code-Doku
 Modulauswahl nach Anfangs- und Endpunkt
 Richtiger Gleisplan
 Vollständige Möglichkeiten zur Fahrplanerstellung

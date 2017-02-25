@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(modSelForm));
             this.mMap = new System.Windows.Forms.PictureBox();
             this.modListBox = new System.Windows.Forms.ListBox();
             this.ButtonExport = new System.Windows.Forms.Button();
@@ -73,6 +74,7 @@
             this.Controls.Add(this.mMap);
             this.Controls.Add(this.ButtonExport);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "modSelForm";
             this.Text = "ZuSi 3 Modulauswahl";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.modSelForm_Paint);

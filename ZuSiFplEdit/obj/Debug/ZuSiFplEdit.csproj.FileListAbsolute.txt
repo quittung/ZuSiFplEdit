@@ -4,5 +4,10 @@ C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\bin\Debug\ZuSiFplEdit.
 C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\bin\Debug\ZuSiFplEdit.pdb
 C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.exe
 C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.pdb
-C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.csprojResolveAssemblyReference.cache
 C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.modSelForm.resources
+C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.csprojResolveAssemblyReference.cache
+C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\bin\Debug\ZuSiFplEdit.exe.manifest
+C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\bin\Debug\ZuSiFplEdit.application
+C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.TrustInfo.xml
+C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.exe.manifest
+C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.application

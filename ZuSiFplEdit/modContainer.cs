@@ -232,7 +232,17 @@ namespace ZuSiFplEdit
             int UTM_Z1 = 0;
             char UTM_Z2 = ' ';
 
-            var fpn_file = new System.IO.StreamWriter("Fragment.fpn", false);
+            var fpn_file = new System.IO.StreamWriter("Rohling.fpn", false);
+
+            fpn_file.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            fpn_file.WriteLine("<Zusi>");
+            fpn_file.WriteLine("<Info DateiTyp=\"Fahrplan\" Version=\"A.1\" MinVersion=\"A.1\">");
+            fpn_file.WriteLine("<AutorEintrag/>");
+            fpn_file.WriteLine("</Info>");
+            fpn_file.WriteLine("<Fahrplan>");
+            fpn_file.WriteLine("<BefehlsKonfiguration/>");
+            fpn_file.WriteLine("<Begruessungsdatei/>");
+
             foreach (var mod in mSammlung)
             {
                 if (mod.selected)
@@ -257,7 +267,12 @@ namespace ZuSiFplEdit
             //Abbrechen, wenn nichts ausgewählt.
             if (mod_Count == 0)
             {
+                fpn_file.WriteLine("<UTM/>");
+                fpn_file.WriteLine("</Fahrplan>");
+                fpn_file.WriteLine("</Zusi>");
+
                 fpn_file.Close();
+
                 return;
 
             }
@@ -268,6 +283,8 @@ namespace ZuSiFplEdit
 
             //Schreibe UTM-Referenzpunkt
             fpn_file.WriteLine("<UTM UTM_WE=\"" + UTM_WE_avg + "\" UTM_NS=\"" + UTM_NS_avg + "\" UTM_Zone=\"" + UTM_Z1 + "\" UTM_Zone2=\"" + UTM_Z2 + "\"/>\"");
+            fpn_file.WriteLine("</Fahrplan>");
+            fpn_file.WriteLine("</Zusi>");
 
             fpn_file.Close();
         }

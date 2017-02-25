@@ -1,7 +1,9 @@
 TODO - ZuSi 3 - Fahrplaneditor 
 
 V0.1
-Text besser ausrichten.
+Stationsnamen besser platzieren.
+Erkennung von einseitigen Verbindungen in modContainer.moduleVerlinken verlagern.
+Icon.
 
 V1
 Modulauswahl nach Anfangs- und Endpunkt

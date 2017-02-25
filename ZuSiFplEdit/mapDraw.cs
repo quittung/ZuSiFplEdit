@@ -136,7 +136,7 @@ namespace ZuSiFplEdit
         {
             map.Clear(Color.White);
 
-            map.DrawString("N" + center_NS.ToString("F2") + " - E" + center_WE.ToString("F2") + " - 1:" + pixPerGrad.ToString("F1"), new Font("Verdana", 10), new SolidBrush(Color.Red), 20, map_height_p - 20);
+            map.DrawString("N" + center_NS.ToString("F2") + " - E" + center_WE.ToString("F2") + " - " + pixPerGrad.ToString("F1") + "pix/km", new Font("Verdana", 10), new SolidBrush(Color.Red), 20, map_height_p - 20);
 
             Pen pen_unselected = new Pen(Color.Black);
             Pen pen_selected = new Pen(Color.Green);

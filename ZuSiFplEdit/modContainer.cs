@@ -254,6 +254,14 @@ namespace ZuSiFplEdit
                 }
             }
 
+            //Abbrechen, wenn nichts ausgewählt.
+            if (mod_Count == 0)
+            {
+                fpn_file.Close();
+                return;
+
+            }
+
             //Berechne UTM-Referenzpunkt
             UTM_NS_avg = UTM_NS_avg / mod_Count;
             UTM_WE_avg = UTM_WE_avg / mod_Count;

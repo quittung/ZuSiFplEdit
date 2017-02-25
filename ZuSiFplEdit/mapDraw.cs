@@ -160,7 +160,7 @@ namespace ZuSiFplEdit
                 if (pixPerGrad > 11)
                 {
                     //TODO: Text richtig ausrichten.
-                    map.DrawString(mod.modName, new Font("Verdana", 8), Brushes.Black, mod.PIX_X + 10, mod.PIX_Y + 10);
+                    map.DrawString(mod.modName, new Font("Verdana", 8), Brushes.Black, mod.PIX_X + 6, mod.PIX_Y);
                 }  
             }
 

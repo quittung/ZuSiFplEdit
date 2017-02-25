@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using System.Xml;
 using System.IO;
+using System.Windows.Forms;
 
 namespace ZuSiFplEdit
 {
@@ -75,6 +76,7 @@ namespace ZuSiFplEdit
         }
 
         public List<streckenModul> mSammlung = new List<streckenModul>();
+        string BaseDir = "";
         public int grenzeN;
         public int grenzeS;
         public int grenzeW;
@@ -84,7 +86,8 @@ namespace ZuSiFplEdit
         public modContainer()
         {
             //Durchläuft das Streckenverzeichnis und sucht nach allen .st3-Dateien
-            string BaseDir = "C:\\games\\Zusi3\\Routes\\Deutschland\\";
+
+            BaseDir = Microsoft.Win32.Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Zusi3", "DatenVerzeichnis", "").ToString() + "Routes\\Deutschland\\";  //HACK: Might not work on win32.
 
             foreach (string grid in Directory.GetDirectories(BaseDir))
             {
@@ -229,7 +232,17 @@ namespace ZuSiFplEdit
             int UTM_Z1 = 0;
             char UTM_Z2 = ' ';
 
-            var fpn_file = new System.IO.StreamWriter("Fragment.fpn", false);
+            var fpn_file = new System.IO.StreamWriter("Rohling.fpn", false);
+
+            fpn_file.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            fpn_file.WriteLine("<Zusi>");
+            fpn_file.WriteLine("<Info DateiTyp=\"Fahrplan\" Version=\"A.1\" MinVersion=\"A.1\">");
+            fpn_file.WriteLine("<AutorEintrag/>");
+            fpn_file.WriteLine("</Info>");
+            fpn_file.WriteLine("<Fahrplan>");
+            fpn_file.WriteLine("<BefehlsKonfiguration/>");
+            fpn_file.WriteLine("<Begruessungsdatei/>");
+
             foreach (var mod in mSammlung)
             {
                 if (mod.selected)
@@ -251,12 +264,27 @@ namespace ZuSiFplEdit
                 }
             }
 
+            //Abbrechen, wenn nichts ausgewählt.
+            if (mod_Count == 0)
+            {
+                fpn_file.WriteLine("<UTM/>");
+                fpn_file.WriteLine("</Fahrplan>");
+                fpn_file.WriteLine("</Zusi>");
+
+                fpn_file.Close();
+
+                return;
+
+            }
+
             //Berechne UTM-Referenzpunkt
             UTM_NS_avg = UTM_NS_avg / mod_Count;
             UTM_WE_avg = UTM_WE_avg / mod_Count;
 
             //Schreibe UTM-Referenzpunkt
             fpn_file.WriteLine("<UTM UTM_WE=\"" + UTM_WE_avg + "\" UTM_NS=\"" + UTM_NS_avg + "\" UTM_Zone=\"" + UTM_Z1 + "\" UTM_Zone2=\"" + UTM_Z2 + "\"/>\"");
+            fpn_file.WriteLine("</Fahrplan>");
+            fpn_file.WriteLine("</Zusi>");
 
             fpn_file.Close();
         }

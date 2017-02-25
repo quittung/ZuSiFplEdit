@@ -1,5 +1,7 @@
 TODO - ZuSi 3 - Fahrplaneditor 
 
+V0.1
+
 V0.2
 Stationsnamen besser platzieren.
 

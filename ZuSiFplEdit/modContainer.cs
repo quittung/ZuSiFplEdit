@@ -18,13 +18,31 @@ namespace ZuSiFplEdit
             public int UTM_Z1;
             public char UTM_Z2;
 
+            /// <summary>
+            /// Pixel-Position auf X-Achse auf Karte beim letzten Zeichenvorgang.
+            /// </summary>
             public int PIX_X;
+            /// <summary>
+            /// Pixel-Position auf Y-Achse auf Karte beim letzten Zeichenvorgang.
+            /// </summary>
             public int PIX_Y;
 
+            /// <summary>
+            /// Enthält die umliegenden Module als String. Nach Verlinkung nicht mehr aktuell.
+            /// </summary>
             public List<string> VerbindungenStr;
-            public streckenModul[] Verbindungen;
+            /// <summary>
+            /// Enthält Pointer zu den umliegenden Modulen.
+            /// </summary>
+            public List<streckenModul> Verbindungen;
 
+            /// <summary>
+            /// Wahr, wenn Modul weniger als 2 existierende Verbindungen im Datenbestand hat.
+            /// </summary>
             public bool NetzGrenze;
+            /// <summary>
+            /// Wahr, wenn Modul für Fahrplan ausgewählt wurde.
+            /// </summary>
             public bool selected;
 
             public streckenModul(string modulePath)
@@ -111,7 +129,7 @@ namespace ZuSiFplEdit
                     string Dateiname = aktModXml.GetAttribute("Dateiname");
                     
                     if (!(Dateiname == null || aktMod.VerbindungenStr.Contains(Dateiname)))
-                        aktMod.VerbindungenStr.Add(Dateiname);
+                        aktMod.VerbindungenStr.Add(speicherortZuName(Dateiname, '\\'));
                 }
             }
 
@@ -124,34 +142,33 @@ namespace ZuSiFplEdit
             //MessageBox.Show("Module werden jetzt verlinkt.", "Debugnachricht", MessageBoxButtons.OK);
             foreach (streckenModul aktModul in mSammlung)
             {
-                int missingConnections = 0;
-                aktModul.Verbindungen = new streckenModul[aktModul.VerbindungenStr.Count];
-                for (int i = 0; i < aktModul.VerbindungenStr.Count; i++)
+                aktModul.Verbindungen = new List<streckenModul>();
+                foreach (string connectionString in aktModul.VerbindungenStr)
                 {
-                    aktModul.VerbindungenStr[i] = speicherortZuName(aktModul.VerbindungenStr[i], '\\');
-                    aktModul.Verbindungen[i] = sucheMod(aktModul.VerbindungenStr[i]);
-                    if (aktModul.Verbindungen[i] == null)
+                    streckenModul connectionObj = sucheMod(connectionString);
+                    if (!(connectionObj == null))
+                    {
+                        aktModul.Verbindungen.Add(connectionObj);
+                    } else
                     {
                         aktModul.NetzGrenze = true;
-                        missingConnections++;
+                        //aktModul.VerbindungenStr.Remove(connectionString);
+                    }
+                }
+            }
+
+            //Delete one-sided connections.
+            foreach (streckenModul mod in mSammlung)
+            {
+                foreach (var connection in mod.Verbindungen.ToArray())
+                {
+                    if (! connection.Verbindungen.Contains(mod))
+                    {
+                        mod.Verbindungen.Remove(connection);
                     }
                 }
 
-                //Fehlende Module aus Links löschen:
-                if (aktModul.NetzGrenze)
-                {
-                    streckenModul[] tmp_Verbindungen = new streckenModul[aktModul.Verbindungen.Length - missingConnections];
-                    int verbindungen_count = 0;
-                    for (int i = 0; i < aktModul.Verbindungen.Length; i++)
-                    {
-                        if (aktModul.Verbindungen[i] != null)
-                        {
-                            tmp_Verbindungen[verbindungen_count] = aktModul.Verbindungen[i];
-                            verbindungen_count++;
-                        }
-                    }
-                    aktModul.Verbindungen = tmp_Verbindungen;
-                }
+                if (mod.Verbindungen.Count < 2) mod.NetzGrenze = true;
             }
         }
 

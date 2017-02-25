@@ -7,3 +7,5 @@ ZuSiFplEdit/obj/
 *.resources
 
 *.pfx
+
+*.cache

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using System.Xml;
 using System.IO;
+using System.Windows.Forms;
 
 namespace ZuSiFplEdit
 {
@@ -75,6 +76,7 @@ namespace ZuSiFplEdit
         }
 
         public List<streckenModul> mSammlung = new List<streckenModul>();
+        string BaseDir = "";
         public int grenzeN;
         public int grenzeS;
         public int grenzeW;
@@ -84,7 +86,8 @@ namespace ZuSiFplEdit
         public modContainer()
         {
             //Durchläuft das Streckenverzeichnis und sucht nach allen .st3-Dateien
-            string BaseDir = "C:\\games\\Zusi3\\Routes\\Deutschland\\";
+
+            BaseDir = Microsoft.Win32.Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Zusi3", "DatenVerzeichnis", "").ToString() + "Routes\\Deutschland\\";  //HACK: Might not work on win32.
 
             foreach (string grid in Directory.GetDirectories(BaseDir))
             {

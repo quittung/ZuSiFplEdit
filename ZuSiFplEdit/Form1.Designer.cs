@@ -50,7 +50,6 @@
             this.mMap.Size = new System.Drawing.Size(575, 527);
             this.mMap.TabIndex = 2;
             this.mMap.TabStop = false;
-            this.mMap.Paint += new System.Windows.Forms.PaintEventHandler(this.mMap_Paint);
             this.mMap.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mMap_MouseDown);
             this.mMap.MouseUp += new System.Windows.Forms.MouseEventHandler(this.mMap_MouseUp);
             this.mMap.Resize += new System.EventHandler(this.mMap_Resize);
@@ -90,7 +89,6 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.mMap);
-            this.splitContainer1.Panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.splitContainer1_Panel2_Paint);
             this.splitContainer1.Size = new System.Drawing.Size(823, 527);
             this.splitContainer1.SplitterDistance = 244;
             this.splitContainer1.TabIndex = 4;

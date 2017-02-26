@@ -134,22 +134,14 @@ namespace ZuSiFplEdit
 
         private void modSelForm_Paint(object sender, PaintEventArgs e)
         {
+            Application.DoEvents();
             kartenZeichner.draw();
         }
 
         private void mMap_Resize(object sender, EventArgs e)
         {
+            this.Invalidate();
             kartenZeichner.updateMapSize(mMap.CreateGraphics(), mMap.Width, mMap.Height);
-        }
-
-        private void mMap_Paint(object sender, PaintEventArgs e)
-        {
-            kartenZeichner.draw();
-        }
-
-        private void splitContainer1_Panel2_Paint(object sender, PaintEventArgs e)
-        {
-            kartenZeichner.draw();
         }
     }
 }

@@ -178,7 +178,7 @@ namespace ZuSiFplEdit
             {
                 int circleSize = 8;
 
-                if (pixPerGrad > 2)
+                if ((pixPerGrad > 2) || mod.NetzGrenze || mod.selected)
                 {
                     if (mod.selected)
                     {

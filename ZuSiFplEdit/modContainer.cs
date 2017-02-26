@@ -106,6 +106,8 @@ namespace ZuSiFplEdit
                 }
             }
 
+            
+            if (DirBase[DirBase.Length - 1] != '\\') DirBase += '\\';
             DirRoute = DirBase + "Routes\\Deutschland\\";
 
             List<string> st3Fehler = new List<string>();

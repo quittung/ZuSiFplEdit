@@ -11,3 +11,4 @@ C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\bin\Debug\ZuSiFplEdit.
 C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.TrustInfo.xml
 C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.exe.manifest
 C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.application
+C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\bin\Debug\ZuSiFplEdit.exe.config

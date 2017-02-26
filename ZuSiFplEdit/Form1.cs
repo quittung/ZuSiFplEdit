@@ -53,7 +53,7 @@ namespace ZuSiFplEdit
             Module = new modContainer();
 
             //Module ausgeben
-            foreach (modContainer.streckenModul modul in Module.mSammlung)
+            foreach (streckenModul modul in Module.mSammlung)
             {
                 modListBox.Items.Add(modul.modName);
             }

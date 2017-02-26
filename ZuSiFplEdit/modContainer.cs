@@ -9,73 +9,7 @@ namespace ZuSiFplEdit
 {
     class modContainer
     {
-        public class streckenModul
-        {
-            /// <summary>
-            /// Relativer Pfad zum Modul in Zusi-Bibliothek
-            /// </summary>
-            public string modPath;
-            /// <summary>
-            /// Name des Moduls
-            /// </summary>
-            public string modName;
-
-            /// <summary>
-            /// UMT-Nordwert von Modul
-            /// </summary>
-            public int UTM_NS;
-            /// <summary>
-            /// UMT-Ostwert von Modul
-            /// </summary>
-            public int UTM_WE;
-            /// <summary>
-            /// UMT-Meridianzone von Modul
-            /// </summary>
-            public int UTM_Z1;
-            /// <summary>
-            /// UMT Latitude Band von Modul
-            /// </summary>
-            public char UTM_Z2;
-
-            /// <summary>
-            /// Pixel-Position auf X-Achse auf Karte beim letzten Zeichenvorgang
-            /// </summary>
-            public int PIX_X;
-            /// <summary>
-            /// Pixel-Position auf Y-Achse auf Karte beim letzten Zeichenvorgang
-            /// </summary>
-            public int PIX_Y;
-
-            /// <summary>
-            /// Enthält die umliegenden Module als String. Nach Verlinkung nicht mehr aktuell.
-            /// </summary>
-            public List<string> VerbindungenStr;
-            /// <summary>
-            /// Enthält Pointer zu den umliegenden Modulen.
-            /// </summary>
-            public List<streckenModul> Verbindungen;
-
-            /// <summary>
-            /// Wahr, wenn Modul weniger als 2 existierende Verbindungen im Datenbestand hat.
-            /// </summary>
-            public bool NetzGrenze;
-            public bool wichtig;
-            /// <summary>
-            /// Wahr, wenn Modul für Fahrplan ausgewählt wurde.
-            /// </summary>
-            public bool selected;
-
-            public streckenModul(string modulePath)
-            {
-                modPath = modulePath.Replace('/', '\\');
-                modPath = modPath.Substring(modPath.IndexOf("Routes"));
-                modName = speicherortZuName(modPath, '\\');
-                VerbindungenStr = new List<string>();
-                NetzGrenze = false;
-                wichtig = false;
-                selected = false;
-            }
-        }
+        
 
         public List<streckenModul> mSammlung = new List<streckenModul>();
         public string DirBase = "";
@@ -123,7 +57,6 @@ namespace ZuSiFplEdit
                             streckenModul aktModul = modulEinlesen(st3);
                             if (!(aktModul == null))
                             {
-                                grenzenEinlesen(aktModul);
                                 mSammlung.Add(aktModul);
                             } else
                             {
@@ -146,31 +79,9 @@ namespace ZuSiFplEdit
 
             moduleVerlinken();
         }
-        
-
-        void grenzenEinlesen(streckenModul aktModul)
-        {
-            if (mSammlung.Count == 1)
-            {
-                grenzeN = aktModul.UTM_NS;
-                grenzeS = aktModul.UTM_NS;
-                grenzeE = aktModul.UTM_WE;
-                grenzeW = aktModul.UTM_WE;
-            }
-            else
-            {
-                if (aktModul.UTM_NS > grenzeN) grenzeN = aktModul.UTM_NS;
-                if (aktModul.UTM_NS < grenzeS) grenzeS = aktModul.UTM_NS;
-                if (aktModul.UTM_WE > grenzeE) grenzeE = aktModul.UTM_WE;
-                if (aktModul.UTM_WE < grenzeW) grenzeW = aktModul.UTM_WE;
-            }
-        }
 
         streckenModul modulEinlesen(string Speicherort)
         {
-            
-            
-
             streckenModul aktMod = new streckenModul(Speicherort);
 
             try
@@ -263,7 +174,7 @@ namespace ZuSiFplEdit
         /// </summary>
         /// <param name="Speicherort">Pfad zum Modul</param>
         /// /// <param name="DirSeparator">Verzeichnisseparator</param>
-        static string speicherortZuName(string Speicherort, char DirSeparator)
+        public static string speicherortZuName(string Speicherort, char DirSeparator)
         {
             string[] modNameAr = Speicherort.Split(DirSeparator);
             string modName = modNameAr[modNameAr.Length - 1];

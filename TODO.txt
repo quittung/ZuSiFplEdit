@@ -1,12 +1,29 @@
 TODO - ZuSi 3 - Fahrplaneditor 
 
-V0.1
-
 V0.2
-Stationsnamen besser platzieren.
+- Kaputte st3 abfangen
+- Hauptfenster sollte Größenänderung zulassen
+- Datei speichern-Dialog bei fpn ausgeben, das ich gleich einen Namen eingeben kann / Schaltfläche fpn ausgeben überschreibt ohne Rückfrage eine bestehende Rohling.fpn
+- Module die noch keinen Nachbarn haben sind schwer zu finden. Man muss wissen wo sie sind, um sie nach dem Zoomen auch zu finden.
+- win32 Registry 
+
+V0.?
+- Stationsnamen besser platzieren.
+- Wenn es mehrere Module an der gleichen Stelle gibt, wird der Text überschrieben, z. B. Gersthofen_1990, Gersthofen_2016
+- Rahmen aufziehen, fügt mehrere Module hinzu oder entfernt 
 
 V1
-Vollständige Code-Doku
-Modulauswahl nach Anfangs- und Endpunkt
-Richtiger Gleisplan
-Vollständige Möglichkeiten zur Fahrplanerstellung
+- Vollständige Code-Doku
+- Modulauswahl nach Anfangs- und Endpunkt
+- Richtiger Gleisplan
+- Vollständige Möglichkeiten zur Fahrplanerstellung
+- Einen Taktfahrplan-Modus
+- Liste aller verfügbaren Befehlskonfigurationen zum Auswählen (Combobox vielleicht?)
+- Autoren-Informationen werden automatisch eingefügt
+
+
+Changelog
+V0.2
+
+
+Feedback:

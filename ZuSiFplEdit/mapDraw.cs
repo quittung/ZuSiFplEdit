@@ -37,6 +37,15 @@ namespace ZuSiFplEdit
             setInitPos();
         }
 
+        public void updateMapSize(Graphics map_gr, int width, int height)
+        {
+            map_width_p = width;
+            map_height_p = height;
+            map = map_gr;
+            updateBorders();
+            draw();
+        }
+
         public int coordToPix(double coord, bool isNS)
         {
             if (isNS)
@@ -169,7 +178,7 @@ namespace ZuSiFplEdit
             {
                 int circleSize = 8;
 
-                if (pixPerGrad > 2)
+                if ((pixPerGrad > 2) || mod.NetzGrenze || mod.selected)
                 {
                     if (mod.selected)
                     {

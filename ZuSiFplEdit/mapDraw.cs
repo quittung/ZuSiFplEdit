@@ -37,6 +37,15 @@ namespace ZuSiFplEdit
             setInitPos();
         }
 
+        public void updateMapSize(Graphics map_gr, int width, int height)
+        {
+            map_width_p = width;
+            map_height_p = height;
+            map = map_gr;
+            updateBorders();
+            draw();
+        }
+
         public int coordToPix(double coord, bool isNS)
         {
             if (isNS)
@@ -136,7 +145,7 @@ namespace ZuSiFplEdit
         {
             map.Clear(Color.White);
 
-            map.DrawString("N" + center_NS.ToString("F2") + " - E" + center_WE.ToString("F2") + " - " + pixPerGrad.ToString("F1") + "pix/km", new Font("Verdana", 10), new SolidBrush(Color.Red), 20, map_height_p - 20);
+            map.DrawString("N" + center_NS.ToString("F2") + " - E" + center_WE.ToString("F2") + " - " + pixPerGrad.ToString("F1") + "pix/km - " + map_width_p + "x" + map_height_p, new Font("Verdana", 10), new SolidBrush(Color.Red), 20, map_height_p - 20);
 
             Pen pen_unselected = new Pen(Color.Black);
             Pen pen_selected = new Pen(Color.Green);

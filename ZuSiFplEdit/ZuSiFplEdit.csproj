@@ -87,6 +87,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class1.cs" />
     <Compile Include="mapDraw.cs" />
     <Compile Include="modContainer.cs" />
     <Compile Include="Form1.cs">

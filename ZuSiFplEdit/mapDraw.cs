@@ -10,8 +10,8 @@ namespace ZuSiFplEdit
 {
     class mapDraw
     {
-        List<modContainer.streckenModul> modList;
-        List<modContainer.streckenModul> modVisible;
+        List<streckenModul> modList;
+        List<streckenModul> modVisible;
         Graphics map;
 
         int map_width_p;
@@ -26,13 +26,13 @@ namespace ZuSiFplEdit
         double border_south;
         double border_west;
 
-        public mapDraw(Graphics map_gr, int width, int height, List<modContainer.streckenModul> mList)
+        public mapDraw(Graphics map_gr, int width, int height, List<streckenModul> mList)
         {
             map = map_gr;
             map_width_p = width;
             map_height_p = height;
             modList = mList;
-            modVisible = new List<modContainer.streckenModul>();
+            modVisible = new List<streckenModul>();
 
             setInitPos();
         }
@@ -75,7 +75,7 @@ namespace ZuSiFplEdit
             border_south = modList[0].UTM_NS;
             border_east = modList[0].UTM_WE;
             border_west = modList[0].UTM_WE;
-            foreach (modContainer.streckenModul mod in modList)
+            foreach (streckenModul mod in modList)
             {
                 if (mod.UTM_NS > border_north) border_north = mod.UTM_NS;
                 if (mod.UTM_NS < border_south) border_south = mod.UTM_NS;
@@ -122,7 +122,7 @@ namespace ZuSiFplEdit
             border_west = center_WE - halfLen_NS;
 
             modVisible.Clear();
-            foreach (modContainer.streckenModul mod in modList)
+            foreach (streckenModul mod in modList)
             {
                 if (isVisible(mod))
                 {
@@ -134,7 +134,7 @@ namespace ZuSiFplEdit
             }
         }
          
-        bool isVisible (modContainer.streckenModul mod)
+        bool isVisible (streckenModul mod)
         {
             return ((mod.UTM_NS < border_north) && (mod.UTM_NS > border_south) && (mod.UTM_WE < border_east) && (mod.UTM_WE > border_west));
         }
@@ -152,7 +152,7 @@ namespace ZuSiFplEdit
             Pen pen_act;
             
             //First layer (lines + names) + data processing
-            foreach (modContainer.streckenModul mod in modVisible)
+            foreach (streckenModul mod in modVisible)
             {
                 if (mod.selected)
                 {
@@ -162,7 +162,7 @@ namespace ZuSiFplEdit
                     pen_act = pen_unselected; 
                 }
 
-                foreach (modContainer.streckenModul connection in mod.Verbindungen)
+                foreach (streckenModul connection in mod.Verbindungen)
                 {
                     map.DrawLine(pen_unselected, mod.PIX_X, mod.PIX_Y, coordToPix(connection.UTM_WE, false), coordToPix(connection.UTM_NS, true));
                 }
@@ -194,11 +194,11 @@ namespace ZuSiFplEdit
             }
         }
 
-        public modContainer.streckenModul getNearestStation(int X, int Y)
+        public streckenModul getNearestStation(int X, int Y)
         {
             double dist = -1;
-            modContainer.streckenModul nearestMod = null;
-            foreach (modContainer.streckenModul mod in modVisible)
+            streckenModul nearestMod = null;
+            foreach (streckenModul mod in modVisible)
             {
                 double modDist = getStationDistance(mod, X, Y);
                 if ((dist > modDist) || (dist == -1))
@@ -210,7 +210,7 @@ namespace ZuSiFplEdit
             return (nearestMod);
         }
 
-        public int getStationDistance(modContainer.streckenModul mod, int X, int Y)
+        public int getStationDistance(streckenModul mod, int X, int Y)
         {
             int deltaX = mod.PIX_X - X;
             int deltaY = mod.PIX_Y - Y;

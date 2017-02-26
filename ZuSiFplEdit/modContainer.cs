@@ -59,6 +59,7 @@ namespace ZuSiFplEdit
             /// Wahr, wenn Modul weniger als 2 existierende Verbindungen im Datenbestand hat.
             /// </summary>
             public bool NetzGrenze;
+            public bool wichtig;
             /// <summary>
             /// Wahr, wenn Modul für Fahrplan ausgewählt wurde.
             /// </summary>
@@ -71,12 +72,14 @@ namespace ZuSiFplEdit
                 modName = speicherortZuName(modPath, '\\');
                 VerbindungenStr = new List<string>();
                 NetzGrenze = false;
+                wichtig = false;
                 selected = false;
             }
         }
 
         public List<streckenModul> mSammlung = new List<streckenModul>();
-        string BaseDir = "";
+        public string DirBase = "";
+        public string DirRoute = "";
         public int grenzeN;
         public int grenzeS;
         public int grenzeW;
@@ -88,13 +91,13 @@ namespace ZuSiFplEdit
             //Durchläuft das Streckenverzeichnis und sucht nach allen .st3-Dateien
             try
             {
-                BaseDir = Microsoft.Win32.Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Zusi3", "DatenVerzeichnis", "").ToString() + "Routes\\Deutschland\\";
+                DirBase = Microsoft.Win32.Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Zusi3", "DatenVerzeichnis", "").ToString();
             }
             catch (Exception)
             {
                 try
                 {
-                    BaseDir = Microsoft.Win32.Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Zusi3", "DatenVerzeichnis", "").ToString() + "Routes\\Deutschland\\";
+                    DirBase = Microsoft.Win32.Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Zusi3", "DatenVerzeichnis", "").ToString();
                 }
                 catch (Exception)
                 {
@@ -102,9 +105,12 @@ namespace ZuSiFplEdit
                     Application.Exit();
                 }
             }
-            
 
-            foreach (string grid in Directory.GetDirectories(BaseDir))
+            DirRoute = DirBase + "Routes\\Deutschland\\";
+
+            List<string> st3Fehler = new List<string>();
+
+            foreach (string grid in Directory.GetDirectories(DirRoute))
             {
                 foreach (string mod in Directory.GetDirectories(grid))
                 {
@@ -113,12 +119,29 @@ namespace ZuSiFplEdit
                         if (! st3.Contains("ummy"))
                         {
                             streckenModul aktModul = modulEinlesen(st3);
-                            grenzenEinlesen(aktModul);
-                            mSammlung.Add(aktModul);
+                            if (!(aktModul == null))
+                            {
+                                grenzenEinlesen(aktModul);
+                                mSammlung.Add(aktModul);
+                            } else
+                            {
+                                st3Fehler.Add(st3);
+                            }
                         }
                     }
                 }
             }
+
+            if (st3Fehler.Count > 0)
+            {
+                string errMsg = "Fehler beim Laden der folgenden Module:";
+                foreach (var st3 in st3Fehler)
+                {
+                    errMsg += "\n - " + st3;
+                }
+                MessageBox.Show(errMsg, "Fehler in .st3-Dateien", MessageBoxButtons.OK);
+            }
+
             moduleVerlinken();
         }
         
@@ -143,31 +166,41 @@ namespace ZuSiFplEdit
 
         streckenModul modulEinlesen(string Speicherort)
         {
-            XmlReader aktModXml = XmlReader.Create(Speicherort);
+            
             
 
-            streckenModul aktMod = new streckenModul(aktModXml.BaseURI);
+            streckenModul aktMod = new streckenModul(Speicherort);
 
-            while (aktModXml.Read())
+            try
             {
-                if ((aktModXml.NodeType == XmlNodeType.Element) && (aktModXml.Name == "UTM"))
-                {
-                    aktMod.UTM_NS = Convert.ToInt32(aktModXml.GetAttribute("UTM_NS"));
-                    aktMod.UTM_WE = Convert.ToInt32(aktModXml.GetAttribute("UTM_WE"));
-                    aktMod.UTM_Z1 = Convert.ToInt32(aktModXml.GetAttribute("UTM_Zone"));
-                    aktMod.UTM_Z2 = aktModXml.GetAttribute("UTM_Zone2")[0];
-                }
+                XmlReader aktModXml = XmlReader.Create(Speicherort);
 
-                if ((aktModXml.NodeType == XmlNodeType.Element) && (aktModXml.Name == "ModulDateien"))
+                while (aktModXml.Read())
                 {
-                    aktModXml.Read();
-                    while (aktModXml.Name != "Datei") aktModXml.Read();
-                    string Dateiname = aktModXml.GetAttribute("Dateiname");
-                    
-                    if (!(Dateiname == null || aktMod.VerbindungenStr.Contains(Dateiname)))
-                        aktMod.VerbindungenStr.Add(speicherortZuName(Dateiname, '\\'));
+                    if ((aktModXml.NodeType == XmlNodeType.Element) && (aktModXml.Name == "UTM"))
+                    {
+                        aktMod.UTM_NS = Convert.ToInt32(aktModXml.GetAttribute("UTM_NS"));
+                        aktMod.UTM_WE = Convert.ToInt32(aktModXml.GetAttribute("UTM_WE"));
+                        aktMod.UTM_Z1 = Convert.ToInt32(aktModXml.GetAttribute("UTM_Zone"));
+                        aktMod.UTM_Z2 = aktModXml.GetAttribute("UTM_Zone2")[0];
+                    }
+
+                    if ((aktModXml.NodeType == XmlNodeType.Element) && (aktModXml.Name == "ModulDateien"))
+                    {
+                        aktModXml.Read();
+                        while (aktModXml.Name != "Datei") aktModXml.Read();
+                        string Dateiname = aktModXml.GetAttribute("Dateiname");
+
+                        if (!(Dateiname == null || aktMod.VerbindungenStr.Contains(Dateiname)))
+                            aktMod.VerbindungenStr.Add(speicherortZuName(Dateiname, '\\'));
+                    }
                 }
             }
+            catch (Exception)
+            {
+                return null;
+            }
+            
 
             return aktMod;
         }
@@ -205,6 +238,7 @@ namespace ZuSiFplEdit
                 }
 
                 if (mod.Verbindungen.Count < 2) mod.NetzGrenze = true;
+                if ((mod.Verbindungen.Count > 2) || (mod.NetzGrenze)) mod.wichtig = true; 
             }
         }
 
@@ -238,7 +272,7 @@ namespace ZuSiFplEdit
         /// <summary>
         /// Erzeugt .fpn-Fragment aus aktuell ausgewählten Modulen.
         /// </summary>
-        public void writeToFile()
+        public void writeToFile(string path)
         {
             int mod_Count = 0;
             int UTM_NS_avg = 0;
@@ -247,7 +281,8 @@ namespace ZuSiFplEdit
             int UTM_Z1 = 0;
             char UTM_Z2 = ' ';
 
-            var fpn_file = new System.IO.StreamWriter("Rohling.fpn", false);
+            if (path == "") path = "Rohling.fpn";
+            var fpn_file = new System.IO.StreamWriter(path, false);
 
             fpn_file.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             fpn_file.WriteLine("<Zusi>");

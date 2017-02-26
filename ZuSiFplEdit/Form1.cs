@@ -34,7 +34,17 @@ namespace ZuSiFplEdit
 
         private void ModulButton_Click(object sender, EventArgs e)
         {
-            Module.writeToFile();
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+
+            saveFileDialog1.InitialDirectory = Module.DirBase + "Timetables\\";
+            saveFileDialog1.Filter = "Fahrplandateien (*.fpn)|*.fpn|All files (*.*)|*.*";
+            saveFileDialog1.FilterIndex = 1;
+            saveFileDialog1.RestoreDirectory = true;
+
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                Module.writeToFile(saveFileDialog1.FileName);
+            }
         }    
 
         private void appInit()

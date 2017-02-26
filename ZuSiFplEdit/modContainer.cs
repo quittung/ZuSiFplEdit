@@ -86,9 +86,23 @@ namespace ZuSiFplEdit
         public modContainer()
         {
             //Durchläuft das Streckenverzeichnis und sucht nach allen .st3-Dateien
-            MessageBox.Show("Suche nach Datenverzeichnis", "Debugnachricht", MessageBoxButtons.OK);
-            BaseDir = Microsoft.Win32.Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Zusi3", "DatenVerzeichnis", "").ToString() + "Routes\\Deutschland\\";  //HACK: Might not work on win32.
-            MessageBox.Show("Datenverzeichnis: " + BaseDir, "Debugnachricht", MessageBoxButtons.OK);
+            try
+            {
+                BaseDir = Microsoft.Win32.Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Zusi3", "DatenVerzeichnis", "").ToString() + "Routes\\Deutschland\\";
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    BaseDir = Microsoft.Win32.Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Zusi3", "DatenVerzeichnis", "").ToString() + "Routes\\Deutschland\\";
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Datenverzeichnis konnte nicht gefunden werden.", "Fataler Fehler", MessageBoxButtons.OK);
+                    Application.Exit();
+                }
+            }
+            
 
             foreach (string grid in Directory.GetDirectories(BaseDir))
             {

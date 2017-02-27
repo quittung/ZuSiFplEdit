@@ -1,16 +1,17 @@
 TODO - ZuSi 3 - Fahrplaneditor 
 
-V0.2
-- Kaputte st3 abfangen
-- Hauptfenster sollte Größenänderung zulassen
-- Datei speichern-Dialog bei fpn ausgeben, das ich gleich einen Namen eingeben kann / Schaltfläche fpn ausgeben überschreibt ohne Rückfrage eine bestehende Rohling.fpn
-- Module die noch keinen Nachbarn haben sind schwer zu finden. Man muss wissen wo sie sind, um sie nach dem Zoomen auch zu finden.
-- win32 Registry 
+V0.3
+- .st3 soll vollständig eingelesen werden 
+- detailliertere Karten
+- 
+
+
 
 V0.?
 - Stationsnamen besser platzieren.
 - Wenn es mehrere Module an der gleichen Stelle gibt, wird der Text überschrieben, z. B. Gersthofen_1990, Gersthofen_2016
 - Rahmen aufziehen, fügt mehrere Module hinzu oder entfernt 
+- Bessere Maßstabsanzeige
 
 V1
 - Vollständige Code-Doku
@@ -24,6 +25,11 @@ V1
 
 Changelog
 V0.2
-
+- Umstieg auf .net4.0 (mit Zusi vorinstalliert)
+- Unterstützung von 32Bit
+- Fenstergröße kann jetzt verändert werden
+- Unlesbare .st3 sollten nicht mehr zum Absturz führen
+- Speicherort der Fahrplandatei kann jetzt frei gewählt werden
+- Module mit weniger als zwei vorhandenen Nachbarn (Netzgrenzen) und ausgewählte Module werden jetzt unabhängig von der Vergrößerung angezeigt
 
 Feedback:

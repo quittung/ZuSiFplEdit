@@ -14,10 +14,6 @@ namespace ZuSiFplEdit
         public List<streckenModul> mSammlung = new List<streckenModul>();
         public string DirBase = "";
         public string DirRoute = "";
-        public int grenzeN;
-        public int grenzeS;
-        public int grenzeW;
-        public int grenzeE;
 
 
         public modContainer()
@@ -84,36 +80,7 @@ namespace ZuSiFplEdit
         {
             streckenModul aktMod = new streckenModul(Speicherort);
 
-            try
-            {
-                XmlReader aktModXml = XmlReader.Create(Speicherort);
-
-                while (aktModXml.Read())
-                {
-                    if ((aktModXml.NodeType == XmlNodeType.Element) && (aktModXml.Name == "UTM"))
-                    {
-                        aktMod.UTM_NS = Convert.ToInt32(aktModXml.GetAttribute("UTM_NS"));
-                        aktMod.UTM_WE = Convert.ToInt32(aktModXml.GetAttribute("UTM_WE"));
-                        aktMod.UTM_Z1 = Convert.ToInt32(aktModXml.GetAttribute("UTM_Zone"));
-                        aktMod.UTM_Z2 = aktModXml.GetAttribute("UTM_Zone2")[0];
-                    }
-
-                    if ((aktModXml.NodeType == XmlNodeType.Element) && (aktModXml.Name == "ModulDateien"))
-                    {
-                        aktModXml.Read();
-                        while (aktModXml.Name != "Datei") aktModXml.Read();
-                        string Dateiname = aktModXml.GetAttribute("Dateiname");
-
-                        if (!(Dateiname == null || aktMod.VerbindungenStr.Contains(Dateiname)))
-                            aktMod.VerbindungenStr.Add(speicherortZuName(Dateiname, '\\'));
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-            
+            if (!aktMod.isSane) return null;
 
             return aktMod;
         }
@@ -144,13 +111,30 @@ namespace ZuSiFplEdit
             {
                 foreach (var connection in mod.Verbindungen.ToArray())
                 {
-                    if (! connection.Verbindungen.Contains(mod))
-                    {
-                        mod.Verbindungen.Remove(connection);
-                    }
+                    //if (! connection.Verbindungen.Contains(mod))
+                    //{
+                    //    mod.Verbindungen.Remove(connection);
+                    //}
                 }
 
-                if (mod.Verbindungen.Count < 2) mod.NetzGrenze = true;
+                if (mod.Verbindungen.Count < 2)
+                {
+                    mod.NetzGrenze = true;
+                    if (mod.Verbindungen.Count != mod.VerbindungenStr.Count)
+                    {
+                        string msgString = "Eingelesene Verbindungen:";
+                        foreach (var item in mod.VerbindungenStr)
+                        {
+                            msgString += "\n" + item;
+                        }
+                        msgString += "\nVerbliebene Verbindungen:";
+                        foreach (var item in mod.Verbindungen)
+                        {
+                            msgString += "\n" + item.modName;
+                        }
+                        MessageBox.Show(msgString, "Grenzreport für " + mod.modName, MessageBoxButtons.OK);
+                    }
+                }
                 if ((mod.Verbindungen.Count > 2) || (mod.NetzGrenze)) mod.wichtig = true; 
             }
         }
@@ -159,11 +143,12 @@ namespace ZuSiFplEdit
         /// Gibt Modul-Objekt für einen Modulnamen zurück
         /// </summary>
         /// <param name="modName">Name des Moduls</param>
-        streckenModul sucheMod(string modName)
+        streckenModul sucheMod(string modName) 
         {
+            modName = modName.Substring(0, modName.Length - 5); //HACK: Jahreszahl wird ignoriert
             foreach (var mod in mSammlung)
             {
-                if (mod.modName == modName) return mod;
+                if (mod.modName.Contains(modName)) return mod;
             }
             return null;
         }
@@ -195,7 +180,7 @@ namespace ZuSiFplEdit
             char UTM_Z2 = ' ';
 
             if (path == "") path = "Rohling.fpn";
-            var fpn_file = new System.IO.StreamWriter(path, false);
+            var fpn_file = new StreamWriter(path, false);
 
             fpn_file.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             fpn_file.WriteLine("<Zusi>");

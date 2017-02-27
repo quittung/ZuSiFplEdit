@@ -61,16 +61,16 @@
             this.modListBox.Location = new System.Drawing.Point(3, 3);
             this.modListBox.Name = "modListBox";
             this.modListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.modListBox.Size = new System.Drawing.Size(238, 467);
+            this.modListBox.Size = new System.Drawing.Size(238, 471);
             this.modListBox.TabIndex = 3;
             this.modListBox.SelectedValueChanged += new System.EventHandler(this.modListBox_SelectedValueChanged);
             // 
             // ButtonExport
             // 
             this.ButtonExport.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ButtonExport.Location = new System.Drawing.Point(3, 476);
+            this.ButtonExport.Location = new System.Drawing.Point(3, 480);
             this.ButtonExport.Name = "ButtonExport";
-            this.ButtonExport.Size = new System.Drawing.Size(238, 48);
+            this.ButtonExport.Size = new System.Drawing.Size(238, 44);
             this.ButtonExport.TabIndex = 0;
             this.ButtonExport.Text = ".fpn ausgeben";
             this.ButtonExport.UseVisualStyleBackColor = true;
@@ -96,15 +96,15 @@
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Controls.Add(this.modListBox, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.ButtonExport, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 89.87109F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10.12891F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(244, 527);
             this.tableLayoutPanel1.TabIndex = 4;
             // 

@@ -18,6 +18,9 @@ namespace ZuSiFplEdit
 
         public modContainer()
         {
+            var timeGesamt = new System.Diagnostics.Stopwatch();
+            timeGesamt.Start();
+
             //Durchläuft das Streckenverzeichnis und sucht nach allen .st3-Dateien
             try
             {
@@ -62,6 +65,14 @@ namespace ZuSiFplEdit
                     }
                 }
             }
+            
+            moduleVerlinken();
+
+            timeGesamt.Stop();
+            MessageBox.Show("Einlesen hat " + timeGesamt.ElapsedMilliseconds + " ms gedauert.", "Gesamtdauer des Einlesens", MessageBoxButtons.OK);
+
+            
+
 
             if (st3Fehler.Count > 0)
             {
@@ -70,10 +81,9 @@ namespace ZuSiFplEdit
                 {
                     errMsg += "\n - " + st3;
                 }
+                errMsg += "\n\nDie betroffenen Module wurden ignoriert.";
                 MessageBox.Show(errMsg, "Fehler in .st3-Dateien", MessageBoxButtons.OK);
             }
-
-            moduleVerlinken();
         }
 
         streckenModul modulEinlesen(string Speicherort)
@@ -120,20 +130,20 @@ namespace ZuSiFplEdit
                 if (mod.Verbindungen.Count < 2)
                 {
                     mod.NetzGrenze = true;
-                    if (mod.Verbindungen.Count != mod.VerbindungenStr.Count)
-                    {
-                        string msgString = "Eingelesene Verbindungen:";
-                        foreach (var item in mod.VerbindungenStr)
-                        {
-                            msgString += "\n" + item;
-                        }
-                        msgString += "\nVerbliebene Verbindungen:";
-                        foreach (var item in mod.Verbindungen)
-                        {
-                            msgString += "\n" + item.modName;
-                        }
-                        MessageBox.Show(msgString, "Grenzreport für " + mod.modName, MessageBoxButtons.OK);
-                    }
+                    //if (true || mod.Verbindungen.Count != mod.VerbindungenStr.Count)
+                    //{
+                    //    string msgString = "Eingelesene Verbindungen:";
+                    //    foreach (var item in mod.VerbindungenStr)
+                    //    {
+                    //        msgString += "\n" + item;
+                    //    }
+                    //    msgString += "\nVerbliebene Verbindungen:";
+                    //    foreach (var item in mod.Verbindungen)
+                    //    {
+                    //        msgString += "\n" + item.modName;
+                    //    }
+                    //    MessageBox.Show(msgString, "Grenzreport für " + mod.modName, MessageBoxButtons.OK);
+                    //}
                 }
                 if ((mod.Verbindungen.Count > 2) || (mod.NetzGrenze)) mod.wichtig = true; 
             }

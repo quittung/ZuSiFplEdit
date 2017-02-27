@@ -5,6 +5,7 @@ using System.Text;
 
 
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace ZuSiFplEdit
 {
@@ -136,7 +137,10 @@ namespace ZuSiFplEdit
          
         bool isVisible (streckenModul mod)
         {
-            return ((mod.UTM_NS < border_north) && (mod.UTM_NS > border_south) && (mod.UTM_WE < border_east) && (mod.UTM_WE > border_west));
+            bool withinBorders = ((mod.UTM_NS < border_north) && (mod.UTM_NS > border_south) && (mod.UTM_WE < border_east) && (mod.UTM_WE > border_west));
+            int range = 25;
+            bool withinRange = ((Math.Abs(mod.UTM_NS - center_NS) < range) && (Math.Abs(mod.UTM_WE - center_WE) < range)); //HACK: Entfernung sollte Situationsbedingt angepasst werden (z.B. Abtand zu Nachbar)
+            return (withinBorders || withinRange);
         }
 
 
@@ -170,6 +174,21 @@ namespace ZuSiFplEdit
                 {
                     //TODO: Text richtig ausrichten.
                     map.DrawString(mod.modName, new Font("Verdana", 8), Brushes.Black, mod.PIX_X + 6, mod.PIX_Y);
+
+                    if (pixPerGrad > 50)
+                    {
+                        foreach (var strE in mod.StreckenElemente)
+                        {
+                            //MessageBox.Show((strE.g_Y - strE.b_Y).ToString("F2"), "VAL:", MessageBoxButtons.OK);
+
+                            float gx = mod.UTM_WE + (strE.g_X / 1000f);
+                            float gy = mod.UTM_NS + (strE.g_Y / 1000f);
+                            float bx = mod.UTM_WE + (strE.b_X / 1000f);
+                            float by = mod.UTM_NS + (strE.b_Y / 1000f);
+
+                            map.DrawLine(pen_unselected, coordToPix(gx, false), coordToPix(gy, true), coordToPix(bx, false), coordToPix(by, true));
+                        }
+                    }
                 }  
             }
 
@@ -183,8 +202,13 @@ namespace ZuSiFplEdit
                     if (mod.selected)
                     {
                         map.FillEllipse(Brushes.Red, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
-                        map.DrawEllipse(pen_selected, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                        map.DrawEllipse(pen_unselected, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
                     }
+                    else if(mod.NetzGrenze)
+                    {
+                        map.FillEllipse(Brushes.DarkGray, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                        map.DrawEllipse(pen_unselected, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                    } 
                     else
                     {
                         map.FillEllipse(Brushes.LightGray, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
@@ -192,6 +216,25 @@ namespace ZuSiFplEdit
                     }
                 }
             }
+            //foreach (var mod in modList)
+            //{
+
+
+            //    if (mod.modName == "Grimmelshofen_2008")
+            //    {
+            //        foreach (var strE in mod.StreckenElemente)
+            //        {
+            //            //MessageBox.Show((strE.g_Y - strE.b_Y).ToString("F2"), "VAL:", MessageBoxButtons.OK);
+
+            //            float gx = mod.UTM_WE + (strE.g_X / 1000f);
+            //            float gy = mod.UTM_NS + (strE.g_Y / 1000f);
+            //            float bx = mod.UTM_WE + (strE.b_X / 1000f);
+            //            float by = mod.UTM_NS + (strE.b_Y / 1000f);
+
+            //            map.DrawLine(pen_unselected, coordToPix(gx, false), coordToPix(gy, true), coordToPix(bx, false), coordToPix(by, true));
+            //        }
+            //    }
+            //}
         }
 
         public streckenModul getNearestStation(int X, int Y)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -13,6 +14,8 @@ namespace ZuSiFplEdit
         int mouseDownX = 0;
         int mouseDownY = 0;
         bool mouseDown = false;
+
+        streckenModul horribleHackVariableThatHoldsRightClickModule;
 
         public modSelForm()
         {
@@ -107,14 +110,21 @@ namespace ZuSiFplEdit
             if (e.Button == MouseButtons.Right)
             {
                 var nächsteStation = kartenZeichner.getNearestStation(e.X, e.Y);
+                horribleHackVariableThatHoldsRightClickModule = nächsteStation;
 
                 MenuItem[] menuItems = new MenuItem[]{new MenuItem("Pixel: X" + e.X + " - Y" + e.Y),
                 new MenuItem("Koordinaten: X" + kartenZeichner.pixToCoord(e.X, false).ToString("F1") + " - Y" + kartenZeichner.pixToCoord(e.Y, true).ToString("F1")),
-                new MenuItem("Nächste Station: " + nächsteStation.modName + "; Distanz: " + kartenZeichner.getStationDistance(nächsteStation, e.X, e.Y).ToString())};
+                new MenuItem("Nächste Station: " + nächsteStation.modName + "; Distanz: " + kartenZeichner.getStationDistance(nächsteStation, e.X, e.Y).ToString()),
+                new MenuItem(nächsteStation.modName + " im Explorer anzeigen", new EventHandler(showMod))};
 
                 ContextMenu buttonMenu = new ContextMenu(menuItems);
                 buttonMenu.Show(mMap, new Point(e.X, e.Y));
             }
+        }
+
+        private void showMod(object sender, EventArgs e)
+        {
+            Process.Start(Module.DirBase + horribleHackVariableThatHoldsRightClickModule.modPath.Substring(0, horribleHackVariableThatHoldsRightClickModule.modPath.LastIndexOf('\\'))); //HACK: HACKHACKHACKHACKHACK Shame!
         }
 
         private void modListBox_SelectedValueChanged(object sender, EventArgs e)

@@ -151,6 +151,8 @@ namespace ZuSiFplEdit
                 if ((mod.Verbindungen.Count > 2) || (mod.NetzGrenze)) mod.wichtig = true; 
             }
 
+            //string problemstellen = "";
+
             foreach (var mod in mSammlung)
             {
                 foreach (var fstr in mod.FahrStr)
@@ -160,11 +162,14 @@ namespace ZuSiFplEdit
                         fstr.Start = sucheMod(fstr.StartMod).sucheReferenz(fstr.StartRef);
                         fstr.Ziel = sucheMod(fstr.ZielMod).sucheReferenz(fstr.ZielRef);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
+                        //problemstellen += mod.modName + ":" + fstr.FahrstrName + ":" + fstr.ZielMod + "\n";
                     }
                 }
             }
+
+            //MessageBox.Show(problemstellen, "Problemstellen Fahrstraßen", MessageBoxButtons.OK);
         }
 
         /// <summary>

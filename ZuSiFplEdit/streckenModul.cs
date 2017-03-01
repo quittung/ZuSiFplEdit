@@ -351,6 +351,7 @@ namespace ZuSiFplEdit
                 //else if (modXml.NodeType == XmlNodeType.EndElement && modXml.Name == "Strecke") break;
             }
 
+            //Verlinke Referenzelemente mit Streckenelementen 
             foreach (var refEl in ReferenzElemente)
             {
                 refEl.StrElement = sucheStrElement(refEl.StrElementNr);

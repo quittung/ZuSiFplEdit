@@ -5,6 +5,9 @@ V0.3
 - detailliertere Karten
 - Seitenverhältnis des Karteninhalts beim Verändern der Größe beibehalten
 - Datei mit geblockten Modulen.
+- Draw abbrechen, wenn Karte verschoben oder gezoomt wurde
+- Streckenelemente verknüpfen
+Fahrstraßen in Lamerden werden nicht eingelesen
 
 
 
@@ -39,3 +42,4 @@ Feedback:
 Bugs:
 - Absturz bei Distanzabfrage, wenn kein Modul sichtbar ist.
 - Modvisible sollte module in einer gewissenn entfernung immer anzeigen.
+- Fahrstraßen werden nicht über das aktuelle Modul hinaus verlinkt.

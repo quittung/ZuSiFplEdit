@@ -243,6 +243,8 @@ namespace ZuSiFplEdit
 
             if (pixPerGrad > 10 && drawFahrstrassen)
             {
+                string problemstellen = "";
+
                 foreach (var mod in modVisible)
                 {
                     foreach (var fstr in mod.FahrStr)
@@ -258,10 +260,13 @@ namespace ZuSiFplEdit
                         }
                         catch (Exception e)
                         {
-                           // MessageBox.Show(e.Message, "AAAAAAAAAAAAAAAAAAAA" + mod.modName, MessageBoxButtons.OK);
+                            // MessageBox.Show(e.Message, "AAAAAAAAAAAAAAAAAAAA" + mod.modName, MessageBoxButtons.OK);
+                            problemstellen += mod.modName + ":" + fstr.FahrstrName + ":" + fstr.ZielMod + "\n";
                         }
                     }
                 }
+
+                //MessageBox.Show(problemstellen, "Problemstellen Fahrstraßen", MessageBoxButtons.OK);
             }
 
             frameTime.Stop();

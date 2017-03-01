@@ -51,7 +51,7 @@ namespace ZuSiFplEdit
         {
             //Module einlesen
             Module = new modContainer();
-
+            ladezeitToolStripMenuItem.Text = "Ladezeit: " + Module.loadTime + " ms";
             //Module ausgeben
             foreach (streckenModul modul in Module.mSammlung)
             {
@@ -142,6 +142,39 @@ namespace ZuSiFplEdit
         {
             this.Invalidate();
             kartenZeichner.updateMapSize(mMap.CreateGraphics(), mMap.Width, mMap.Height);
+        }
+
+        private void LayerChange_Click(object sender, EventArgs e)
+        {
+            if (sender == moduToolStripMenuItem)
+            {
+                kartenZeichner.setLayers("module", moduToolStripMenuItem.Checked);
+            }
+            else if (sender == punkteToolStripMenuItem)
+            {
+                kartenZeichner.setLayers("module_punkte", punkteToolStripMenuItem.Checked);
+            }
+            else if (sender == namenToolStripMenuItem)
+            {
+                kartenZeichner.setLayers("module_namen", namenToolStripMenuItem.Checked);
+            }
+            else if (sender == verbindungenToolStripMenuItem)
+            {
+                kartenZeichner.setLayers("module_verbindungen", verbindungenToolStripMenuItem.Checked);
+            }
+            else if (sender == modulgrenzenToolStripMenuItem)
+            {
+                kartenZeichner.setLayers("module_grenzen", modulgrenzenToolStripMenuItem.Checked);
+            }
+            else if (sender == mToolStripMenuItem)
+            {
+                kartenZeichner.setLayers("strecke", mToolStripMenuItem.Checked);
+            }
+            else if (sender == fahrstraenToolStripMenuItem)
+            {
+                kartenZeichner.setLayers("fahrstr", fahrstraenToolStripMenuItem.Checked);
+            }
+            
         }
     }
 }

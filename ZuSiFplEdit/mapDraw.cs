@@ -27,6 +27,20 @@ namespace ZuSiFplEdit
         double border_south;
         double border_west;
 
+        //Drawing layers:
+        bool drawModule = true;
+        bool drawModule_Punkte = true;
+        bool drawModule_Namen = true;
+        bool drawModule_Verbindungen = true;
+        bool drawModule_Grenzen = false;
+
+        bool drawStrecke = false;
+
+        bool drawFahrstrassen = false;
+
+
+
+
         public mapDraw(Graphics map_gr, int width, int height, List<streckenModul> mList)
         {
             map = map_gr;
@@ -139,7 +153,7 @@ namespace ZuSiFplEdit
         {
             bool withinBorders = ((mod.UTM_NS < border_north) && (mod.UTM_NS > border_south) && (mod.UTM_WE < border_east) && (mod.UTM_WE > border_west));
             int range = 25;
-            bool withinRange = ((Math.Abs(mod.UTM_NS - center_NS) < range) && (Math.Abs(mod.UTM_WE - center_WE) < range)); //HACK: Entfernung sollte Situationsbedingt angepasst werden (z.B. Abtand zu Nachbar)
+            bool withinRange = ((Math.Abs(mod.UTM_NS - center_NS) < range) && (Math.Abs(mod.UTM_WE - center_WE) < range)); //HACK: Entfernung sollte Situationsbedingt angepasst werden (z.B. Abtsand zu Nachbar)
             return (withinBorders || withinRange);
         }
 
@@ -149,92 +163,109 @@ namespace ZuSiFplEdit
         {
             map.Clear(Color.White);
 
-            map.DrawString("N" + center_NS.ToString("F2") + " - E" + center_WE.ToString("F2") + " - " + pixPerGrad.ToString("F1") + "pix/km", new Font("Verdana", 10), new SolidBrush(Color.Red), 20, map_height_p - 20);
-
+            var frameTime = new System.Diagnostics.Stopwatch();
+            frameTime.Start();
+            
             Pen pen_unselected = new Pen(Color.Black);
-            Pen pen_selected = new Pen(Color.Green);
-            Pen pen_act;
+            Pen pen_selected = new Pen(Color.Red);
             
             //First layer (lines + names) + data processing
             foreach (streckenModul mod in modVisible)
             {
-                if (mod.selected)
-                {
-                    pen_act = pen_selected;
-                } else
-                {
-                    pen_act = pen_unselected; 
-                }
+                if(drawModule_Verbindungen && drawModule)
 
-                foreach (streckenModul connection in mod.Verbindungen)
                 {
-                    map.DrawLine(pen_unselected, mod.PIX_X, mod.PIX_Y, coordToPix(connection.UTM_WE, false), coordToPix(connection.UTM_NS, true));
+                    foreach(streckenModul connection in mod.Verbindungen)
+                    {
+                        map.DrawLine(pen_unselected, mod.PIX_X, mod.PIX_Y, coordToPix(connection.UTM_WE, false), coordToPix(connection.UTM_NS, true));
+                    } 
                 }
                 if (pixPerGrad > 11)
                 {
-                    //TODO: Text richtig ausrichten.
-                    map.DrawString(mod.modName, new Font("Verdana", 8), Brushes.Black, mod.PIX_X + 6, mod.PIX_Y);
-
-                    if (pixPerGrad > 50)
+                    if (drawModule_Namen && drawModule)
                     {
-                        foreach (var strE in mod.StreckenElemente)
+                        //TODO: Text richtig ausrichten.
+                        map.DrawString(mod.modName, new Font("Verdana", 8), Brushes.Black, mod.PIX_X + 6, mod.PIX_Y); 
+                    }
+
+                    if (drawModule_Grenzen && drawModule)
+                    {
+                        for (int i = 0; i < mod.Huellkurve.Count; i++)
                         {
-                            //MessageBox.Show((strE.g_Y - strE.b_Y).ToString("F2"), "VAL:", MessageBoxButtons.OK);
+                            var x1 = mod.Huellkurve[i].abs_X;
+                            var y1 = mod.Huellkurve[i].abs_Y;
+                            var x2 = mod.Huellkurve[(i + 1) % mod.Huellkurve.Count].abs_X;
+                            var y2 = mod.Huellkurve[(i + 1) % mod.Huellkurve.Count].abs_Y;
 
-                            float gx = mod.UTM_WE + (strE.g_X / 1000f);
-                            float gy = mod.UTM_NS + (strE.g_Y / 1000f);
-                            float bx = mod.UTM_WE + (strE.b_X / 1000f);
-                            float by = mod.UTM_NS + (strE.b_Y / 1000f);
-
-                            map.DrawLine(pen_unselected, coordToPix(gx, false), coordToPix(gy, true), coordToPix(bx, false), coordToPix(by, true));
+                            map.DrawLine(pen_selected, coordToPix(x1, false), coordToPix(y1, true), coordToPix(x2, false), coordToPix(y2, true));
+                        } 
+                    }
+                    
+                    {
+                        if (drawStrecke)
+                        {
+                            foreach (var strE in mod.StreckenElemente)
+                            {
+                                if (strE.Funktion != 0) map.DrawLine(pen_selected, coordToPix(strE.g_X, false), coordToPix(strE.g_Y, true), coordToPix(strE.b_X, false), coordToPix(strE.b_Y, true));
+                                else map.DrawLine(pen_unselected, coordToPix(strE.g_X, false), coordToPix(strE.g_Y, true), coordToPix(strE.b_X, false), coordToPix(strE.b_Y, true));
+                            } 
                         }
                     }
                 }  
             }
 
-            //Second layer (station circles)
-            foreach (var mod in modVisible)
+            if (drawModule_Punkte && drawModule)
             {
-                int circleSize = 8;
-
-                if ((pixPerGrad > 2) || mod.NetzGrenze || mod.selected)
+                //Second layer (station circles)
+                foreach (var mod in modVisible)
                 {
-                    if (mod.selected)
+                    int circleSize = 8; //Größe der Modulkreise
+                    if ((pixPerGrad > 2) || mod.NetzGrenze || mod.selected)
                     {
-                        map.FillEllipse(Brushes.Red, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
-                        map.DrawEllipse(pen_unselected, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                        if (mod.selected)
+                        {
+                            map.FillEllipse(Brushes.Red, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                            map.DrawEllipse(pen_unselected, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                        }
+                        else if (mod.NetzGrenze)
+                        {
+                            map.FillEllipse(Brushes.DarkGray, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                            map.DrawEllipse(pen_unselected, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                        }
+                        else //Normale Module
+                        {
+                            map.FillEllipse(Brushes.LightGray, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                            map.DrawEllipse(pen_unselected, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                        }
                     }
-                    else if(mod.NetzGrenze)
+                } 
+            }
+
+            if (pixPerGrad > 10 && drawFahrstrassen)
+            {
+                foreach (var mod in modVisible)
+                {
+                    foreach (var fstr in mod.FahrStr)
                     {
-                        map.FillEllipse(Brushes.DarkGray, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
-                        map.DrawEllipse(pen_unselected, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
-                    } 
-                    else
-                    {
-                        map.FillEllipse(Brushes.LightGray, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
-                        map.DrawEllipse(pen_unselected, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                        try
+                        {
+                            int start_x = coordToPix(fstr.Start.StrElement.b_X, false);
+                            int start_y = coordToPix(fstr.Start.StrElement.b_Y, true);
+                            int ziel_x = coordToPix(fstr.Ziel.StrElement.b_X, false);
+                            int ziel_y = coordToPix(fstr.Ziel.StrElement.b_Y, true);
+                            
+                            map.DrawLine(Pens.Orange, start_x, start_y, ziel_x, ziel_y);
+                        }
+                        catch (Exception e)
+                        {
+                           // MessageBox.Show(e.Message, "AAAAAAAAAAAAAAAAAAAA" + mod.modName, MessageBoxButtons.OK);
+                        }
                     }
                 }
             }
-            //foreach (var mod in modList)
-            //{
 
-
-            //    if (mod.modName == "Grimmelshofen_2008")
-            //    {
-            //        foreach (var strE in mod.StreckenElemente)
-            //        {
-            //            //MessageBox.Show((strE.g_Y - strE.b_Y).ToString("F2"), "VAL:", MessageBoxButtons.OK);
-
-            //            float gx = mod.UTM_WE + (strE.g_X / 1000f);
-            //            float gy = mod.UTM_NS + (strE.g_Y / 1000f);
-            //            float bx = mod.UTM_WE + (strE.b_X / 1000f);
-            //            float by = mod.UTM_NS + (strE.b_Y / 1000f);
-
-            //            map.DrawLine(pen_unselected, coordToPix(gx, false), coordToPix(gy, true), coordToPix(bx, false), coordToPix(by, true));
-            //        }
-            //    }
-            //}
+            frameTime.Stop();
+            map.DrawString("N" + center_NS.ToString("F2") + " - E" + center_WE.ToString("F2") + " - " + pixPerGrad.ToString("F1") + "pix/km - " + frameTime.ElapsedMilliseconds + " ms/frame", new Font("Verdana", 10), new SolidBrush(Color.Red), 20, map_height_p - 20);
         }
 
         public streckenModul getNearestStation(int X, int Y)
@@ -260,6 +291,42 @@ namespace ZuSiFplEdit
 
             int dist = (int)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
             return dist;
+        }
+
+        public void setLayers(string layer, bool drawLayer)
+        {
+            if (layer == "module")
+            {
+                drawModule = drawLayer;
+            }
+            else if (layer == "module_punkte")
+            {
+                drawModule_Punkte = drawLayer;
+            }
+            else if (layer == "module_namen")
+            {
+                drawModule_Namen = drawLayer;
+            }
+            else if (layer == "module_verbindungen")
+            {
+                drawModule_Verbindungen = drawLayer;
+            }
+            else if (layer == "module_grenzen")
+            {
+                drawModule_Grenzen = drawLayer;
+            }
+            else if (layer == "strecke")
+            {
+                drawStrecke = drawLayer;
+            }
+            else if (layer == "fahrstr")
+            {
+                drawFahrstrassen = drawLayer;
+            }
+
+            
+
+            draw();
         }
     }
 }

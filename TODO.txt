@@ -3,7 +3,8 @@ TODO - ZuSi 3 - Fahrplaneditor
 V0.3
 - .st3 soll vollständig eingelesen werden 
 - detailliertere Karten
-- 
+- Seitenverhältnis des Karteninhalts beim Verändern der Größe beibehalten
+- Datei mit geblockten Modulen.
 
 
 
@@ -33,3 +34,8 @@ V0.2
 - Module mit weniger als zwei vorhandenen Nachbarn (Netzgrenzen) und ausgewählte Module werden jetzt unabhängig von der Vergrößerung angezeigt
 
 Feedback:
+
+
+Bugs:
+- Absturz bei Distanzabfrage, wenn kein Modul sichtbar ist.
+- Modvisible sollte module in einer gewissenn entfernung immer anzeigen.

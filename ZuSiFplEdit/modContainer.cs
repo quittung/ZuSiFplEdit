@@ -15,6 +15,8 @@ namespace ZuSiFplEdit
         public string DirBase = "";
         public string DirRoute = "";
 
+        public long loadTime;
+
 
         public modContainer()
         {
@@ -69,9 +71,10 @@ namespace ZuSiFplEdit
             moduleVerlinken();
 
             timeGesamt.Stop();
-            MessageBox.Show("Einlesen hat " + timeGesamt.ElapsedMilliseconds + " ms gedauert.", "Gesamtdauer des Einlesens", MessageBoxButtons.OK);
+            loadTime = timeGesamt.ElapsedMilliseconds;
+            //MessageBox.Show("Einlesen hat " + timeGesamt.ElapsedMilliseconds + " ms gedauert.", "Gesamtdauer des Einlesens", MessageBoxButtons.OK);
 
-            
+
 
 
             if (st3Fehler.Count > 0)
@@ -146,6 +149,21 @@ namespace ZuSiFplEdit
                     //}
                 }
                 if ((mod.Verbindungen.Count > 2) || (mod.NetzGrenze)) mod.wichtig = true; 
+            }
+
+            foreach (var mod in mSammlung)
+            {
+                foreach (var fstr in mod.FahrStr)
+                {
+                    try
+                    {
+                        fstr.Start = sucheMod(fstr.StartMod).sucheReferenz(fstr.StartRef);
+                        fstr.Ziel = sucheMod(fstr.ZielMod).sucheReferenz(fstr.ZielRef);
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
             }
         }
 

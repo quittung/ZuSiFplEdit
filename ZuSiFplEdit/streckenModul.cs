@@ -196,8 +196,13 @@ namespace ZuSiFplEdit
             }
             catch (Exception e)
             {
-                //MessageBox.Show(e.Message, "XML Error: " + modName, MessageBoxButtons.OK);
+                MessageBox.Show(e.Message, "XML Error: " + modName, MessageBoxButtons.OK);
                 isSane = false;
+            }
+
+            if (modName == "Aulfingen2005")
+            {
+
             }
         }
 
@@ -297,6 +302,10 @@ namespace ZuSiFplEdit
                     if (modXml.Name == "StrElement")
                     {
                         int Nr = Convert.ToInt32(modXml.GetAttribute("Nr"));
+                        if (modName == "Aulfingen2005" && Nr == 9133)
+                        {
+
+                        }
                         float spTrass = Convert.ToSingle(modXml.GetAttribute("spTrass"), CultureInfo.InvariantCulture.NumberFormat);
                         int Anschluss = Convert.ToInt32(modXml.GetAttribute("Anschluss"));
                         int Funktion = Convert.ToInt32(modXml.GetAttribute("Fkt"));
@@ -316,17 +325,25 @@ namespace ZuSiFplEdit
                         b_X = UTM_WE + (b_X / 1000f);
                         b_Y = UTM_NS + (b_Y / 1000f);
 
-                        while ((!(modXml.Name == "NachNorm")) && modXml.Read()) { }
+                        while ((!(modXml.Name == "NachNorm")) && (!(modXml.Name == "StrElement")) && modXml.Read()) { }
                         int AnschlussNorm = Convert.ToInt32(modXml.GetAttribute("Nr"));
-                        while ((!(modXml.Name == "NachGegen")) && modXml.Read()) { }
+                        while ((!(modXml.Name == "NachGegen")) && (!(modXml.Name == "StrElement")) && modXml.Read()) { }
                         int AnschlussGegen = Convert.ToInt32(modXml.GetAttribute("Nr"));
                         
                         if(!(Funktion == 2))
                             StreckenElemente.Add(new streckenElement(Nr, spTrass, Anschluss, Funktion, Oberbau, g_X, g_Y, b_X, b_Y, AnschlussNorm, AnschlussGegen));
                         while ((!(modXml.NodeType == XmlNodeType.EndElement && modXml.Name == "StrElement")) && modXml.Read()) { }
+
+                        
                     }
+                    
                     if (modXml.Name == "Fahrstrasse")
                     {
+                        if (modName == "Aulfingen2005")
+                        {
+
+                        }
+
                         string FahrstrName = modXml.GetAttribute("FahrstrName");
                         string FahrstrStrecke = modXml.GetAttribute("FahrstrStrecke");
                         int RglGgl = Convert.ToInt32(modXml.GetAttribute("RglGgl"));

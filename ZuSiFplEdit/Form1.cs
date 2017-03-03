@@ -11,9 +11,12 @@ namespace ZuSiFplEdit
         modContainer Module;
         mapDraw kartenZeichner;
 
-        int mouseDownX = 0;
-        int mouseDownY = 0;
+        int mouseDownX_it = 0;
+        int mouseDownY_it = 0;
+        int mouseDownX_abs = 0;
+        int mouseDownY_abs = 0;
         bool mouseDown = false;
+        bool mouseMoved = false;
 
         streckenModul horribleHackVariableThatHoldsRightClickModule;
 
@@ -72,8 +75,10 @@ namespace ZuSiFplEdit
             if (e.Button == MouseButtons.Left)
             {
                 mouseDown = true;
-                mouseDownX = e.X;
-                mouseDownY = e.Y;
+                mouseDownX_it = e.X;
+                mouseDownY_it = e.Y;
+                mouseDownX_abs = e.X;
+                mouseDownY_abs = e.Y;
             }
 
             if (e.Button == MouseButtons.Right)
@@ -87,15 +92,16 @@ namespace ZuSiFplEdit
             if (mouseDown && (e.Button == MouseButtons.Left))
             {
                 mouseDown = false;
-                int deltaX = e.X - mouseDownX;
-                int deltaY = e.Y - mouseDownY;
+                int deltaX = e.X - mouseDownX_it;
+                int deltaY = e.Y - mouseDownY_it;
+
 
                 int movementThreshold = 3;
 
                 if ((Math.Abs(deltaX) > movementThreshold) || (Math.Abs(deltaY) > movementThreshold))
                 {
                     kartenZeichner.move(deltaY, deltaX);
-                } else
+                } else if (!mouseMoved) 
                 {
                     var nächsteStation = kartenZeichner.getNearestStation(e.X, e.Y);
                     if (kartenZeichner.getStationDistance(nächsteStation, e.X, e.Y) < 10)
@@ -105,6 +111,8 @@ namespace ZuSiFplEdit
                         modListBox.SetSelected(Module.mSammlung.IndexOf(nächsteStation), nächsteStation.selected);
                     }
                 }
+
+                mouseMoved = false;
             }
 
             if (e.Button == MouseButtons.Right)
@@ -185,6 +193,26 @@ namespace ZuSiFplEdit
                 kartenZeichner.setLayers("fahrstr", fahrstraenToolStripMenuItem.Checked);
             }
             
+        }
+
+        private void mMap_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (mouseDown)
+            {
+                int movement = Math.Abs(e.X - mouseDownX_abs) + Math.Abs(e.Y - mouseDownY_abs);
+
+                if (movement > 3) mouseMoved = true;
+
+                int deltaX = e.X - mouseDownX_it;
+                int deltaY = e.Y - mouseDownY_it;
+                //int deltaX_ges = e.X - mouseDownX_orig;
+                //int deltaY_ges = e.Y - mouseDownY_orig;
+                mouseDownX_it = e.X;
+                mouseDownY_it = e.Y;
+                
+                
+                kartenZeichner.move(deltaY, deltaX);
+            }
         }
     }
 }

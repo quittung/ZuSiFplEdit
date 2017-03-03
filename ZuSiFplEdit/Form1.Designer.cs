@@ -40,11 +40,11 @@
             this.modulgrenzenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.namenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.verbindungenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.punkteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fahrstraenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ladezeitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.punkteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.fahrstraenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.mMap)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -63,6 +63,7 @@
             this.mMap.TabIndex = 2;
             this.mMap.TabStop = false;
             this.mMap.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mMap_MouseDown);
+            this.mMap.MouseMove += new System.Windows.Forms.MouseEventHandler(this.mMap_MouseMove);
             this.mMap.MouseUp += new System.Windows.Forms.MouseEventHandler(this.mMap_MouseUp);
             this.mMap.Resize += new System.EventHandler(this.mMap_Resize);
             // 
@@ -155,7 +156,7 @@
             this.verbindungenToolStripMenuItem,
             this.punkteToolStripMenuItem});
             this.moduToolStripMenuItem.Name = "moduToolStripMenuItem";
-            this.moduToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.moduToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.moduToolStripMenuItem.Text = "Module";
             this.moduToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
@@ -163,7 +164,7 @@
             // 
             this.modulgrenzenToolStripMenuItem.CheckOnClick = true;
             this.modulgrenzenToolStripMenuItem.Name = "modulgrenzenToolStripMenuItem";
-            this.modulgrenzenToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.modulgrenzenToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.modulgrenzenToolStripMenuItem.Text = "Modulgrenzen";
             this.modulgrenzenToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
@@ -173,7 +174,7 @@
             this.namenToolStripMenuItem.CheckOnClick = true;
             this.namenToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.namenToolStripMenuItem.Name = "namenToolStripMenuItem";
-            this.namenToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.namenToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.namenToolStripMenuItem.Text = "Namen";
             this.namenToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
@@ -183,17 +184,35 @@
             this.verbindungenToolStripMenuItem.CheckOnClick = true;
             this.verbindungenToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.verbindungenToolStripMenuItem.Name = "verbindungenToolStripMenuItem";
-            this.verbindungenToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.verbindungenToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.verbindungenToolStripMenuItem.Text = "Verbindungen";
             this.verbindungenToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
+            // 
+            // punkteToolStripMenuItem
+            // 
+            this.punkteToolStripMenuItem.Checked = true;
+            this.punkteToolStripMenuItem.CheckOnClick = true;
+            this.punkteToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.punkteToolStripMenuItem.Name = "punkteToolStripMenuItem";
+            this.punkteToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.punkteToolStripMenuItem.Text = "Punkte";
+            this.punkteToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
             // mToolStripMenuItem
             // 
             this.mToolStripMenuItem.CheckOnClick = true;
             this.mToolStripMenuItem.Name = "mToolStripMenuItem";
-            this.mToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.mToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.mToolStripMenuItem.Text = "Streckenplan";
             this.mToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
+            // 
+            // fahrstraenToolStripMenuItem
+            // 
+            this.fahrstraenToolStripMenuItem.CheckOnClick = true;
+            this.fahrstraenToolStripMenuItem.Name = "fahrstraenToolStripMenuItem";
+            this.fahrstraenToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.fahrstraenToolStripMenuItem.Text = "Fahrstraßen";
+            this.fahrstraenToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
             // debugToolStripMenuItem
             // 
@@ -209,24 +228,6 @@
             this.ladezeitToolStripMenuItem.Name = "ladezeitToolStripMenuItem";
             this.ladezeitToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
             this.ladezeitToolStripMenuItem.Text = "Ladezeit...";
-            // 
-            // punkteToolStripMenuItem
-            // 
-            this.punkteToolStripMenuItem.Checked = true;
-            this.punkteToolStripMenuItem.CheckOnClick = true;
-            this.punkteToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.punkteToolStripMenuItem.Name = "punkteToolStripMenuItem";
-            this.punkteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.punkteToolStripMenuItem.Text = "Punkte";
-            this.punkteToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
-            // 
-            // fahrstraenToolStripMenuItem
-            // 
-            this.fahrstraenToolStripMenuItem.CheckOnClick = true;
-            this.fahrstraenToolStripMenuItem.Name = "fahrstraenToolStripMenuItem";
-            this.fahrstraenToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.fahrstraenToolStripMenuItem.Text = "Fahrstraßen";
-            this.fahrstraenToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
             // modSelForm
             // 

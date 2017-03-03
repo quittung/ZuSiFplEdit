@@ -35,15 +35,15 @@ namespace ZuSiFplEdit
             public int Funktion;
             public string Oberbau;
 
-            public float g_X;
-            public float g_Y;
-            public float b_X;
-            public float b_Y;
+            public double g_X;
+            public double g_Y;
+            public double b_X;
+            public double b_Y;
 
             public int AnschlussNorm;
             public int AnschlussGegen;
 
-            public streckenElement(int Nr, float spTrass, int Anschluss, int Funktion, string Oberbau, float g_X, float g_Y, float b_X, float b_Y, int AnschlussNorm, int AnschlussGegen)
+            public streckenElement(int Nr, float spTrass, int Anschluss, int Funktion, string Oberbau, double g_X, double g_Y, double b_X, double b_Y, int AnschlussNorm, int AnschlussGegen)
             {
                 this.Nr = Nr;
                 this.spTrass = spTrass;
@@ -309,16 +309,16 @@ namespace ZuSiFplEdit
                         //if (Oberbau != null && Oberbau.Contains("B55")) continue;
 
                         while (!(modXml.Name == "g")) modXml.Read();
-                        float g_X = Convert.ToSingle(modXml.GetAttribute("X"), CultureInfo.InvariantCulture.NumberFormat);
-                        float g_Y = Convert.ToSingle(modXml.GetAttribute("Y"), CultureInfo.InvariantCulture.NumberFormat);
+                        double g_X = Convert.ToDouble(modXml.GetAttribute("X"), CultureInfo.InvariantCulture.NumberFormat);
+                        double g_Y = Convert.ToDouble(modXml.GetAttribute("Y"), CultureInfo.InvariantCulture.NumberFormat);
                         while (!(modXml.Name == "b")) modXml.Read();
-                        float b_X = Convert.ToSingle(modXml.GetAttribute("X"), CultureInfo.InvariantCulture.NumberFormat);
-                        float b_Y = Convert.ToSingle(modXml.GetAttribute("Y"), CultureInfo.InvariantCulture.NumberFormat);
+                        double b_X = Convert.ToDouble(modXml.GetAttribute("X"), CultureInfo.InvariantCulture.NumberFormat);
+                        double b_Y = Convert.ToDouble(modXml.GetAttribute("Y"), CultureInfo.InvariantCulture.NumberFormat);
 
-                        g_X = UTM_WE + (g_X / 1000f);
-                        g_Y = UTM_NS + (g_Y / 1000f);
-                        b_X = UTM_WE + (b_X / 1000f);
-                        b_Y = UTM_NS + (b_Y / 1000f);
+                        g_X = UTM_WE + (g_X / 1000);
+                        g_Y = UTM_NS + (g_Y / 1000);
+                        b_X = UTM_WE + (b_X / 1000);
+                        b_Y = UTM_NS + (b_Y / 1000);
 
                         while ((!(modXml.Name == "NachNorm")) && (!(modXml.Name == "StrElement")) && modXml.Read()) { }
                         int AnschlussNorm = Convert.ToInt32(modXml.GetAttribute("Nr"));

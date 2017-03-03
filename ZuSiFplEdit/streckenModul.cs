@@ -27,6 +27,22 @@ namespace ZuSiFplEdit
             }
         }
 
+        public class Signal
+        {
+            public string Name;
+            public string Stellwerk;
+            public string Betriebstelle;
+            public int Signaltyp;
+
+            public Signal(string Name, string Stellwerk, string Betriebstelle, int Signaltyp)
+            {
+                this.Name = Name;
+                this.Stellwerk = Stellwerk;
+                this.Betriebstelle = Betriebstelle;
+                this.Signaltyp = Signaltyp;
+        }
+        }
+
         public class streckenElement
         {
             public int Nr;
@@ -43,7 +59,10 @@ namespace ZuSiFplEdit
             public int AnschlussNorm;
             public int AnschlussGegen;
 
-            public streckenElement(int Nr, float spTrass, int Anschluss, int Funktion, string Oberbau, double g_X, double g_Y, double b_X, double b_Y, int AnschlussNorm, int AnschlussGegen)
+            public Signal SignalNorm;
+            public Signal SignalGegen;
+
+            public streckenElement(int Nr, float spTrass, int Anschluss, int Funktion, string Oberbau, double g_X, double g_Y, double b_X, double b_Y, Signal SignalNorm, Signal SignalGegen, int AnschlussNorm, int AnschlussGegen)
             {
                 this.Nr = Nr;
                 this.spTrass = spTrass;
@@ -55,6 +74,9 @@ namespace ZuSiFplEdit
                 this.g_Y = g_Y;
                 this.b_X = b_X;
                 this.b_Y = b_Y;
+
+                this.SignalNorm = SignalNorm;
+                this.SignalGegen = SignalGegen;
 
                 this.AnschlussNorm = AnschlussNorm;
                 this.AnschlussGegen = AnschlussGegen;
@@ -95,6 +117,8 @@ namespace ZuSiFplEdit
 
             public referenzElement Start;
             public referenzElement Ziel;
+
+            public List<fahrStr> folgeStraßen;
 
             public fahrStr(string FahrstrName, string FahrstrStrecke, int RglGgl, string FahrstrTyp, float Laenge, int StartRef, string StartMod, int ZielRef, string ZielMod)
             {
@@ -320,14 +344,57 @@ namespace ZuSiFplEdit
                         b_X = UTM_WE + (b_X / 1000);
                         b_Y = UTM_NS + (b_Y / 1000);
 
-                        while ((!(modXml.Name == "NachNorm")) && (!(modXml.Name == "StrElement")) && modXml.Read()) { }
-                        int AnschlussNorm = Convert.ToInt32(modXml.GetAttribute("Nr"));
-                        while ((!(modXml.Name == "NachGegen")) && (!(modXml.Name == "StrElement")) && modXml.Read()) { }
-                        int AnschlussGegen = Convert.ToInt32(modXml.GetAttribute("Nr"));
+
+                        int AnschlussNorm = -1;
+                        int AnschlussGegen = -1;
+                        Signal SignalNorm = null;
+                        Signal SignalGegen = null;
+                        while ((!(modXml.NodeType == XmlNodeType.EndElement && modXml.Name == "StrElement")) && modXml.Read())
+                        {
+                            if (modXml.Name == "InfoNormRichtung")
+                            {
+                                modXml.Read();
+                                while (modXml.NodeType == XmlNodeType.Whitespace && modXml.Read()) { }
+                                if (modXml.Name == "Signal")
+                                {
+                                    string Name = modXml.GetAttribute("Signalname");
+                                    string Stellwerk = modXml.GetAttribute("Stellwerk");
+                                    string Betriebstelle = modXml.GetAttribute("NameBetriebsstelle");
+                                    int Signaltyp = Convert.ToInt32(modXml.GetAttribute("SignalTyp"));
+                                    SignalNorm = new Signal(Name, Stellwerk, Betriebstelle, Signaltyp);
+                                    while ((!(modXml.Name == "InfoNormRichtung")) && (!(modXml.Name == "StrElement")) && modXml.Read()) { }
+                                }
+                            }
+                            if (modXml.Name == "InfoGegenRichtung")
+                            {
+                                modXml.Read();
+                                while (modXml.NodeType == XmlNodeType.Whitespace && modXml.Read()) { }
+                                if (modXml.Name == "Signal")
+                                {
+                                    string Name = modXml.GetAttribute("Signalname");
+                                    string Stellwerk = modXml.GetAttribute("Stellwerk");
+                                    string Betriebstelle = modXml.GetAttribute("NameBetriebsstelle");
+                                    int Signaltyp = Convert.ToInt32(modXml.GetAttribute("SignalTyp"));
+                                    SignalGegen = new Signal(Name, Stellwerk, Betriebstelle, Signaltyp);
+                                    while ((!(modXml.Name == "InfoGegenRichtung")) && (!(modXml.Name == "StrElement")) && modXml.Read()) { }
+                                }
+                            }
+                            if (modXml.Name == "NachNorm" && modXml.NodeType == XmlNodeType.Element)
+                            {
+                                AnschlussNorm = Convert.ToInt32(modXml.GetAttribute("Nr"));
+                            }
+                            if (modXml.Name == "NachGegen" && modXml.NodeType == XmlNodeType.Element)
+                            {
+                                AnschlussGegen = Convert.ToInt32(modXml.GetAttribute("Nr"));
+                            }
+                        }
+
+
+                        
                         
                         if(!(Funktion == 2))
-                            StreckenElemente.Add(new streckenElement(Nr, spTrass, Anschluss, Funktion, Oberbau, g_X, g_Y, b_X, b_Y, AnschlussNorm, AnschlussGegen));
-                        while ((!(modXml.NodeType == XmlNodeType.EndElement && modXml.Name == "StrElement")) && modXml.Read()) { }
+                            StreckenElemente.Add(new streckenElement(Nr, spTrass, Anschluss, Funktion, Oberbau, g_X, g_Y, b_X, b_Y, SignalNorm, SignalGegen, AnschlussNorm, AnschlussGegen));
+                        
 
                         
                     }
@@ -343,7 +410,7 @@ namespace ZuSiFplEdit
                         string FahrstrStrecke = modXml.GetAttribute("FahrstrStrecke");
                         int RglGgl = Convert.ToInt32(modXml.GetAttribute("RglGgl"));
                         string FahrstrTyp = modXml.GetAttribute("FahrstrTyp");
-                        float Laenge = Convert.ToSingle(modXml.GetAttribute("Laenge"));
+                        float Laenge = Convert.ToSingle(modXml.GetAttribute("Laenge"), CultureInfo.InvariantCulture.NumberFormat);
 
                         while (!(modXml.Name == "FahrstrStart")) modXml.Read();
                         int StartRef = Convert.ToInt32(modXml.GetAttribute("Ref"));

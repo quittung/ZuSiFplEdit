@@ -235,8 +235,26 @@ namespace ZuSiFplEdit
                 {
                     foreach (var strE in mod.StreckenElemente)
                     {
-                        if (strE.Funktion != 0) framebuffer.DrawLine(pen_selected, coordToPix(strE.g_X, false), coordToPix(strE.g_Y, true), coordToPix(strE.b_X, false), coordToPix(strE.b_Y, true));
-                        else framebuffer.DrawLine(pen_unselected, coordToPix(strE.g_X, false), coordToPix(strE.g_Y, true), coordToPix(strE.b_X, false), coordToPix(strE.b_Y, true));
+                        if (strE.SignalNorm != null && (strE.SignalNorm.Signaltyp == 7 || strE.SignalNorm.Signaltyp == 9))
+                        {
+                            int circleSize = 4;
+                            framebuffer.FillEllipse(Brushes.LightGreen, coordToPix((float)strE.g_X, false) - circleSize / 2, coordToPix((float)strE.g_Y, true) - circleSize / 2, circleSize, circleSize);
+                        }
+
+                        if (strE.SignalGegen != null && (strE.SignalGegen.Signaltyp == 7 || strE.SignalGegen.Signaltyp == 9))
+                        {
+                            int circleSize = 4;
+                            framebuffer.FillEllipse(Brushes.Red, coordToPix((float)strE.g_X, false) - circleSize / 2, coordToPix((float)strE.g_Y, true) - circleSize / 2, circleSize, circleSize);
+                        }
+
+                        //var strE_color = Color.Blue;
+                        //if (strE.Funktion == 0) strE_color = Color.Black;
+                        //if (strE.SignalNorm != null) strE_color = Color.LightGreen;
+                        //if (strE.SignalGegen != null) strE_color = Color.Red;
+                        //var strE_pen = new Pen(strE_color, 2);
+                        var strE_pen = Pens.Black;
+
+                        framebuffer.DrawLine(strE_pen, coordToPix(strE.g_X, false), coordToPix(strE.g_Y, true), coordToPix(strE.b_X, false), coordToPix(strE.b_Y, true));
                     }
                 }
             }

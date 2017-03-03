@@ -152,7 +152,7 @@ namespace ZuSiFplEdit
             }
 
             //string problemstellen = "";
-
+            //verlinke fahrstraßen mit referenzen.
             foreach (var mod in mSammlung)
             {
                 foreach (var fstr in mod.FahrStr)
@@ -165,6 +165,25 @@ namespace ZuSiFplEdit
                     catch (Exception e)
                     {
                         //problemstellen += mod.modName + ":" + fstr.FahrstrName + ":" + fstr.ZielMod + "\n";
+                    }
+                }
+            }
+
+            foreach (var mod in mSammlung)
+            {
+                foreach (var fstr in mod.FahrStr)
+                {
+                    fstr.folgeStraßen = new List<streckenModul.fahrStr>();
+
+                    if (!(fstr.Ziel == null))
+                    {
+                        foreach (var fort in sucheMod(fstr.ZielMod).FahrStr)
+                        {
+                            if (fstr.Ziel == fort.Start)
+                            {
+                                fstr.folgeStraßen.Add(fort);
+                            }
+                        }
                     }
                 }
             }

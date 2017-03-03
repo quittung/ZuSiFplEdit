@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
@@ -127,8 +128,9 @@ namespace ZuSiFplEdit
                 MenuItem[] menuItems = new MenuItem[]{new MenuItem("Pixel: X" + e.X + " - Y" + e.Y),
                 new MenuItem("Koordinaten: X" + kartenZeichner.pixToCoord(e.X, false).ToString("F1") + " - Y" + kartenZeichner.pixToCoord(e.Y, true).ToString("F1")),
                 new MenuItem("Nächste Station: " + nächsteStation.modName + "; Distanz: " + kartenZeichner.getStationDistance(nächsteStation, e.X, e.Y).ToString()),
-                new MenuItem(nächsteStation.modName + " im Explorer anzeigen", new EventHandler(showMod))};
-
+                new MenuItem(nächsteStation.modName + " im Explorer anzeigen", new EventHandler(showMod)),
+                new MenuItem("Alle Wege führen nach Kassel", new EventHandler(route))};
+            
                 ContextMenu buttonMenu = new ContextMenu(menuItems);
                 buttonMenu.Show(mMap, new Point(e.X, e.Y));
             }
@@ -137,6 +139,52 @@ namespace ZuSiFplEdit
         private void showMod(object sender, EventArgs e)
         {
             Process.Start(Module.DirBase + horribleHackVariableThatHoldsRightClickModule.modPath.Substring(0, horribleHackVariableThatHoldsRightClickModule.modPath.LastIndexOf('\\'))); //HACK: HACKHACKHACKHACKHACK Shame!
+        }
+
+        private void route(object sender, EventArgs e)
+        {
+            var fertige_route = routeSearch(horribleHackVariableThatHoldsRightClickModule, Module.sucheMod("Kassel_Hbf_1988"), new List<streckenModul>());
+
+            if (fertige_route == null)
+            {
+                MessageBox.Show("Strecke nicht gefunden.", "Strecke nach Kassel", MessageBoxButtons.OK);
+            }
+            else
+            {
+                string stregge = "";
+                foreach (var mod in fertige_route)
+                {
+                    stregge += mod.modName + "\n";
+                }
+                MessageBox.Show(stregge, "Strecke nach Kassel", MessageBoxButtons.OK);
+            }
+        }
+
+        List<streckenModul> routeSearch(streckenModul Aktuell, streckenModul Ziel, List<streckenModul> Besucht)
+        {
+            Besucht.Add(Aktuell);
+            if (Aktuell == Ziel)
+            {
+                var Lizte = new List<streckenModul>();
+                Lizte.Add(Aktuell);
+                return (Lizte);
+            } else
+            {
+                foreach (var con in Aktuell.Verbindungen)
+                {
+                    if (!(Besucht.Contains(con)))
+                    {
+                        var rList = routeSearch(con, Ziel, Besucht); 
+                        if (!(rList == null))
+                        {
+                            rList.Insert(0, Aktuell);
+                            return rList;
+                        }
+                    }
+                }
+            }
+
+            return null;
         }
 
         private void modListBox_SelectedValueChanged(object sender, EventArgs e)

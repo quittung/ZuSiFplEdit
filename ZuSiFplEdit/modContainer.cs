@@ -176,7 +176,7 @@ namespace ZuSiFplEdit
         /// Gibt Modul-Objekt für einen Modulnamen zurück
         /// </summary>
         /// <param name="modName">Name des Moduls</param>
-        streckenModul sucheMod(string modName) 
+        public streckenModul sucheMod(string modName) 
         {
             modName = modName.Substring(0, modName.Length - 5); //HACK: Jahreszahl wird ignoriert
             foreach (var mod in mSammlung)

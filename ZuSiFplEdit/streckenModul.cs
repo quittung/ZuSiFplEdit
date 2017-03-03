@@ -196,13 +196,8 @@ namespace ZuSiFplEdit
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message, "XML Error: " + modName, MessageBoxButtons.OK);
+                //MessageBox.Show(e.Message, "XML Error: " + modName, MessageBoxButtons.OK);
                 isSane = false;
-            }
-
-            if (modName == "Aulfingen2005")
-            {
-
             }
         }
 

@@ -11,12 +11,13 @@ namespace ZuSiFplEdit
         modContainer Module;
         mapDraw kartenZeichner;
 
-        int mouseDownX_it = 0;
-        int mouseDownY_it = 0;
+        int mouseDownX_rel = 0;
+        int mouseDownY_rel = 0;
         int mouseDownX_abs = 0;
         int mouseDownY_abs = 0;
         bool mouseDown = false;
         bool mouseMoved = false;
+        bool updatingMap = false;
 
         streckenModul horribleHackVariableThatHoldsRightClickModule;
 
@@ -36,6 +37,8 @@ namespace ZuSiFplEdit
                 kartenZeichner.updateScale(1.25);
             if (e.Delta < 0)
                 kartenZeichner.updateScale(0.8);
+
+            mMap.Image = kartenZeichner.draw();
         }
 
         private void ModulButton_Click(object sender, EventArgs e)
@@ -75,8 +78,8 @@ namespace ZuSiFplEdit
             if (e.Button == MouseButtons.Left)
             {
                 mouseDown = true;
-                mouseDownX_it = e.X;
-                mouseDownY_it = e.Y;
+                mouseDownX_rel = e.X;
+                mouseDownY_rel = e.Y;
                 mouseDownX_abs = e.X;
                 mouseDownY_abs = e.Y;
             }
@@ -92,8 +95,8 @@ namespace ZuSiFplEdit
             if (mouseDown && (e.Button == MouseButtons.Left))
             {
                 mouseDown = false;
-                int deltaX = e.X - mouseDownX_it;
-                int deltaY = e.Y - mouseDownY_it;
+                int deltaX = e.X - mouseDownX_rel;
+                int deltaY = e.Y - mouseDownY_rel;
 
 
                 int movementThreshold = 3;
@@ -101,13 +104,14 @@ namespace ZuSiFplEdit
                 if ((Math.Abs(deltaX) > movementThreshold) || (Math.Abs(deltaY) > movementThreshold))
                 {
                     kartenZeichner.move(deltaY, deltaX);
+                    mMap.Image = kartenZeichner.draw();
                 } else if (!mouseMoved) 
                 {
                     var nächsteStation = kartenZeichner.getNearestStation(e.X, e.Y);
                     if (kartenZeichner.getStationDistance(nächsteStation, e.X, e.Y) < 10)
                     {
                         nächsteStation.selected = !nächsteStation.selected;
-                        kartenZeichner.draw();
+                        mMap.Image = kartenZeichner.draw();
                         modListBox.SetSelected(Module.mSammlung.IndexOf(nächsteStation), nächsteStation.selected);
                     }
                 }
@@ -147,19 +151,20 @@ namespace ZuSiFplEdit
                     Module.mSammlung[i].selected = false;
                 }
             }
-            kartenZeichner.draw();
+            mMap.Image = kartenZeichner.draw();
         }
 
         private void modSelForm_Paint(object sender, PaintEventArgs e)
         {
             Application.DoEvents();
-            kartenZeichner.draw();
+            mMap.Image = kartenZeichner.draw();
         }
 
         private void mMap_Resize(object sender, EventArgs e)
         {
             this.Invalidate();
             kartenZeichner.updateMapSize(mMap.CreateGraphics(), mMap.Width, mMap.Height);
+            mMap.Image = kartenZeichner.draw();
         }
 
         private void LayerChange_Click(object sender, EventArgs e)
@@ -192,26 +197,42 @@ namespace ZuSiFplEdit
             {
                 kartenZeichner.setLayers("fahrstr", fahrstraenToolStripMenuItem.Checked);
             }
-            
+
+            mMap.Image = kartenZeichner.draw();
         }
 
         private void mMap_MouseMove(object sender, MouseEventArgs e)
         {
-            if (mouseDown)
+            if (mouseDown && !(updatingMap))
             {
-                int movement = Math.Abs(e.X - mouseDownX_abs) + Math.Abs(e.Y - mouseDownY_abs);
+                updatingMap = true;
 
+                int movement = Math.Abs(e.X - mouseDownX_abs) + Math.Abs(e.Y - mouseDownY_abs);
                 if (movement > 3) mouseMoved = true;
 
-                int deltaX = e.X - mouseDownX_it;
-                int deltaY = e.Y - mouseDownY_it;
-                //int deltaX_ges = e.X - mouseDownX_orig;
-                //int deltaY_ges = e.Y - mouseDownY_orig;
-                mouseDownX_it = e.X;
-                mouseDownY_it = e.Y;
-                
-                
+                int stepsize = Math.Abs(e.X - mouseDownX_rel) + Math.Abs(e.Y - mouseDownY_rel);
+                if (stepsize > 50)
+                {
+                    
+                }
+
+                int deltaX = e.X - mouseDownX_rel;
+                int deltaY = e.Y - mouseDownY_rel;
+                mouseDownX_rel = e.X;
+                mouseDownY_rel = e.Y;
+
+                var frameTime = new System.Diagnostics.Stopwatch();
+                frameTime.Start();
                 kartenZeichner.move(deltaY, deltaX);
+
+                //this.Invalidate();
+                //Application.DoEvents();
+                mMap.Image = kartenZeichner.draw();
+
+                frameTime.Stop();
+                toolStripMenuItem1.Text = frameTime.ElapsedMilliseconds + " ms";
+
+                updatingMap = false;                
             }
         }
     }

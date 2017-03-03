@@ -13,7 +13,8 @@ namespace ZuSiFplEdit
     {
         List<streckenModul> modList;
         List<streckenModul> modVisible;
-        Graphics map;
+        public Bitmap frame;
+        Graphics framebuffer;
 
         int map_width_p;
         int map_height_p;
@@ -43,11 +44,14 @@ namespace ZuSiFplEdit
 
         public mapDraw(Graphics map_gr, int width, int height, List<streckenModul> mList)
         {
-            map = map_gr;
+            //map = map_gr;
             map_width_p = width;
             map_height_p = height;
             modList = mList;
             modVisible = new List<streckenModul>();
+
+            frame = new Bitmap(map_width_p, map_height_p);
+            framebuffer = Graphics.FromImage(frame);
 
             setInitPos();
         }
@@ -56,9 +60,8 @@ namespace ZuSiFplEdit
         {
             map_width_p = width;
             map_height_p = height;
-            map = map_gr;
+            //map = map_gr;
             updateBorders();
-            draw();
         }
 
         public int coordToPix(double coord, bool isNS)
@@ -113,8 +116,6 @@ namespace ZuSiFplEdit
         {
             pixPerGrad = pixPerGrad * factor;
             updateBorders();
-
-            draw();
         }
 
         public void move (int pix_NS, int pix_WE)
@@ -123,7 +124,6 @@ namespace ZuSiFplEdit
             center_WE -= (double)pix_WE / pixPerGrad;
 
             updateBorders();
-            draw();
         }
 
         void updateBorders()
@@ -158,14 +158,14 @@ namespace ZuSiFplEdit
         }
 
 
-        //Zeichnet die Karte. 
-        public void draw()
-        {
-            map.Clear(Color.White);
 
+        public Bitmap draw()
+        {
             var frameTime = new System.Diagnostics.Stopwatch();
             frameTime.Start();
-            
+
+            framebuffer.Clear(Color.White);
+
             Pen pen_unselected = new Pen(Color.Black);
             Pen pen_selected = new Pen(Color.Red);
 
@@ -177,7 +177,7 @@ namespace ZuSiFplEdit
                     {
                         foreach (streckenModul connection in mod.Verbindungen)
                         {
-                            map.DrawLine(pen_unselected, mod.PIX_X, mod.PIX_Y, coordToPix(connection.UTM_WE, false), coordToPix(connection.UTM_NS, true));
+                            framebuffer.DrawLine(pen_unselected, mod.PIX_X, mod.PIX_Y, coordToPix(connection.UTM_WE, false), coordToPix(connection.UTM_NS, true));
                         }
                     }
                 }
@@ -190,18 +190,18 @@ namespace ZuSiFplEdit
                         {
                             if (mod.selected)
                             {
-                                map.FillEllipse(Brushes.Red, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
-                                map.DrawEllipse(pen_unselected, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                                framebuffer.FillEllipse(Brushes.Red, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                                framebuffer.DrawEllipse(pen_unselected, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
                             }
                             else if (mod.NetzGrenze)
                             {
-                                map.FillEllipse(Brushes.DarkGray, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
-                                map.DrawEllipse(pen_unselected, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                                framebuffer.FillEllipse(Brushes.DarkGray, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                                framebuffer.DrawEllipse(pen_unselected, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
                             }
                             else //Normale Module
                             {
-                                map.FillEllipse(Brushes.LightGray, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
-                                map.DrawEllipse(pen_unselected, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                                framebuffer.FillEllipse(Brushes.LightGray, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                                framebuffer.DrawEllipse(pen_unselected, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
                             }
                         }
                     }
@@ -210,7 +210,7 @@ namespace ZuSiFplEdit
                 {
                     foreach (streckenModul mod in modVisible)
                     {
-                        map.DrawString(mod.modName, new Font("Verdana", 8), Brushes.Black, mod.PIX_X + 6, mod.PIX_Y);
+                        framebuffer.DrawString(mod.modName, new Font("Verdana", 8), Brushes.Black, mod.PIX_X + 6, mod.PIX_Y);
                     }
                 }
                 if (drawModule_Grenzen && pixPerGrad > 11)
@@ -224,7 +224,7 @@ namespace ZuSiFplEdit
                             var x2 = mod.Huellkurve[(i + 1) % mod.Huellkurve.Count].abs_X;
                             var y2 = mod.Huellkurve[(i + 1) % mod.Huellkurve.Count].abs_Y;
 
-                            map.DrawLine(pen_selected, coordToPix(x1, false), coordToPix(y1, true), coordToPix(x2, false), coordToPix(y2, true));
+                            framebuffer.DrawLine(pen_selected, coordToPix(x1, false), coordToPix(y1, true), coordToPix(x2, false), coordToPix(y2, true));
                         }
                     }
                 }
@@ -235,8 +235,8 @@ namespace ZuSiFplEdit
                 {
                     foreach (var strE in mod.StreckenElemente)
                     {
-                        if (strE.Funktion != 0) map.DrawLine(pen_selected, coordToPix(strE.g_X, false), coordToPix(strE.g_Y, true), coordToPix(strE.b_X, false), coordToPix(strE.b_Y, true));
-                        else map.DrawLine(pen_unselected, coordToPix(strE.g_X, false), coordToPix(strE.g_Y, true), coordToPix(strE.b_X, false), coordToPix(strE.b_Y, true));
+                        if (strE.Funktion != 0) framebuffer.DrawLine(pen_selected, coordToPix(strE.g_X, false), coordToPix(strE.g_Y, true), coordToPix(strE.b_X, false), coordToPix(strE.b_Y, true));
+                        else framebuffer.DrawLine(pen_unselected, coordToPix(strE.g_X, false), coordToPix(strE.g_Y, true), coordToPix(strE.b_X, false), coordToPix(strE.b_Y, true));
                     }
                 }
             }
@@ -253,7 +253,7 @@ namespace ZuSiFplEdit
                             int ziel_x = coordToPix(fstr.Ziel.StrElement.b_X, false);
                             int ziel_y = coordToPix(fstr.Ziel.StrElement.b_Y, true);
 
-                            map.DrawLine(Pens.Orange, start_x, start_y, ziel_x, ziel_y);
+                            framebuffer.DrawLine(Pens.Orange, start_x, start_y, ziel_x, ziel_y);
                         }
                         catch (Exception)
                         {
@@ -263,7 +263,9 @@ namespace ZuSiFplEdit
             }
 
             frameTime.Stop();
-            map.DrawString("N" + center_NS.ToString("F2") + " - E" + center_WE.ToString("F2") + " - " + pixPerGrad.ToString("F1") + "pix/km - " + frameTime.ElapsedMilliseconds + " ms/frame", new Font("Verdana", 10), new SolidBrush(Color.Red), 20, map_height_p - 20);
+            framebuffer.DrawString("N" + center_NS.ToString("F2") + " - E" + center_WE.ToString("F2") + " - " + pixPerGrad.ToString("F1") + "pix/km - " + frameTime.ElapsedMilliseconds + " ms/frame", new Font("Verdana", 10), new SolidBrush(Color.Red), 20, map_height_p - 20);
+
+            return (frame);
         }
 
         public streckenModul getNearestStation(int X, int Y)
@@ -321,10 +323,6 @@ namespace ZuSiFplEdit
             {
                 drawFahrstrassen = drawLayer;
             }
-
-            
-
-            draw();
         }
     }
 }

@@ -163,6 +163,52 @@ namespace ZuSiFplEdit
                 }
                 MessageBox.Show(stregge, "Strecke nach Kassel", MessageBoxButtons.OK);
             }
+
+            var fertige_fstr_route = fstrRouteSearch(horribleHackVariableThatHoldsRightClickModule.FahrStr[0], Module.sucheMod("Kassel_Hbf_1988"), new List<streckenModul.fahrStr>());
+            if (fertige_fstr_route == null)
+            {
+                MessageBox.Show("Fahrstraßen nicht gefunden.", "Strecke nach Kassel", MessageBoxButtons.OK);
+            }
+            else
+            {
+                double länge = 0;
+                string stregge = "";
+                foreach (var fstr in fertige_fstr_route)
+                {
+                    stregge += fstr.FahrstrName + "\n";
+                    länge += fstr.Laenge;
+                }
+                stregge += "Länge: " + (länge/1000).ToString("F1") + "km";
+                MessageBox.Show(stregge, "Fahrstraßen nach Kassel", MessageBoxButtons.OK);
+            }
+        }
+
+        List<streckenModul.fahrStr> fstrRouteSearch(streckenModul.fahrStr Aktuell, streckenModul Ziel, List<streckenModul.fahrStr> Besucht)
+        {
+            Besucht.Add(Aktuell);
+            if (Module.sucheMod(Aktuell.ZielMod) == Ziel)
+            {
+                var Lizte = new List<streckenModul.fahrStr>();
+                Lizte.Add(Aktuell);
+                return (Lizte);
+            }
+            else
+            {
+                foreach (var folge in Aktuell.folgeStraßen)
+                {
+                    if (!(Besucht.Contains(folge)))
+                    {
+                        var rList = fstrRouteSearch(folge, Ziel, Besucht);
+                        if (!(rList == null))
+                        {
+                            rList.Insert(0, Aktuell);
+                            return rList;
+                        } Besucht.Add(Aktuell);
+                    }
+                }
+            }
+
+            return null;
         }
 
         List<streckenModul> routeSearch(streckenModul Aktuell, streckenModul Ziel, List<streckenModul> Besucht)
@@ -173,7 +219,8 @@ namespace ZuSiFplEdit
                 var Lizte = new List<streckenModul>();
                 Lizte.Add(Aktuell);
                 return (Lizte);
-            } else
+            }
+            else
             {
                 foreach (var con in Aktuell.Verbindungen)
                 {
@@ -213,7 +260,7 @@ namespace ZuSiFplEdit
             mMap.Image = kartenZeichner.draw();
         }
 
-        private void mMap_Resize(object sender, EventArgs e) //BUG: Funktioniert nicht mehr. (Wird erst mit richtiger, dann mit alter Größe aufgerufen.
+        private void mMap_Resize(object sender, EventArgs e)
         {
             this.Invalidate();
             kartenZeichner.updateMapSize(mMap.Width, mMap.Height);
@@ -277,9 +324,8 @@ namespace ZuSiFplEdit
                 frameTime.Start();
                 kartenZeichner.move(deltaY, deltaX);
 
-                //this.Invalidate();
-                //Application.DoEvents();
-                mMap.Image = kartenZeichner.draw();
+                this.Invalidate();
+                Application.DoEvents();//Zeichnen
 
                 frameTime.Stop();
                 toolStripMenuItem1.Text = frameTime.ElapsedMilliseconds + " ms";

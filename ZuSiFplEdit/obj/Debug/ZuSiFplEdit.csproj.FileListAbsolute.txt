@@ -11,3 +11,4 @@ C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.
 C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.application
 C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.exe
 C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.pdb
+C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.csprojResolveAssemblyReference.cache

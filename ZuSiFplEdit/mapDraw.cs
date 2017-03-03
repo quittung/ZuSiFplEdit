@@ -42,9 +42,8 @@ namespace ZuSiFplEdit
 
 
 
-        public mapDraw(Graphics map_gr, int width, int height, List<streckenModul> mList)
+        public mapDraw(int width, int height, List<streckenModul> mList)
         {
-            //map = map_gr;
             map_width_p = width;
             map_height_p = height;
             modList = mList;
@@ -56,11 +55,12 @@ namespace ZuSiFplEdit
             setInitPos();
         }
 
-        public void updateMapSize(Graphics map_gr, int width, int height)
+        public void updateMapSize(int width, int height)
         {
             map_width_p = width;
             map_height_p = height;
-            //map = map_gr;
+            frame = new Bitmap(width, height);
+            framebuffer = Graphics.FromImage(frame);
             updateBorders();
         }
 

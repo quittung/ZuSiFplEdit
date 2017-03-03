@@ -20,6 +20,9 @@ namespace ZuSiFplEdit
         bool mouseMoved = false;
         bool updatingMap = false;
 
+
+        int debugX = 0;
+        int debugY = 0;
         streckenModul horribleHackVariableThatHoldsRightClickModule;
 
         public modSelForm()
@@ -69,7 +72,9 @@ namespace ZuSiFplEdit
             }
 
             //Modulekarte vorbereiten
-            kartenZeichner = new mapDraw(mMap.CreateGraphics(), mMap.Width, mMap.Height, Module.mSammlung);
+            debugX = mMap.Width;
+            debugY = mMap.Height;
+            kartenZeichner = new mapDraw(mMap.Width, mMap.Height, Module.mSammlung);
         }
 
         private void mMap_MouseDown(object sender, MouseEventArgs e)
@@ -208,11 +213,10 @@ namespace ZuSiFplEdit
             mMap.Image = kartenZeichner.draw();
         }
 
-        private void mMap_Resize(object sender, EventArgs e)
+        private void mMap_Resize(object sender, EventArgs e) //BUG: Funktioniert nicht mehr. (Wird erst mit richtiger, dann mit alter Größe aufgerufen.
         {
             this.Invalidate();
-            kartenZeichner.updateMapSize(mMap.CreateGraphics(), mMap.Width, mMap.Height);
-            mMap.Image = kartenZeichner.draw();
+            kartenZeichner.updateMapSize(mMap.Width, mMap.Height);
         }
 
         private void LayerChange_Click(object sender, EventArgs e)

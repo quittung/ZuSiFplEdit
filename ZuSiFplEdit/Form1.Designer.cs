@@ -58,9 +58,9 @@
             // mMap
             // 
             this.mMap.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mMap.Location = new System.Drawing.Point(0, 0);
+            this.mMap.Location = new System.Drawing.Point(3, 1);
             this.mMap.Name = "mMap";
-            this.mMap.Size = new System.Drawing.Size(580, 511);
+            this.mMap.Size = new System.Drawing.Size(645, 564);
             this.mMap.TabIndex = 2;
             this.mMap.TabStop = false;
             this.mMap.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mMap_MouseDown);
@@ -75,16 +75,16 @@
             this.modListBox.Location = new System.Drawing.Point(3, 3);
             this.modListBox.Name = "modListBox";
             this.modListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.modListBox.Size = new System.Drawing.Size(225, 455);
+            this.modListBox.Size = new System.Drawing.Size(253, 509);
             this.modListBox.TabIndex = 3;
             this.modListBox.SelectedValueChanged += new System.EventHandler(this.modListBox_SelectedValueChanged);
             // 
             // ButtonExport
             // 
             this.ButtonExport.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ButtonExport.Location = new System.Drawing.Point(3, 464);
+            this.ButtonExport.Location = new System.Drawing.Point(3, 518);
             this.ButtonExport.Name = "ButtonExport";
-            this.ButtonExport.Size = new System.Drawing.Size(225, 44);
+            this.ButtonExport.Size = new System.Drawing.Size(253, 44);
             this.ButtonExport.TabIndex = 0;
             this.ButtonExport.Text = ".fpn ausgeben";
             this.ButtonExport.UseVisualStyleBackColor = true;
@@ -104,9 +104,9 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.mMap);
-            this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(0, 0, 8, 8);
-            this.splitContainer1.Size = new System.Drawing.Size(839, 519);
-            this.splitContainer1.SplitterDistance = 247;
+            this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(3, 1, 8, 8);
+            this.splitContainer1.Size = new System.Drawing.Size(935, 573);
+            this.splitContainer1.SplitterDistance = 275;
             this.splitContainer1.TabIndex = 4;
             // 
             // tableLayoutPanel1
@@ -122,7 +122,7 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(231, 511);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(259, 565);
             this.tableLayoutPanel1.TabIndex = 4;
             // 
             // menuStrip1
@@ -132,7 +132,7 @@
             this.debugToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(839, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(935, 24);
             this.menuStrip1.TabIndex = 5;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -242,7 +242,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(839, 543);
+            this.ClientSize = new System.Drawing.Size(935, 597);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

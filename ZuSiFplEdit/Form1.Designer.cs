@@ -45,6 +45,7 @@
             this.fahrstraenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ladezeitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.mMap)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -217,7 +218,8 @@
             // debugToolStripMenuItem
             // 
             this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ladezeitToolStripMenuItem});
+            this.ladezeitToolStripMenuItem,
+            this.toolStripMenuItem1});
             this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
             this.debugToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
             this.debugToolStripMenuItem.Text = "Debug";
@@ -226,8 +228,15 @@
             // 
             this.ladezeitToolStripMenuItem.Enabled = false;
             this.ladezeitToolStripMenuItem.Name = "ladezeitToolStripMenuItem";
-            this.ladezeitToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.ladezeitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.ladezeitToolStripMenuItem.Text = "Ladezeit...";
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Enabled = false;
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.toolStripMenuItem1.Text = "Framezeit...";
             // 
             // modSelForm
             // 
@@ -271,6 +280,7 @@
         private System.Windows.Forms.ToolStripMenuItem verbindungenToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem punkteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fahrstraenToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     }
 }
 

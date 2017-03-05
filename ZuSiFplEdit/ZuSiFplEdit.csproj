@@ -87,6 +87,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="fileops.cs" />
     <Compile Include="streckenModul.cs" />
     <Compile Include="mapDraw.cs" />
     <Compile Include="modContainer.cs" />

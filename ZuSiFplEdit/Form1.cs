@@ -10,6 +10,25 @@ namespace ZuSiFplEdit
 {
     public partial class modSelForm : Form
     {
+        public class ZugFahrt
+        {
+            public string Gattung;
+            public int Zugnummer;
+            public streckenModul.referenzElement ZstartSignal;
+            public streckenModul.referenzElement ZzielSignal;
+            public List<streckenModul.fahrStr> route;
+
+            public ZugFahrt()
+            {
+
+            }
+
+            public override string ToString()
+            {
+                return (Gattung + " " + Zugnummer.ToString());
+            }
+        } 
+
         modContainer Module;
         mapDraw kartenZeichner;
 
@@ -21,6 +40,11 @@ namespace ZuSiFplEdit
         bool mouseMoved = false;
         bool updatingMap = false;
 
+        bool selectRouteStart = false;
+        bool selectRouteEnd = false;
+
+        bool ZLBready = true;
+        List<ZugFahrt> ZugFahrten = new List<ZugFahrt>();
 
         int debugX = 0;
         int debugY = 0;
@@ -28,6 +52,7 @@ namespace ZuSiFplEdit
         streckenModul.referenzElement tmpSignal;
         streckenModul.referenzElement startSignal;
         streckenModul.referenzElement zielSignal;
+        List<streckenModul.fahrStr> fstrRoute;
 
         public modSelForm()
         {
@@ -37,6 +62,8 @@ namespace ZuSiFplEdit
             modListBox.SelectedIndexChanged += new EventHandler(modListBox_SelectedValueChanged);
 
             appInit();
+
+            
         }
 
         private void mMap_MouseWheel(object sender, MouseEventArgs e)
@@ -60,7 +87,12 @@ namespace ZuSiFplEdit
 
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                Module.writeToFile(saveFileDialog1.FileName);
+                List<ZugFahrt> zList = new List<ZugFahrt>();
+                foreach (var Zufa in ZugFahrtBox.Items)
+                {
+                    zList.Add((ZugFahrt)Zufa);
+                }
+                new fileops(Module.mSammlung, zList, saveFileDialog1.FileName);
             }
         }    
 
@@ -108,6 +140,28 @@ namespace ZuSiFplEdit
                 int deltaX = e.X - mouseDownX_rel;
                 int deltaY = e.Y - mouseDownY_rel;
 
+                if (selectRouteStart || selectRouteEnd)
+                {
+                    var act = (ZugFahrt)ZugFahrtBox.SelectedItem;
+                    if (selectRouteStart)
+                    {
+                        act.ZstartSignal = kartenZeichner.getNearestSignal(e.X, e.Y);
+                        selectRouteStart = false;
+                    }
+                    else
+                    {
+                        act.ZzielSignal = kartenZeichner.getNearestSignal(e.X, e.Y);
+                        selectRouteEnd = false;
+                    }
+
+                    if (act.ZstartSignal != null && act.ZzielSignal != null)
+                    {
+                        act.route = fstrRouteSearchStart(act.ZstartSignal, act.ZzielSignal);
+                    }
+
+                    updateZugFields();
+                    return;
+                }
 
                 int movementThreshold = 3;
 
@@ -206,7 +260,7 @@ namespace ZuSiFplEdit
                 MessageBox.Show(stregge, "Strecke nach Meschede", MessageBoxButtons.OK);
             }
 
-            var fertige_fstr_route = fstrRouteSearchStart(startSignal, zielSignal, new List<streckenModul.fahrStr>());
+            var fertige_fstr_route = fstrRouteSearchStart(startSignal, zielSignal);
             if (fertige_fstr_route == null)
             {
                 MessageBox.Show("Fahrstraßen nicht gefunden.", "Strecke nach Meschede", MessageBoxButtons.OK);
@@ -223,55 +277,13 @@ namespace ZuSiFplEdit
                 stregge += "Länge: " + (länge/1000).ToString("F1") + "km";
                 MessageBox.Show(stregge, "Fahrstraßen nach Meschede", MessageBoxButtons.OK);
 
-                string path = "RB999.trn";
-                var trn_file = new StreamWriter(path, false);
-
-                trn_file.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                trn_file.WriteLine("<Zusi>");
-                trn_file.WriteLine("<Info DateiTyp=\"Zug\" Version=\"A.1\" MinVersion=\"A.1\">");
-                trn_file.WriteLine("<AutorEintrag/>");
-                trn_file.WriteLine("</Info>");
-                trn_file.WriteLine("<Zug Gattung=\"RB\" Nummer=\"999\" Prio=\"1500\" Bremsstellung=\"4\" Rekursionstiefe=\"5\" FahrstrName=\"" + fertige_fstr_route[0].FahrstrName.Replace(">", "&gt;") + "\" Zugtyp=\"1\" Buchfahrplandll=\"_InstSetup\\lib\\timetable\\Buchfahrplan_DB_1979.dll\">");
-                trn_file.WriteLine("<Datei Dateiname=\"Timetables\\Custom\\test.fpn\" NurInfo=\"1\"/>");
-
-                for (int i = 0; i < fertige_fstr_route.Count; i++)
-                {
-                    streckenModul.Signal nextSignal = null;
-                    if (fertige_fstr_route[i].Ziel.StrElement.SignalNorm != null)
-                    {
-                        nextSignal = fertige_fstr_route[i].Ziel.StrElement.SignalNorm;
-                    } 
-                    else
-                    {
-                        nextSignal = fertige_fstr_route[i].Ziel.StrElement.SignalGegen;
-                    }
-
-                    if (i == 0)
-                    {
-                        trn_file.WriteLine("<FahrplanEintrag Ank=\"2017-02-27 12:00:00\" Abf=\"2017-02-27 12:01:00\" Betrst=\"" + nextSignal.Betriebstelle + "\">");
-                    }
-                    else
-                    {
-                        trn_file.WriteLine("<FahrplanEintrag Betrst=\"" + nextSignal.Betriebstelle + "\">");
-                    }
-                    trn_file.WriteLine("<FahrplanSignalEintrag FahrplanSignal=\"" + nextSignal.Name + "\"/>");
-                    trn_file.WriteLine("</FahrplanEintrag>");
-                }
-
-                trn_file.WriteLine("<FahrzeugVarianten Bezeichnung=\"default\" ZufallsWert=\"1\">");
-                trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
-                trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Dieseltriebwagen\\RegioShuttle\\RS1.rv.fzg\"/>");
-                trn_file.WriteLine("</FahrzeugInfo>");
-                trn_file.WriteLine("</FahrzeugVarianten>");
-                trn_file.WriteLine("</Zug>");
-                trn_file.WriteLine("</Zusi>");
-
-                trn_file.Close();
+                fstrRoute = fertige_fstr_route;
             }
         }
 
-        List<streckenModul.fahrStr> fstrRouteSearchStart(streckenModul.referenzElement StartSignal, streckenModul.referenzElement ZielSignal, List<streckenModul.fahrStr> Besucht)
+        List<streckenModul.fahrStr> fstrRouteSearchStart(streckenModul.referenzElement StartSignal, streckenModul.referenzElement ZielSignal)
         {
+            var Besucht = new List<streckenModul.fahrStr>();
             foreach (var start_fstr in StartSignal.abgehendeFahrstraßen)
             {
                 var rList = fstrRouteSearch(start_fstr, ZielSignal, Besucht);
@@ -294,7 +306,7 @@ namespace ZuSiFplEdit
             {
                 foreach (var folge in Aktuell.folgeStraßen)
                 {
-                    if (!(Besucht.Contains(folge)))
+                    if ((!(Besucht.Contains(folge))) && (folge.Ziel != null))
                     {
                         var rList = fstrRouteSearch(folge, ZielSignal, Besucht);
                         if (!(rList == null))
@@ -430,6 +442,151 @@ namespace ZuSiFplEdit
 
                 updatingMap = false;                
             }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            
+            var tmpZugfahrt = new ZugFahrt();
+
+            tmpZugfahrt.Gattung = "ART";
+            
+            int ZugNummer = 0;
+            bool ZugNummerBesetzt = true;
+            while (ZugNummerBesetzt)
+            {
+                ZugNummer++;
+                ZugNummerBesetzt = ZNBesetzt(ZugNummer);
+            }
+            tmpZugfahrt.Zugnummer = ZugNummer;
+
+            ZugFahrtBox.Items.Add(tmpZugfahrt);
+            ZugFahrtBox.SelectedItem = tmpZugfahrt;
+        }
+        
+
+        bool ZNBesetzt(int ZN)
+        {
+            bool ZugNummerBesetzt = false;
+            foreach (ZugFahrt zug in ZugFahrtBox.Items)
+            {
+                if (zug.Zugnummer == ZN)
+                {
+                    ZugNummerBesetzt = true;
+                    break;
+                }
+            }
+            return ZugNummerBesetzt;
+        }
+
+        private void textBox_Gattung_TextChanged(object sender, EventArgs e)
+        {
+            var act = (ZugFahrt)ZugFahrtBox.SelectedItem;
+            act.Gattung = textBox_Gattung.Text;
+            zlbUpdate();
+        }
+
+        void zlbUpdate()
+        {
+            ZLBready = false;
+            ZugFahrtBox.Items[ZugFahrtBox.SelectedIndex] = ZugFahrtBox.SelectedItem;
+            ZLBready = true;
+        }
+
+        private void textBox_ZNummer_TextChanged(object sender, EventArgs e)
+        {
+            int ZN = -1;
+            try
+            {
+                ZN = Convert.ToInt32(textBox_ZNummer.Text);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Keine gültige Zugnummer", "Fehler", MessageBoxButtons.OK);
+                return;
+            }
+
+            var act = (ZugFahrt)ZugFahrtBox.SelectedItem;
+            if (ZNBesetzt(ZN))
+            {
+                if (ZN != act.Zugnummer)
+                    textBox_ZNummer.BackColor = Color.Red;
+            } 
+            else
+            {
+                textBox_ZNummer.BackColor = Color.White;
+                
+                act.Zugnummer = ZN;
+
+                zlbUpdate();
+            }
+        }
+
+        private void ZugFahrtBox_SelectedValueChanged(object sender, EventArgs e)
+        {
+            updateZugFields();
+        }
+
+        private void updateZugFields()
+        {
+            if (ZLBready)
+            {
+                var act = (ZugFahrt)ZugFahrtBox.SelectedItem;
+
+                textBox_Gattung.Text = act.Gattung;
+                textBox_ZNummer.Text = act.Zugnummer.ToString();
+
+                if (act.ZstartSignal == null)
+                {
+                    label_StartSig.Text = "Startsignal unbekannt";
+                }
+                else
+                {
+                    label_StartSig.Text = act.ZstartSignal.ToString();
+                }
+
+                if (act.ZzielSignal == null)
+                {
+                    label_ZielSig.Text = "Startsignal unbekannt";
+                }
+                else
+                {
+                    label_ZielSig.Text = act.ZzielSignal.ToString();
+                }
+
+                if (act.route == null)
+                {
+                    if (act.ZstartSignal == null || act.ZzielSignal == null)
+                    {
+                        label_Fstr.Text = "Start- und/oder Zielsignal nicht gesetzt";
+                    } 
+                    else
+                    {
+                        label_Fstr.Text = "Fahrweg konnte nicht gefunden werden";
+                    }
+                }
+                else
+                {
+                    double fstr_len = 0;
+                    foreach (var fstr in act.route)
+                    {
+                        fstr_len += fstr.Laenge;
+                    }
+                    label_Fstr.Text = "Fahrweglänge ist " + (fstr_len/1000).ToString("F2") + " km";
+                }
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            selectRouteStart = true;
+            //Startsignal wird bei MouseUp && MouseButton == Links gesetzt.
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            selectRouteEnd = true;
+            //Zielsignal wird bei MouseUp && MouseButton == Links gesetzt.
         }
     }
 }

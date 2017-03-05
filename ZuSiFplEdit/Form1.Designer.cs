@@ -33,7 +33,23 @@
             this.modListBox = new System.Windows.Forms.ListBox();
             this.ButtonExport = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.label_StartSig = new System.Windows.Forms.Label();
+            this.label_ZielSig = new System.Windows.Forms.Label();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.textBox_Gattung = new System.Windows.Forms.TextBox();
+            this.textBox_ZNummer = new System.Windows.Forms.TextBox();
+            this.ZugFahrtBox = new System.Windows.Forms.ListBox();
+            this.button3 = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.karteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.moduToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -46,12 +62,19 @@
             this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ladezeitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.label_Fstr = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.mMap)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -75,16 +98,16 @@
             this.modListBox.Location = new System.Drawing.Point(3, 3);
             this.modListBox.Name = "modListBox";
             this.modListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.modListBox.Size = new System.Drawing.Size(253, 509);
+            this.modListBox.Size = new System.Drawing.Size(239, 477);
             this.modListBox.TabIndex = 3;
             this.modListBox.SelectedValueChanged += new System.EventHandler(this.modListBox_SelectedValueChanged);
             // 
             // ButtonExport
             // 
             this.ButtonExport.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ButtonExport.Location = new System.Drawing.Point(3, 518);
+            this.ButtonExport.Location = new System.Drawing.Point(3, 486);
             this.ButtonExport.Name = "ButtonExport";
-            this.ButtonExport.Size = new System.Drawing.Size(253, 44);
+            this.ButtonExport.Size = new System.Drawing.Size(239, 44);
             this.ButtonExport.TabIndex = 0;
             this.ButtonExport.Text = ".fpn ausgeben";
             this.ButtonExport.UseVisualStyleBackColor = true;
@@ -98,7 +121,7 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.tableLayoutPanel1);
+            this.splitContainer1.Panel1.Controls.Add(this.tabControl1);
             this.splitContainer1.Panel1.Padding = new System.Windows.Forms.Padding(8, 0, 8, 8);
             // 
             // splitContainer1.Panel2
@@ -109,6 +132,28 @@
             this.splitContainer1.SplitterDistance = 275;
             this.splitContainer1.TabIndex = 4;
             // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(8, 0);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(259, 565);
+            this.tabControl1.TabIndex = 0;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.tableLayoutPanel1);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(251, 539);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "tabPage1";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 1;
@@ -116,14 +161,175 @@
             this.tableLayoutPanel1.Controls.Add(this.modListBox, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.ButtonExport, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(8, 0);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(259, 565);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(245, 533);
             this.tableLayoutPanel1.TabIndex = 4;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.tableLayoutPanel2);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(251, 539);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "tabPage2";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel4, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.ZugFahrtBox, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.button3, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.label_Fstr, 0, 4);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 5;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.1399F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 88.86011F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 111F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 105F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(245, 533);
+            this.tableLayoutPanel2.TabIndex = 0;
+            // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.ColumnCount = 2;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.Controls.Add(this.button1, 1, 0);
+            this.tableLayoutPanel4.Controls.Add(this.button2, 1, 1);
+            this.tableLayoutPanel4.Controls.Add(this.label_StartSig, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.label_ZielSig, 0, 1);
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 410);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 2;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(239, 99);
+            this.tableLayoutPanel4.TabIndex = 2;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(122, 3);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(122, 52);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 1;
+            this.button2.Text = "button2";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // label_StartSig
+            // 
+            this.label_StartSig.AutoSize = true;
+            this.label_StartSig.Location = new System.Drawing.Point(3, 0);
+            this.label_StartSig.Name = "label_StartSig";
+            this.label_StartSig.Size = new System.Drawing.Size(110, 13);
+            this.label_StartSig.TabIndex = 2;
+            this.label_StartSig.Text = "Startsignal unbekannt";
+            // 
+            // label_ZielSig
+            // 
+            this.label_ZielSig.AutoSize = true;
+            this.label_ZielSig.Location = new System.Drawing.Point(3, 49);
+            this.label_ZielSig.Name = "label_ZielSig";
+            this.label_ZielSig.Size = new System.Drawing.Size(105, 13);
+            this.label_ZielSig.TabIndex = 3;
+            this.label_ZielSig.Text = "Zielsignal unbekannt";
+            // 
+            // tableLayoutPanel3
+            // 
+            this.tableLayoutPanel3.ColumnCount = 2;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel3.Controls.Add(this.label1, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.label2, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.textBox_Gattung, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.textBox_ZNummer, 1, 1);
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 299);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 2;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(239, 105);
+            this.tableLayoutPanel3.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(3, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(45, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Gattung";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(122, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(46, 13);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Nummer";
+            // 
+            // textBox_Gattung
+            // 
+            this.textBox_Gattung.Location = new System.Drawing.Point(3, 55);
+            this.textBox_Gattung.Name = "textBox_Gattung";
+            this.textBox_Gattung.Size = new System.Drawing.Size(100, 20);
+            this.textBox_Gattung.TabIndex = 2;
+            this.textBox_Gattung.TextChanged += new System.EventHandler(this.textBox_Gattung_TextChanged);
+            // 
+            // textBox_ZNummer
+            // 
+            this.textBox_ZNummer.Location = new System.Drawing.Point(122, 55);
+            this.textBox_ZNummer.Name = "textBox_ZNummer";
+            this.textBox_ZNummer.Size = new System.Drawing.Size(100, 20);
+            this.textBox_ZNummer.TabIndex = 3;
+            this.textBox_ZNummer.TextChanged += new System.EventHandler(this.textBox_ZNummer_TextChanged);
+            // 
+            // ZugFahrtBox
+            // 
+            this.ZugFahrtBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ZugFahrtBox.FormattingEnabled = true;
+            this.ZugFahrtBox.Location = new System.Drawing.Point(3, 36);
+            this.ZugFahrtBox.Name = "ZugFahrtBox";
+            this.ZugFahrtBox.Size = new System.Drawing.Size(239, 257);
+            this.ZugFahrtBox.TabIndex = 0;
+            this.ZugFahrtBox.SelectedIndexChanged += new System.EventHandler(this.ZugFahrtBox_SelectedValueChanged);
+            // 
+            // button3
+            // 
+            this.button3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button3.Location = new System.Drawing.Point(3, 3);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(239, 27);
+            this.button3.TabIndex = 3;
+            this.button3.Text = "Neuer Zug";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // menuStrip1
             // 
@@ -228,15 +434,25 @@
             // 
             this.ladezeitToolStripMenuItem.Enabled = false;
             this.ladezeitToolStripMenuItem.Name = "ladezeitToolStripMenuItem";
-            this.ladezeitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.ladezeitToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.ladezeitToolStripMenuItem.Text = "Ladezeit...";
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Enabled = false;
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
             this.toolStripMenuItem1.Text = "Framezeit...";
+            // 
+            // labelFstr
+            // 
+            this.label_Fstr.AutoSize = true;
+            this.label_Fstr.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label_Fstr.Location = new System.Drawing.Point(3, 512);
+            this.label_Fstr.Name = "labelFstr";
+            this.label_Fstr.Size = new System.Drawing.Size(239, 21);
+            this.label_Fstr.TabIndex = 4;
+            this.label_Fstr.Text = "Fahrweg konnte nicht gefunden werden";
             // 
             // modSelForm
             // 
@@ -255,7 +471,16 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
+            this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel4.PerformLayout();
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel3.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -281,6 +506,23 @@
         private System.Windows.Forms.ToolStripMenuItem punkteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fahrstraenToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.ListBox ZugFahrtBox;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox textBox_Gattung;
+        private System.Windows.Forms.TextBox textBox_ZNummer;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Label label_StartSig;
+        private System.Windows.Forms.Label label_ZielSig;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Label label_Fstr;
     }
 }
 

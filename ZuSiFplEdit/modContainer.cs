@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Xml;
 using System.IO;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace ZuSiFplEdit
 {
@@ -148,7 +149,19 @@ namespace ZuSiFplEdit
                     //    MessageBox.Show(msgString, "Grenzreport für " + mod.modName, MessageBoxButtons.OK);
                     //}
                 }
-                if ((mod.Verbindungen.Count > 2) || (mod.NetzGrenze)) mod.wichtig = true; 
+                if ((mod.Verbindungen.Count > 2) || (mod.NetzGrenze)) mod.wichtig = true;
+                //DrawDist eintragen.
+                double dist = 0;
+                foreach (var con in mod.Verbindungen)
+                {
+                    double dx = mod.UTM_WE - con.UTM_WE;
+                    double dy = mod.UTM_NS - con.UTM_NS;
+
+                    double modDist = Math.Sqrt(dx * dx + dy * dy);
+
+                    if (modDist > dist) dist = modDist;
+                }
+                mod.drawDist = dist;
             }
 
             //string problemstellen = "";
@@ -186,6 +199,40 @@ namespace ZuSiFplEdit
                         }
                     }
                 }
+            }
+
+            int[] gewünschteSignale = new int[] { 7, 8, 9, 10, 12 }; //5 Können zielsignale sein
+            
+
+            //Sammle abgehende Fahrstraßen zu Signalen in Modul.
+            foreach (var mod in mSammlung)
+            {
+                foreach (var refE in mod.ReferenzElemente)
+                {
+                    if (refE.StrElement != null)
+                    {
+                        if (refE.StrElement.SignalNorm != null && gewünschteSignale.Contains(refE.StrElement.SignalNorm.Signaltyp)) mod.StartSignale.Add(refE);
+                        if (refE.StrElement.SignalGegen != null && gewünschteSignale.Contains(refE.StrElement.SignalGegen.Signaltyp)) mod.StartSignale.Add(refE); 
+                    }
+                }
+
+                var curStartSigList = new List<streckenModul.referenzElement>();
+                foreach (var fstr in mod.FahrStr)
+                {
+                    foreach (var startSig in mod.StartSignale)
+                    {
+                        if (fstr.Start == startSig)
+                        {
+                            startSig.abgehendeFahrstraßen.Add(fstr);
+                            if (!curStartSigList.Contains(startSig))
+                            {
+                                curStartSigList.Add(startSig);
+                            }
+                            break;
+                        }
+                    }
+                }
+                mod.StartSignale = curStartSigList;
             }
 
             //MessageBox.Show(problemstellen, "Problemstellen Fahrstraßen", MessageBoxButtons.OK);

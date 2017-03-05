@@ -151,10 +151,13 @@ namespace ZuSiFplEdit
          
         bool isVisible (streckenModul mod)
         {
-            bool withinBorders = ((mod.UTM_NS < border_north) && (mod.UTM_NS > border_south) && (mod.UTM_WE < border_east) && (mod.UTM_WE > border_west));
-            int range = 25;
-            bool withinRange = ((Math.Abs(mod.UTM_NS - center_NS) < range) && (Math.Abs(mod.UTM_WE - center_WE) < range)); //HACK: Entfernung sollte Situationsbedingt angepasst werden (z.B. Abtsand zu Nachbar)
-            return (withinBorders || withinRange);
+            double ax = border_east - border_west;
+            double ay = border_north - border_south;
+            double halfDiag = Math.Sqrt(ax * ax + ay * ay) * 0.5;
+            double dx = mod.UTM_WE - center_WE;
+            double dy = mod.UTM_NS - center_NS;
+            double dist = Math.Sqrt(dx * dx + dy * dy);
+            return (dist < (mod.drawDist + halfDiag));
         }
 
 
@@ -231,20 +234,25 @@ namespace ZuSiFplEdit
             }
             if (drawStrecke)
             {
+                int[] gewünschteSignale = new int[] { 7, 8, 9, 10, 12 }; //5 Können zielsignale sein
+                //int[] gewünschteSignale = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
+
                 foreach (streckenModul mod in modVisible)
                 {
                     foreach (var strE in mod.StreckenElemente)
                     {
-                        if (strE.SignalNorm != null && (strE.SignalNorm.Signaltyp == 7 || strE.SignalNorm.Signaltyp == 9))
+                        if (strE.SignalNorm != null && (gewünschteSignale.Contains(strE.SignalNorm.Signaltyp)))
                         {
+                            framebuffer.DrawString(strE.SignalNorm.Signaltyp.ToString() + ":" + strE.SignalNorm.Name, new Font("Verdana", 8), Brushes.Black, coordToPix(strE.b_X, false) + 3, coordToPix(strE.b_Y, true) + 3);
                             int circleSize = 4;
-                            framebuffer.FillEllipse(Brushes.LightGreen, coordToPix((float)strE.g_X, false) - circleSize / 2, coordToPix((float)strE.g_Y, true) - circleSize / 2, circleSize, circleSize);
+                            framebuffer.FillEllipse(Brushes.LightGreen, coordToPix(strE.b_X, false) - circleSize / 2, coordToPix(strE.b_Y, true) - circleSize / 2, circleSize, circleSize);
                         }
 
-                        if (strE.SignalGegen != null && (strE.SignalGegen.Signaltyp == 7 || strE.SignalGegen.Signaltyp == 9))
+                        if (strE.SignalGegen != null && (gewünschteSignale.Contains(strE.SignalGegen.Signaltyp)))
                         {
+                            framebuffer.DrawString(strE.SignalGegen.Signaltyp.ToString() + ":" + strE.SignalGegen.Name, new Font("Verdana", 8), Brushes.Black, coordToPix(strE.b_X, false) + 3, coordToPix(strE.b_Y, true) + 3);
                             int circleSize = 4;
-                            framebuffer.FillEllipse(Brushes.Red, coordToPix((float)strE.g_X, false) - circleSize / 2, coordToPix((float)strE.g_Y, true) - circleSize / 2, circleSize, circleSize);
+                            framebuffer.FillEllipse(Brushes.Red, coordToPix(strE.b_X, false) - circleSize / 2, coordToPix(strE.b_Y, true) - circleSize / 2, circleSize, circleSize);
                         }
 
                         //var strE_color = Color.Blue;
@@ -254,7 +262,7 @@ namespace ZuSiFplEdit
                         //var strE_pen = new Pen(strE_color, 2);
                         var strE_pen = Pens.Black;
 
-                        framebuffer.DrawLine(strE_pen, coordToPix(strE.g_X, false), coordToPix(strE.g_Y, true), coordToPix(strE.b_X, false), coordToPix(strE.b_Y, true));
+                        framebuffer.DrawLine(strE_pen, coordToPix(strE.b_X, false), coordToPix(strE.b_Y, true), coordToPix(strE.g_X, false), coordToPix(strE.g_Y, true));
                     }
                 }
             }
@@ -264,17 +272,16 @@ namespace ZuSiFplEdit
                 {
                     foreach (var fstr in mod.FahrStr)
                     {
-                        try
+                        if (fstr.Ziel != null)
                         {
                             int start_x = coordToPix(fstr.Start.StrElement.b_X, false);
                             int start_y = coordToPix(fstr.Start.StrElement.b_Y, true);
                             int ziel_x = coordToPix(fstr.Ziel.StrElement.b_X, false);
                             int ziel_y = coordToPix(fstr.Ziel.StrElement.b_Y, true);
 
-                            framebuffer.DrawLine(Pens.Orange, start_x, start_y, ziel_x, ziel_y);
-                        }
-                        catch (Exception)
-                        {
+                            //framebuffer.DrawString("Fstr:" + fstr.FahrstrName, new Font("Verdana", 8), Brushes.Black, start_x + 3, start_y + 3);
+
+                            framebuffer.DrawLine(Pens.Orange, start_x, start_y, ziel_x, ziel_y); 
                         }
                     }
                 }
@@ -293,7 +300,7 @@ namespace ZuSiFplEdit
             foreach (streckenModul mod in modVisible)
             {
                 double modDist = getStationDistance(mod, X, Y);
-                if ((dist > modDist) || (dist == -1))
+                if (((dist > modDist) || (dist == -1)) && !(modDist < 0))
                 {
                     dist = modDist;
                     nearestMod = mod;
@@ -308,6 +315,34 @@ namespace ZuSiFplEdit
             int deltaY = mod.PIX_Y - Y;
 
             int dist = (int)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+            return dist;
+        }
+
+        public streckenModul.referenzElement getNearestSignal(int X, int Y)
+        {
+            double dist = -1;
+            streckenModul.referenzElement nearestMod = null;
+            foreach (streckenModul mod in modVisible)
+            {
+                foreach (var Signal in mod.StartSignale)
+                {
+                    double modDist = getSigDistance(Signal, X, Y);
+                    if ((dist > modDist) || (dist == -1) && !(modDist < 0))
+                    {
+                        dist = modDist;
+                        nearestMod = Signal;
+                    } 
+                }
+            }
+            return (nearestMod);
+        }
+
+        public double getSigDistance(streckenModul.referenzElement Signal, int X, int Y)
+        {
+            double deltaX = Signal.StrElement.b_X - pixToCoord(X, false);
+            double deltaY = Signal.StrElement.b_Y - pixToCoord(Y, true);
+
+            double dist = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
             return dist;
         }
 

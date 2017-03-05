@@ -34,13 +34,14 @@ namespace ZuSiFplEdit
             public string Betriebstelle;
             public int Signaltyp;
 
+
             public Signal(string Name, string Stellwerk, string Betriebstelle, int Signaltyp)
             {
                 this.Name = Name;
                 this.Stellwerk = Stellwerk;
                 this.Betriebstelle = Betriebstelle;
                 this.Signaltyp = Signaltyp;
-        }
+            }
         }
 
         public class streckenElement
@@ -92,6 +93,8 @@ namespace ZuSiFplEdit
             public string Info;
             public streckenElement StrElement;
 
+            public List<fahrStr> abgehendeFahrstraßen;
+
             public referenzElement(int ReferenzNr, int StrElement, bool StrNorm, int RefTyp, string Info)
             {
                 this.ReferenzNr = ReferenzNr;
@@ -99,6 +102,13 @@ namespace ZuSiFplEdit
                 this.StrNorm = StrNorm;
                 this.RefTyp = RefTyp;
                 this.Info = Info;
+
+                abgehendeFahrstraßen = new List<fahrStr>();
+            }
+
+            public override string ToString()
+            {
+                return Info;
             }
         }
 
@@ -171,10 +181,13 @@ namespace ZuSiFplEdit
         /// </summary>
         public int PIX_Y;
 
+        public double drawDist;
+
         public List<PunktXY> Huellkurve;
         public List<streckenElement> StreckenElemente;
         public List<referenzElement> ReferenzElemente;
         public List<fahrStr> FahrStr;
+        public List<referenzElement> StartSignale;
 
         /// <summary>
         /// Enthält die umliegenden Module als String. Nach Verlinkung nicht mehr aktuell.
@@ -207,12 +220,13 @@ namespace ZuSiFplEdit
             StreckenElemente = new List<streckenElement>();
             ReferenzElemente = new List<referenzElement>();
             FahrStr = new List<fahrStr>();
+            StartSignale = new List<referenzElement>();
             VerbindungenStr = new List<string>();
             NetzGrenze = false;
             wichtig = false;
             selected = false;
             isDetailed = true;
-
+            
             isSane = true;
             try
             {
@@ -321,7 +335,7 @@ namespace ZuSiFplEdit
                     if (modXml.Name == "StrElement")
                     {
                         int Nr = Convert.ToInt32(modXml.GetAttribute("Nr"));
-                        if (modName == "Aulfingen2005" && Nr == 9133)
+                        if (modName == "Scherfede_1974" && Nr == 28)
                         {
 
                         }
@@ -354,7 +368,7 @@ namespace ZuSiFplEdit
                             if (modXml.Name == "InfoNormRichtung")
                             {
                                 modXml.Read();
-                                while (modXml.NodeType == XmlNodeType.Whitespace && modXml.Read()) { }
+                                while ((modXml.NodeType == XmlNodeType.Whitespace || modXml.Name == "Ereignis") && modXml.Read()) { }
                                 if (modXml.Name == "Signal")
                                 {
                                     string Name = modXml.GetAttribute("Signalname");
@@ -368,7 +382,7 @@ namespace ZuSiFplEdit
                             if (modXml.Name == "InfoGegenRichtung")
                             {
                                 modXml.Read();
-                                while (modXml.NodeType == XmlNodeType.Whitespace && modXml.Read()) { }
+                                while ((modXml.NodeType == XmlNodeType.Whitespace || modXml.Name == "Ereignis") && modXml.Read()) { }
                                 if (modXml.Name == "Signal")
                                 {
                                     string Name = modXml.GetAttribute("Signalname");
@@ -401,11 +415,6 @@ namespace ZuSiFplEdit
                     
                     if (modXml.Name == "Fahrstrasse")
                     {
-                        if (modName == "Aulfingen2005")
-                        {
-
-                        }
-
                         string FahrstrName = modXml.GetAttribute("FahrstrName");
                         string FahrstrStrecke = modXml.GetAttribute("FahrstrStrecke");
                         int RglGgl = Convert.ToInt32(modXml.GetAttribute("RglGgl"));
@@ -435,6 +444,8 @@ namespace ZuSiFplEdit
             {
                 refEl.StrElement = sucheStrElement(refEl.StrElementNr);
             }
+
+            
 
             timeKeeper.Stop();
             //List<int> oberbauTypen = new List<int>();

@@ -1,0 +1,22 @@
+Signaltypen:
+1 - P-Tafel/Reines Schild
+2 - Weichenlaternen
+3 - Gleissperre
+5 - Zergsignale
+6 - Kombi-Halbregel/Vorsignal-1000Hz
+7 - Kombi-Einfahr
+8 - (Brilon Wald)
+9 - Ausfahr
+10 - Sbk
+12 - LZB
+13 -
+14 - 500Hz/BÜ
+? - Kombi-Einfahr
+
+Gleisfunktionen:
+0 - Normales Gleis
+1 - Tunnel 
+2 - Keine Gleisfunktion
+4 - Weichenbausatz
+8 - Keine Schulter Rechts
+16 - Keine Schulter Links

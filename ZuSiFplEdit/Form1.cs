@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 
@@ -24,6 +25,9 @@ namespace ZuSiFplEdit
         int debugX = 0;
         int debugY = 0;
         streckenModul horribleHackVariableThatHoldsRightClickModule;
+        streckenModul.referenzElement tmpSignal;
+        streckenModul.referenzElement startSignal;
+        streckenModul.referenzElement zielSignal;
 
         public modSelForm()
         {
@@ -125,20 +129,58 @@ namespace ZuSiFplEdit
                 mouseMoved = false;
             }
 
-            if (e.Button == MouseButtons.Right)
+            if (e.Button == MouseButtons.Right) //HACK: Horrible Right Click Menu
             {
                 var nächsteStation = kartenZeichner.getNearestStation(e.X, e.Y);
                 horribleHackVariableThatHoldsRightClickModule = nächsteStation;
+                tmpSignal = kartenZeichner.getNearestSignal(e.X, e.Y);
+                string Signame = "";
+                if (tmpSignal.StrElement.SignalNorm != null)
+                {
+                    Signame = tmpSignal.StrElement.SignalNorm.Name;
+                } else
+                {
+                    Signame = tmpSignal.StrElement.SignalGegen.Name;
+                }
 
-                MenuItem[] menuItems = new MenuItem[]{new MenuItem("Pixel: X" + e.X + " - Y" + e.Y),
+                //MessageBox.Show(horribleHackVariableThatHoldsRightClickSignal.Info, "Nächstes Signal:", MessageBoxButtons.OK);
+
+                string startText = tmpSignal.Info + " als Startsignal festlegen";
+
+                string zielText = "Route zu " + tmpSignal.Info;
+                if (startSignal != null)
+                {
+                    zielText = "Route von " + startSignal.Info + " zu " + tmpSignal.Info;
+                }
+
+                
+
+                    MenuItem[] menuItems = new MenuItem[]{new MenuItem("Pixel: X" + e.X + " - Y" + e.Y),
                 new MenuItem("Koordinaten: X" + kartenZeichner.pixToCoord(e.X, false).ToString("F1") + " - Y" + kartenZeichner.pixToCoord(e.Y, true).ToString("F1")),
                 new MenuItem("Nächste Station: " + nächsteStation.modName + "; Distanz: " + kartenZeichner.getStationDistance(nächsteStation, e.X, e.Y).ToString()),
+                new MenuItem("Nächstes Signal: " + tmpSignal.Info + "-" + Signame + "; Distanz: " + (1000 * kartenZeichner.getSigDistance(tmpSignal, e.X, e.Y)).ToString("F2")),
                 new MenuItem(nächsteStation.modName + " im Explorer anzeigen", new EventHandler(showMod)),
-                new MenuItem("Alle Wege führen nach Kassel", new EventHandler(route))};
+                new MenuItem(startText, new EventHandler(setStartSig)),
+                new MenuItem(zielText, new EventHandler(setZielSig))};
             
                 ContextMenu buttonMenu = new ContextMenu(menuItems);
                 buttonMenu.Show(mMap, new Point(e.X, e.Y));
             }
+        }
+
+        private void setStartSig(object sender, EventArgs e)
+        {
+            startSignal = tmpSignal;
+        }
+
+        private void setZielSig(object sender, EventArgs e)
+        {
+            zielSignal = tmpSignal;
+            if( startSignal == null)
+            {
+                MessageBox.Show("Startsignal nicht gesetzt!", "Fehler", MessageBoxButtons.OK);
+            }
+            route();
         }
 
         private void showMod(object sender, EventArgs e)
@@ -146,13 +188,13 @@ namespace ZuSiFplEdit
             Process.Start(Module.DirBase + horribleHackVariableThatHoldsRightClickModule.modPath.Substring(0, horribleHackVariableThatHoldsRightClickModule.modPath.LastIndexOf('\\'))); //HACK: HACKHACKHACKHACKHACK Shame!
         }
 
-        private void route(object sender, EventArgs e)
+        private void route()
         {
-            var fertige_route = routeSearch(horribleHackVariableThatHoldsRightClickModule, Module.sucheMod("Kassel_Hbf_1988"), new List<streckenModul>());
+            var fertige_route = routeSearch(horribleHackVariableThatHoldsRightClickModule, Module.sucheMod("Meschede_1980"), new List<streckenModul>());
 
             if (fertige_route == null)
             {
-                MessageBox.Show("Strecke nicht gefunden.", "Strecke nach Kassel", MessageBoxButtons.OK);
+                MessageBox.Show("Strecke nicht gefunden.", "Strecke nach Meschede", MessageBoxButtons.OK);
             }
             else
             {
@@ -161,13 +203,13 @@ namespace ZuSiFplEdit
                 {
                     stregge += mod.modName + "\n";
                 }
-                MessageBox.Show(stregge, "Strecke nach Kassel", MessageBoxButtons.OK);
+                MessageBox.Show(stregge, "Strecke nach Meschede", MessageBoxButtons.OK);
             }
 
-            var fertige_fstr_route = fstrRouteSearch(horribleHackVariableThatHoldsRightClickModule.FahrStr[0], Module.sucheMod("Kassel_Hbf_1988"), new List<streckenModul.fahrStr>());
+            var fertige_fstr_route = fstrRouteSearchStart(startSignal, zielSignal, new List<streckenModul.fahrStr>());
             if (fertige_fstr_route == null)
             {
-                MessageBox.Show("Fahrstraßen nicht gefunden.", "Strecke nach Kassel", MessageBoxButtons.OK);
+                MessageBox.Show("Fahrstraßen nicht gefunden.", "Strecke nach Meschede", MessageBoxButtons.OK);
             }
             else
             {
@@ -179,14 +221,70 @@ namespace ZuSiFplEdit
                     länge += fstr.Laenge;
                 }
                 stregge += "Länge: " + (länge/1000).ToString("F1") + "km";
-                MessageBox.Show(stregge, "Fahrstraßen nach Kassel", MessageBoxButtons.OK);
+                MessageBox.Show(stregge, "Fahrstraßen nach Meschede", MessageBoxButtons.OK);
+
+                string path = "RB999.trn";
+                var trn_file = new StreamWriter(path, false);
+
+                trn_file.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                trn_file.WriteLine("<Zusi>");
+                trn_file.WriteLine("<Info DateiTyp=\"Zug\" Version=\"A.1\" MinVersion=\"A.1\">");
+                trn_file.WriteLine("<AutorEintrag/>");
+                trn_file.WriteLine("</Info>");
+                trn_file.WriteLine("<Zug Gattung=\"RB\" Nummer=\"999\" Prio=\"1500\" Bremsstellung=\"4\" Rekursionstiefe=\"5\" FahrstrName=\"" + fertige_fstr_route[0].FahrstrName.Replace(">", "&gt;") + "\" Zugtyp=\"1\" Buchfahrplandll=\"_InstSetup\\lib\\timetable\\Buchfahrplan_DB_1979.dll\">");
+                trn_file.WriteLine("<Datei Dateiname=\"Timetables\\Custom\\test.fpn\" NurInfo=\"1\"/>");
+
+                for (int i = 0; i < fertige_fstr_route.Count; i++)
+                {
+                    streckenModul.Signal nextSignal = null;
+                    if (fertige_fstr_route[i].Ziel.StrElement.SignalNorm != null)
+                    {
+                        nextSignal = fertige_fstr_route[i].Ziel.StrElement.SignalNorm;
+                    } 
+                    else
+                    {
+                        nextSignal = fertige_fstr_route[i].Ziel.StrElement.SignalGegen;
+                    }
+
+                    if (i == 0)
+                    {
+                        trn_file.WriteLine("<FahrplanEintrag Ank=\"2017-02-27 12:00:00\" Abf=\"2017-02-27 12:01:00\" Betrst=\"" + nextSignal.Betriebstelle + "\">");
+                    }
+                    else
+                    {
+                        trn_file.WriteLine("<FahrplanEintrag Betrst=\"" + nextSignal.Betriebstelle + "\">");
+                    }
+                    trn_file.WriteLine("<FahrplanSignalEintrag FahrplanSignal=\"" + nextSignal.Name + "\"/>");
+                    trn_file.WriteLine("</FahrplanEintrag>");
+                }
+
+                trn_file.WriteLine("<FahrzeugVarianten Bezeichnung=\"default\" ZufallsWert=\"1\">");
+                trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
+                trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Dieseltriebwagen\\RegioShuttle\\RS1.rv.fzg\"/>");
+                trn_file.WriteLine("</FahrzeugInfo>");
+                trn_file.WriteLine("</FahrzeugVarianten>");
+                trn_file.WriteLine("</Zug>");
+                trn_file.WriteLine("</Zusi>");
+
+                trn_file.Close();
             }
         }
 
-        List<streckenModul.fahrStr> fstrRouteSearch(streckenModul.fahrStr Aktuell, streckenModul Ziel, List<streckenModul.fahrStr> Besucht)
+        List<streckenModul.fahrStr> fstrRouteSearchStart(streckenModul.referenzElement StartSignal, streckenModul.referenzElement ZielSignal, List<streckenModul.fahrStr> Besucht)
+        {
+            foreach (var start_fstr in StartSignal.abgehendeFahrstraßen)
+            {
+                var rList = fstrRouteSearch(start_fstr, ZielSignal, Besucht);
+                if (rList != null) return rList;
+            }
+
+            return null;
+        }
+
+        List<streckenModul.fahrStr> fstrRouteSearch(streckenModul.fahrStr Aktuell, streckenModul.referenzElement ZielSignal, List<streckenModul.fahrStr> Besucht)
         {
             Besucht.Add(Aktuell);
-            if (Module.sucheMod(Aktuell.ZielMod) == Ziel)
+            if (Aktuell.Ziel.StrElement == ZielSignal.StrElement)
             {
                 var Lizte = new List<streckenModul.fahrStr>();
                 Lizte.Add(Aktuell);
@@ -198,7 +296,7 @@ namespace ZuSiFplEdit
                 {
                     if (!(Besucht.Contains(folge)))
                     {
-                        var rList = fstrRouteSearch(folge, Ziel, Besucht);
+                        var rList = fstrRouteSearch(folge, ZielSignal, Besucht);
                         if (!(rList == null))
                         {
                             rList.Insert(0, Aktuell);

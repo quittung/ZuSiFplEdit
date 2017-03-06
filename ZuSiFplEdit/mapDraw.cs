@@ -13,6 +13,7 @@ namespace ZuSiFplEdit
     {
         List<streckenModul> modList;
         List<streckenModul> modVisible;
+        ListBox ZFBox;
         public Bitmap frame;
         Graphics framebuffer;
 
@@ -36,18 +37,22 @@ namespace ZuSiFplEdit
         bool drawModule_Grenzen = false;
 
         bool drawStrecke = false;
+        bool drawSignal_Namen = true;
 
         bool drawFahrstrassen = false;
 
+        bool drawRoute = true;
 
 
 
-        public mapDraw(int width, int height, List<streckenModul> mList)
+
+        public mapDraw(int width, int height, List<streckenModul> mList, ListBox ZFBox)
         {
             map_width_p = width;
             map_height_p = height;
             modList = mList;
             modVisible = new List<streckenModul>();
+            this.ZFBox = ZFBox; 
 
             frame = new Bitmap(map_width_p, map_height_p);
             framebuffer = Graphics.FromImage(frame);
@@ -243,14 +248,16 @@ namespace ZuSiFplEdit
                     {
                         if (strE.SignalNorm != null && (gewünschteSignale.Contains(strE.SignalNorm.Signaltyp)))
                         {
-                            framebuffer.DrawString(strE.SignalNorm.Signaltyp.ToString() + ":" + strE.SignalNorm.Name, new Font("Verdana", 8), Brushes.Black, coordToPix(strE.b_X, false) + 3, coordToPix(strE.b_Y, true) + 3);
+                            if (drawSignal_Namen)
+                                framebuffer.DrawString(strE.SignalNorm.Signaltyp.ToString() + ":" + strE.SignalNorm.Name, new Font("Verdana", 8), Brushes.Black, coordToPix(strE.b_X, false) + 3, coordToPix(strE.b_Y, true) + 3);
                             int circleSize = 4;
                             framebuffer.FillEllipse(Brushes.LightGreen, coordToPix(strE.b_X, false) - circleSize / 2, coordToPix(strE.b_Y, true) - circleSize / 2, circleSize, circleSize);
                         }
 
                         if (strE.SignalGegen != null && (gewünschteSignale.Contains(strE.SignalGegen.Signaltyp)))
                         {
-                            framebuffer.DrawString(strE.SignalGegen.Signaltyp.ToString() + ":" + strE.SignalGegen.Name, new Font("Verdana", 8), Brushes.Black, coordToPix(strE.b_X, false) + 3, coordToPix(strE.b_Y, true) + 3);
+                            if (drawSignal_Namen)
+                                framebuffer.DrawString(strE.SignalGegen.Signaltyp.ToString() + ":" + strE.SignalGegen.Name, new Font("Verdana", 8), Brushes.Black, coordToPix(strE.b_X, false) + 3, coordToPix(strE.b_Y, true) + 3);
                             int circleSize = 4;
                             framebuffer.FillEllipse(Brushes.Red, coordToPix(strE.b_X, false) - circleSize / 2, coordToPix(strE.b_Y, true) - circleSize / 2, circleSize, circleSize);
                         }
@@ -286,7 +293,17 @@ namespace ZuSiFplEdit
                     }
                 }
             }
-
+            if (drawRoute && ZFBox.SelectedItem != null)
+            {
+                var aktZugFahrt = (modSelForm.ZugFahrt)ZFBox.SelectedItem;
+                if (aktZugFahrt.route != null)
+                {
+                    foreach (var step in aktZugFahrt.route)
+                    {
+                        framebuffer.DrawLine(Pens.Red, coordToPix(step.Start.StrElement.b_X, false), coordToPix(step.Start.StrElement.b_Y, true), coordToPix(step.Ziel.StrElement.b_X, false), coordToPix(step.Ziel.StrElement.b_Y, true));
+                    } 
+                }
+            }
             frameTime.Stop();
             framebuffer.DrawString("N" + center_NS.ToString("F2") + " - E" + center_WE.ToString("F2") + " - " + pixPerGrad.ToString("F1") + "pix/km - " + frameTime.ElapsedMilliseconds + " ms/frame", new Font("Verdana", 10), new SolidBrush(Color.Red), 20, map_height_p - 20);
 
@@ -372,9 +389,17 @@ namespace ZuSiFplEdit
             {
                 drawStrecke = drawLayer;
             }
+            else if (layer == "signal_namen")
+            {
+                drawSignal_Namen = drawLayer;
+            }
             else if (layer == "fahrstr")
             {
                 drawFahrstrassen = drawLayer;
+            }
+            else if (layer == "route")
+            {
+                drawRoute = drawLayer;
             }
         }
     }

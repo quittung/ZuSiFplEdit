@@ -110,7 +110,7 @@ namespace ZuSiFplEdit
             //Modulekarte vorbereiten
             debugX = mMap.Width;
             debugY = mMap.Height;
-            kartenZeichner = new mapDraw(mMap.Width, mMap.Height, Module.mSammlung);
+            kartenZeichner = new mapDraw(mMap.Width, mMap.Height, Module.mSammlung, ZugFahrtBox);
         }
 
         private void mMap_MouseDown(object sender, MouseEventArgs e)
@@ -160,6 +160,7 @@ namespace ZuSiFplEdit
                     }
 
                     updateZugFields();
+                    mMap.Image = kartenZeichner.draw();
                     return;
                 }
 
@@ -402,10 +403,19 @@ namespace ZuSiFplEdit
             {
                 kartenZeichner.setLayers("strecke", mToolStripMenuItem.Checked);
             }
+            else if (sender == signalnamenToolStripMenuItem)
+            {
+                kartenZeichner.setLayers("signal_namen", signalnamenToolStripMenuItem.Checked);
+            }
             else if (sender == fahrstraenToolStripMenuItem)
             {
                 kartenZeichner.setLayers("fahrstr", fahrstraenToolStripMenuItem.Checked);
             }
+            else if (sender == routeToolStripMenuItem)
+            {
+                kartenZeichner.setLayers("route", routeToolStripMenuItem.Checked);
+            }
+
 
             mMap.Image = kartenZeichner.draw();
         }
@@ -449,7 +459,7 @@ namespace ZuSiFplEdit
             
             var tmpZugfahrt = new ZugFahrt();
 
-            tmpZugfahrt.Gattung = "ART";
+            tmpZugfahrt.Gattung = "RB";
             
             int ZugNummer = 0;
             bool ZugNummerBesetzt = true;
@@ -495,6 +505,8 @@ namespace ZuSiFplEdit
 
         private void textBox_ZNummer_TextChanged(object sender, EventArgs e)
         {
+            textBox_ZNummer.BackColor = Color.White;
+
             int ZN = -1;
             try
             {
@@ -502,10 +514,13 @@ namespace ZuSiFplEdit
             }
             catch (Exception)
             {
+                textBox_ZNummer.BackColor = Color.Red;
+                //HACK: Bei Backspace soll keine Fehlermeldung kommen.
                 MessageBox.Show("Keine gültige Zugnummer", "Fehler", MessageBoxButtons.OK);
                 return;
             }
 
+            
             var act = (ZugFahrt)ZugFahrtBox.SelectedItem;
             if (ZNBesetzt(ZN))
             {
@@ -514,8 +529,6 @@ namespace ZuSiFplEdit
             } 
             else
             {
-                textBox_ZNummer.BackColor = Color.White;
-                
                 act.Zugnummer = ZN;
 
                 zlbUpdate();
@@ -580,13 +593,34 @@ namespace ZuSiFplEdit
         private void button1_Click(object sender, EventArgs e)
         {
             selectRouteStart = true;
+            label_StartSig.Text = "Startsignal auf Karte wählen";
             //Startsignal wird bei MouseUp && MouseButton == Links gesetzt.
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             selectRouteEnd = true;
+            label_ZielSig.Text = "Zielsignal auf Karte wählen";
             //Zielsignal wird bei MouseUp && MouseButton == Links gesetzt.
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            int löschZug = ZugFahrtBox.SelectedIndex;
+            if(ZugFahrtBox.Items.Count > 1)
+            {
+                if (löschZug == 0)
+                {
+                    ZugFahrtBox.SelectedIndex = 1;
+                }
+                else
+                {
+                    ZugFahrtBox.SelectedIndex = löschZug - 1;
+                }
+            }
+            ZugFahrtBox.Items.RemoveAt(löschZug);
+
+            updateZugFields();
         }
     }
 }

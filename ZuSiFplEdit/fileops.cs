@@ -21,7 +21,8 @@ namespace ZuSiFplEdit
             writeFPN();
             foreach (var zug in Zugfahrten)
             {
-                writeTRN(zug);
+                if (zug.route != null)
+                    writeTRN(zug);
             }
         }
 

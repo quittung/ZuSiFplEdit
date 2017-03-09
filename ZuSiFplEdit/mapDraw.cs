@@ -37,6 +37,8 @@ namespace ZuSiFplEdit
         bool drawModule_Grenzen = false;
 
         bool drawStrecke = false;
+        bool drawSignal_Start = true;
+        bool drawSignal_Ziel = true;
         bool drawSignal_Namen = true;
 
         bool drawFahrstrassen = false;
@@ -246,28 +248,6 @@ namespace ZuSiFplEdit
                 {
                     foreach (var strE in mod.StreckenElemente)
                     {
-                        if (strE.SignalNorm != null && (gewünschteSignale.Contains(strE.SignalNorm.Signaltyp)))
-                        {
-                            if (drawSignal_Namen)
-                                framebuffer.DrawString(strE.SignalNorm.Signaltyp.ToString() + ":" + strE.SignalNorm.Name, new Font("Verdana", 8), Brushes.Black, coordToPix(strE.b_X, false) + 3, coordToPix(strE.b_Y, true) + 3);
-                            int circleSize = 4;
-                            framebuffer.FillEllipse(Brushes.LightGreen, coordToPix(strE.b_X, false) - circleSize / 2, coordToPix(strE.b_Y, true) - circleSize / 2, circleSize, circleSize);
-                        }
-
-                        if (strE.SignalGegen != null && (gewünschteSignale.Contains(strE.SignalGegen.Signaltyp)))
-                        {
-                            if (drawSignal_Namen)
-                                framebuffer.DrawString(strE.SignalGegen.Signaltyp.ToString() + ":" + strE.SignalGegen.Name, new Font("Verdana", 8), Brushes.Black, coordToPix(strE.b_X, false) + 3, coordToPix(strE.b_Y, true) + 3);
-                            int circleSize = 4;
-                            framebuffer.FillEllipse(Brushes.Red, coordToPix(strE.b_X, false) - circleSize / 2, coordToPix(strE.b_Y, true) - circleSize / 2, circleSize, circleSize);
-                        }
-
-                        //var strE_color = Color.Blue;
-                        //if (strE.Funktion == 0) strE_color = Color.Black;
-                        //if (strE.SignalNorm != null) strE_color = Color.LightGreen;
-                        //if (strE.SignalGegen != null) strE_color = Color.Red;
-                        //var strE_pen = new Pen(strE_color, 2);
-
                         if (strE.Funktion != 2)
                         {
                             framebuffer.DrawLine(Pens.Black, coordToPix(strE.b_X, false), coordToPix(strE.b_Y, true), coordToPix(strE.g_X, false), coordToPix(strE.g_Y, true));
@@ -277,6 +257,30 @@ namespace ZuSiFplEdit
                             framebuffer.DrawLine(Pens.LightGray, coordToPix(strE.b_X, false), coordToPix(strE.b_Y, true), coordToPix(strE.g_X, false), coordToPix(strE.g_Y, true));
                         }
                         
+                    }
+
+                    foreach (var startSig in mod.StartSignale)
+                    {
+                        if (drawSignal_Start)
+                        {
+                            if (drawSignal_Namen && startSig.RefTyp == 4)
+                                framebuffer.DrawString(startSig.Signal.Signaltyp.ToString() + ":" + startSig.Signal.Name, new Font("Verdana", 8), Brushes.Black, coordToPix(startSig.StrElement.b_X, false) + 3, coordToPix(startSig.StrElement.b_Y, true) + 3);
+                            if (drawSignal_Namen && startSig.RefTyp == 0)
+                                framebuffer.DrawString(startSig.ToString(), new Font("Verdana", 8), Brushes.Black, coordToPix(startSig.StrElement.b_X, false) + 3, coordToPix(startSig.StrElement.b_Y, true) + 3);
+                            int circleSize = 4;
+                            framebuffer.FillEllipse(Brushes.LightGreen, coordToPix(startSig.StrElement.b_X, false) - circleSize / 2, coordToPix(startSig.StrElement.b_Y, true) - circleSize / 2, circleSize, circleSize); 
+                        }
+                    }
+
+                    foreach (var zielSig in mod.ZielSignale)
+                    {
+                        if (drawSignal_Ziel)
+                        {
+                            if (drawSignal_Namen && zielSig.RefTyp == 4)
+                                framebuffer.DrawString(zielSig.Signal.Signaltyp.ToString() + ":" + zielSig.Signal.Name, new Font("Verdana", 8), Brushes.Black, coordToPix(zielSig.StrElement.b_X, false) + 3, coordToPix(zielSig.StrElement.b_Y, true) + 3);
+                            int circleSize = 4;
+                            framebuffer.FillEllipse(Brushes.Red, coordToPix(zielSig.StrElement.b_X, false) - circleSize / 2, coordToPix(zielSig.StrElement.b_Y, true) - circleSize / 2, circleSize, circleSize); 
+                        }
                     }
                 }
             }
@@ -342,6 +346,54 @@ namespace ZuSiFplEdit
             return dist;
         }
 
+        public streckenModul.referenzElement getNearestSignalStartZiel(int X, int Y, bool start)
+        {
+            double closestDist = -1;
+            List<streckenModul.referenzElement> Ergebnis = new List<streckenModul.referenzElement>();
+
+            foreach (streckenModul mod in modVisible)
+            {
+                List<streckenModul.referenzElement> Signalliste;
+                if (start)
+                {
+                    Signalliste = mod.StartSignale;
+                }
+                else
+                {
+                    Signalliste = mod.ZielSignale;
+                }
+                foreach (var Signal in Signalliste)
+                {
+                    double sigDist = getSigDistance(Signal, X, Y);
+                    if ((closestDist > sigDist) || (closestDist == -1) && !(sigDist < 0))
+                    {
+                        Ergebnis.Clear();
+                        Ergebnis.Add(Signal);
+                        closestDist = sigDist;
+                    }
+                    else if (closestDist == sigDist)
+                    {
+                        Ergebnis.Add(Signal);
+                    }
+                }
+            }
+
+            if (Ergebnis.Count > 1)
+            {
+                var selectForm = new FormSignalSelect();
+                
+                foreach (var erg in Ergebnis)
+                {
+                    selectForm.listBox1.Items.Add(erg);
+                }
+                selectForm.ShowDialog();
+                return ((streckenModul.referenzElement)selectForm.listBox1.SelectedItem);
+            }
+
+            return (Ergebnis[0]);
+        }
+            
+
         public streckenModul.referenzElement getNearestSignal(int X, int Y)
         {
             double dist = -1;
@@ -351,7 +403,7 @@ namespace ZuSiFplEdit
                 foreach (var Signal in mod.StartSignale)
                 {
                     double modDist = getSigDistance(Signal, X, Y);
-                    if ((dist > modDist) || (dist == -1) && !(modDist < 0))
+                    if (((dist > modDist) || (dist == -1)) && (modDist >= 0))
                     {
                         dist = modDist;
                         nearestMod = Signal;
@@ -399,6 +451,14 @@ namespace ZuSiFplEdit
             else if (layer == "signal_namen")
             {
                 drawSignal_Namen = drawLayer;
+            }
+            else if (layer == "signal_start")
+            {
+                drawSignal_Start = drawLayer;
+            }
+            else if (layer == "signal_ziel")
+            {
+                drawSignal_Ziel = drawLayer;
             }
             else if (layer == "fahrstr")
             {

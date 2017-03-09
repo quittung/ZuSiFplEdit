@@ -90,8 +90,16 @@ namespace ZuSiFplEdit
                 List<ZugFahrt> zList = new List<ZugFahrt>();
                 foreach (var Zufa in ZugFahrtBox.Items)
                 {
-                    zList.Add((ZugFahrt)Zufa);
+                    ZugFahrt Zug = (ZugFahrt)Zufa;
+                    foreach (var fstr in Zug.route)
+                    {
+                        fstr.StartMod.selected = true;
+                        fstr.ZielMod.selected = true;
+                    }
+                    zList.Add(Zug);
                 }
+                this.Invalidate();
+                Application.DoEvents();
                 new fileops(Module.mSammlung, zList, saveFileDialog1.FileName);
             }
         }    
@@ -140,17 +148,21 @@ namespace ZuSiFplEdit
                 int deltaX = e.X - mouseDownX_rel;
                 int deltaY = e.Y - mouseDownY_rel;
 
-                if (selectRouteStart || selectRouteEnd)
+                if ((selectRouteStart || selectRouteEnd) && !mouseMoved)
                 {
                     var act = (ZugFahrt)ZugFahrtBox.SelectedItem;
                     if (selectRouteStart)
                     {
-                        act.ZstartSignal = kartenZeichner.getNearestSignal(e.X, e.Y);
+                        act.ZstartSignal = kartenZeichner.getNearestSignalStartZiel(e.X, e.Y, true);
+                        kartenZeichner.setLayers("signal_ziel", true);
+                        this.Invalidate();
                         selectRouteStart = false;
                     }
                     else
                     {
-                        act.ZzielSignal = kartenZeichner.getNearestSignal(e.X, e.Y);
+                        act.ZzielSignal = kartenZeichner.getNearestSignalStartZiel(e.X, e.Y, false);
+                        kartenZeichner.setLayers("signal_start", true); 
+                        this.Invalidate();
                         selectRouteEnd = false;
                     }
 
@@ -560,7 +572,7 @@ namespace ZuSiFplEdit
 
                 if (act.ZzielSignal == null)
                 {
-                    label_ZielSig.Text = "Startsignal unbekannt";
+                    label_ZielSig.Text = "Zielsignal unbekannt";
                 }
                 else
                 {
@@ -594,6 +606,8 @@ namespace ZuSiFplEdit
         {
             selectRouteStart = true;
             label_StartSig.Text = "Startsignal auf Karte wählen";
+            kartenZeichner.setLayers("signal_ziel", false); 
+            this.Invalidate();
             //Startsignal wird bei MouseUp && MouseButton == Links gesetzt.
         }
 
@@ -601,6 +615,8 @@ namespace ZuSiFplEdit
         {
             selectRouteEnd = true;
             label_ZielSig.Text = "Zielsignal auf Karte wählen";
+            kartenZeichner.setLayers("signal_start", false);
+            this.Invalidate();
             //Zielsignal wird bei MouseUp && MouseButton == Links gesetzt.
         }
 

@@ -239,7 +239,7 @@ namespace ZuSiFplEdit
             }
             if (drawStrecke)
             {
-                int[] gewünschteSignale = new int[] { 7, 8, 9, 10, 12 }; //5 Können zielsignale sein
+                int[] gewünschteSignale = new int[] { 7, 8, 9, 10, 12 }; //5 Können zielsignale sein-
                 //int[] gewünschteSignale = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
 
                 foreach (streckenModul mod in modVisible)
@@ -267,9 +267,16 @@ namespace ZuSiFplEdit
                         //if (strE.SignalNorm != null) strE_color = Color.LightGreen;
                         //if (strE.SignalGegen != null) strE_color = Color.Red;
                         //var strE_pen = new Pen(strE_color, 2);
-                        var strE_pen = Pens.Black;
 
-                        framebuffer.DrawLine(strE_pen, coordToPix(strE.b_X, false), coordToPix(strE.b_Y, true), coordToPix(strE.g_X, false), coordToPix(strE.g_Y, true));
+                        if (strE.Funktion != 2)
+                        {
+                            framebuffer.DrawLine(Pens.Black, coordToPix(strE.b_X, false), coordToPix(strE.b_Y, true), coordToPix(strE.g_X, false), coordToPix(strE.g_Y, true));
+                        }
+                        else
+                        {
+                            framebuffer.DrawLine(Pens.LightGray, coordToPix(strE.b_X, false), coordToPix(strE.b_Y, true), coordToPix(strE.g_X, false), coordToPix(strE.g_Y, true));
+                        }
+                        
                     }
                 }
             }

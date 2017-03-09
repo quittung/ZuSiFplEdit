@@ -211,8 +211,16 @@ namespace ZuSiFplEdit
                 {
                     if (refE.StrElement != null)
                     {
-                        if (refE.StrElement.SignalNorm != null && gewünschteSignale.Contains(refE.StrElement.SignalNorm.Signaltyp)) mod.StartSignale.Add(refE);
-                        if (refE.StrElement.SignalGegen != null && gewünschteSignale.Contains(refE.StrElement.SignalGegen.Signaltyp)) mod.StartSignale.Add(refE); 
+                        if (refE.StrElement.SignalNorm != null && gewünschteSignale.Contains(refE.StrElement.SignalNorm.Signaltyp))
+                        {
+                            mod.StartSignale.Add(refE);
+                        }
+                        if (refE.StrElement.SignalGegen != null && gewünschteSignale.Contains(refE.StrElement.SignalGegen.Signaltyp))
+                        {
+                            mod.StartSignale.Add(refE);
+                        }
+                        //if (refE.StrElement.SignalNorm != null && refE.StrElement.SignalGegen != null && gewünschteSignale.Contains(refE.StrElement.SignalNorm.Signaltyp))
+                        //    MessageBox.Show(mod.modName + ":" + refE.Info +"hat 2 Signale:\n" + refE.StrElement.SignalNorm.Name + "(" + refE.StrElement.SignalNorm.Signaltyp + ") und " + refE.StrElement.SignalGegen.Name + "(" + refE.StrElement.SignalGegen.Signaltyp + ")");
                     }
                 }
 

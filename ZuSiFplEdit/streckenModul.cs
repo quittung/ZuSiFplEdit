@@ -42,6 +42,11 @@ namespace ZuSiFplEdit
                 this.Betriebstelle = Betriebstelle;
                 this.Signaltyp = Signaltyp;
             }
+
+            public override string ToString()
+            {
+                return "Signal " + Name + " in " + Betriebstelle;
+            }
         }
 
         public class streckenElement
@@ -109,7 +114,24 @@ namespace ZuSiFplEdit
 
             public override string ToString()
             {
-                return Info;
+
+                switch (RefTyp)
+                {
+                    case 0:
+                        return ("AGP " + Info);
+                    case 1:
+                        return ("MDG " + Info);
+                    case 2:
+                        return ("REG " + Info);
+                    case 3:
+                        return ("WEI " + Info);
+                    case 4:
+                        return ("SIG " + Info);
+                    case 5:
+                        return ("ALP " + Info);
+                    default:
+                        return ("N/A " + Info);
+                }
             }
         }
 
@@ -122,28 +144,34 @@ namespace ZuSiFplEdit
             public float Laenge;
 
             public int StartRef;
-            public string StartMod;
+            public string StartMod_Str;
             public int ZielRef;
-            public string ZielMod;
+            public string ZielMod_Str;
 
             public referenzElement Start;
+            public streckenModul StartMod;
             public referenzElement Ziel;
+            public streckenModul ZielMod;
 
             public List<fahrStr> folgeStraßen;
 
-            public fahrStr(string FahrstrName, string FahrstrStrecke, int RglGgl, string FahrstrTyp, float Laenge, int StartRef, string StartMod, int ZielRef, string ZielMod)
+            public fahrStr(string FahrstrName, string FahrstrStrecke, int RglGgl, string FahrstrTyp, float Laenge, int StartRef, string StartMod_Str, int ZielRef, string ZielMod_Str)
             {
                 this.FahrstrName = FahrstrName;
                 this.FahrstrStrecke = FahrstrStrecke;
                 this.RglGgl = RglGgl;
                 this.FahrstrTyp = FahrstrTyp;
                 this.Laenge = Laenge;
-
-
+                
                 this.StartRef = StartRef;
-                this.StartMod = StartMod;
+                this.StartMod_Str = StartMod_Str;
                 this.ZielRef = ZielRef;
-                this.ZielMod = ZielMod;
+                this.ZielMod_Str = ZielMod_Str;
+            }
+
+            public override string ToString()
+            {
+                return FahrstrName;
             }
         }
 
@@ -378,6 +406,8 @@ namespace ZuSiFplEdit
                                 if (modXml.Name == "Signal")
                                 {
                                     string Name = modXml.GetAttribute("Signalname");
+                                    if (Name == null)
+                                        Name = "";
                                     string Stellwerk = modXml.GetAttribute("Stellwerk");
                                     string Betriebstelle = modXml.GetAttribute("NameBetriebsstelle");
                                     int Signaltyp = Convert.ToInt32(modXml.GetAttribute("SignalTyp"));
@@ -392,6 +422,8 @@ namespace ZuSiFplEdit
                                 if (modXml.Name == "Signal")
                                 {
                                     string Name = modXml.GetAttribute("Signalname");
+                                    if (Name == null)
+                                        Name = "";
                                     string Stellwerk = modXml.GetAttribute("Stellwerk");
                                     string Betriebstelle = modXml.GetAttribute("NameBetriebsstelle");
                                     int Signaltyp = Convert.ToInt32(modXml.GetAttribute("SignalTyp"));
@@ -443,49 +475,124 @@ namespace ZuSiFplEdit
             }
 
             //Verlinke Referenzelemente mit Streckenelementen 
-            int nGesamt = 0;
-            int nDirekt = 0;
-            int nDiag = 0;
-            int nNull = 0;
+            
+            var schlechteReferenzen = new List<referenzElement>();
             foreach (var refEl in ReferenzElemente)
             {
                 refEl.StrElement = sucheStrElement(refEl.StrElementNr);
-                //nGesamt++;
-                //if (refEl.StrNorm)
-                //{
-                //    if (refEl.StrElement.SignalNorm != null)
-                //    {
-                //        nDirekt++;
-                //    }
-                //    else if (refEl.StrElement.SignalGegen != null)
-                //    {
-                //        nDiag++;
-                //    } 
-                //    else
-                //    {
-                //        nNull++;
-                //    }
-                //}
-                //else
-                //{
-                //    if (refEl.StrElement.SignalNorm != null)
-                //    {
-                //        nDiag++;
-                //    }
-                //    else if (refEl.StrElement.SignalGegen != null)
-                //    {
-                //        nDirekt++;
-                //    }
-                //    else
-                //    {
-                //        nNull++;
-                //    }
-                //}
+                if (refEl.StrElement == null)
+                {
+                    schlechteReferenzen.Add(refEl);
+                }
             }
+
+            foreach (var badRef in schlechteReferenzen)
+            {
+                ReferenzElemente.Remove(badRef);
+            }
+
+            foreach (var refEl in ReferenzElemente)
+            {
+                if (refEl.RefTyp == 4)
+                {
+                    if (refEl.StrElement.SignalNorm == null ^ refEl.StrElement.SignalGegen == null)
+                    {
+                        if (refEl.StrElement.SignalGegen == null)
+                        {
+                            refEl.Signal = refEl.StrElement.SignalNorm;
+                        }
+                        else
+                        {
+                            refEl.Signal = refEl.StrElement.SignalGegen;
+                        }
+                    }
+                    else if (refEl.StrElement.SignalNorm != null && refEl.StrElement.SignalGegen != null)
+                    { //Break on (!(refEl.StrElement.SignalNorm.Name.Contains("BÜ"))) && (!(refEl.StrElement.SignalNorm.Betriebstelle.Contains("BÜ"))) && (refEl.StrElement.SignalNorm.Name != refEl.StrElement.SignalGegen.Name)
+                        if (refEl.StrElement.SignalNorm.Name != "" && refEl.Info.Contains(refEl.StrElement.SignalNorm.Name))
+                        {
+                            refEl.Signal = refEl.StrElement.SignalNorm;
+                        }
+                        else if (refEl.StrElement.SignalGegen.Name != "" && refEl.Info.Contains(refEl.StrElement.SignalGegen.Name))
+                        {
+                            refEl.Signal = refEl.StrElement.SignalGegen;
+                        }
+                        else if (refEl.StrNorm)
+                        {
+                            refEl.Signal = refEl.StrElement.SignalNorm;
+                        }
+                        else
+                        {
+                            refEl.Signal = refEl.StrElement.SignalGegen;
+                        }
+                    } 
+                    if (refEl.Signal != null)
+                    {
+                        Signale.Add(refEl);
+                    }
+                }
+            }
+
+            ////Report:
+            //int nGesamt = 0;
+            //int nDirekt = 0;
+            //int nDiag = 0;
+            //int nDoppel = 0;
+            //int nNull = 0;
+            //int nUndef = 0;
+            //foreach (var refEl in ReferenzElemente)
+            //{
+            //    nGesamt++;
+            //    if (refEl.StrElement != null)
+            //    {
+            //        if (refEl.StrElement.SignalNorm != null && refEl.StrElement.SignalGegen != null)
+            //        {
+            //            nDoppel++;
+            //        }
+            //        else
+            //        {
+            //            if (refEl.StrNorm)
+            //            {
+            //                if (refEl.StrElement.SignalNorm != null)
+            //                {
+            //                    nDirekt++;
+            //                }
+            //                else if (refEl.StrElement.SignalGegen != null)
+            //                {
+            //                    nDiag++;
+            //                }
+            //                else
+            //                {
+            //                    nNull++;
+            //                }
+            //            }
+            //            else
+            //            {
+            //                if (refEl.StrElement.SignalNorm != null)
+            //                {
+            //                    nDiag++;
+            //                }
+            //                else if (refEl.StrElement.SignalGegen != null)
+            //                {
+            //                    nDirekt++;
+            //                }
+            //                else
+            //                {
+            //                    nNull++;
+            //                }
+            //            } 
+            //        }
+            //    }
+            //    else
+            //    {
+            //        nUndef++;
+            //    }
+            //}
             //string report = nGesamt + " - Referenzelemente\n";
             //report += nDirekt + " (" + ((float)nDirekt / (float)nGesamt * 100f).ToString("F1") + "%) - Direktverbindungen\n";
             //report += nDiag + " (" + ((float)nDiag / (float)nGesamt * 100f).ToString("F1") + "%) - Diagonalverbindungen\n";
-            //report += nNull + " (" + ((float)nNull / (float)nGesamt * 100f).ToString("F1") + "%) - Keine Signale";
+            //report += nNull + " (" + ((float)nNull / (float)nGesamt * 100f).ToString("F1") + "%) - Keine Signale\n";
+            //report += nDoppel + " (" + ((float)nDoppel / (float)nGesamt * 100f).ToString("F1") + "%) - Doppelreferenz\n";
+            //report += nUndef + " (" + ((float)nUndef / (float)nGesamt * 100f).ToString("F1") + "%) - Kein Streckenelement";
             //MessageBox.Show(report, "Report " + modName);
 
 

@@ -166,22 +166,47 @@ namespace ZuSiFplEdit
 
             //string problemstellen = "";
             //verlinke fahrstraßen mit referenzen.
+            var unvollständigeFahrstraßen = new List<streckenModul.fahrStr>();
             foreach (var mod in mSammlung)
             {
                 foreach (var fstr in mod.FahrStr)
                 {
-                    try
+                    fstr.StartMod = mod;
+                    fstr.Start = mod.sucheReferenz(fstr.StartRef);
+                    //if (fstr.Start == null || fstr.Start.Signal == null)
+                    if (fstr.Start == null)
                     {
-                        fstr.Start = sucheMod(fstr.StartMod).sucheReferenz(fstr.StartRef);
-                        fstr.Ziel = sucheMod(fstr.ZielMod).sucheReferenz(fstr.ZielRef);
+                        unvollständigeFahrstraßen.Add(fstr);
+                        continue;
                     }
-                    catch (Exception e)
+                    else
                     {
-                        //problemstellen += mod.modName + ":" + fstr.FahrstrName + ":" + fstr.ZielMod + "\n";
+                        fstr.Start.abgehendeFahrstraßen.Add(fstr);
                     }
+                    fstr.ZielMod = sucheMod(fstr.ZielMod_Str);
+                    if (fstr.ZielMod == null)
+                    {
+                        unvollständigeFahrstraßen.Add(fstr);
+                        continue;
+                    }
+                    else
+                    {
+                        fstr.Ziel = fstr.ZielMod.sucheReferenz(fstr.ZielRef);
+                        //if (fstr.Ziel == null ||fstr.Ziel.Signal == null)
+                        if (fstr.Ziel == null)
+                        {
+                            unvollständigeFahrstraßen.Add(fstr);
+                            continue;
+                        }
+                    }
+                }
+                foreach (var ufstr in unvollständigeFahrstraßen) //Entfernen von unvollständigen Fahrstraßen.
+                {
+                    mod.FahrStr.Remove(ufstr);
                 }
             }
 
+            //Folgestraßen eintragen
             foreach (var mod in mSammlung)
             {
                 foreach (var fstr in mod.FahrStr)
@@ -190,7 +215,7 @@ namespace ZuSiFplEdit
 
                     if (!(fstr.Ziel == null))
                     {
-                        foreach (var fort in sucheMod(fstr.ZielMod).FahrStr)
+                        foreach (var fort in fstr.ZielMod.FahrStr)
                         {
                             if (fstr.Ziel == fort.Start)
                             {
@@ -200,50 +225,19 @@ namespace ZuSiFplEdit
                     }
                 }
             }
-
-            int[] gewünschteSignale = new int[] { 7, 8, 9, 10, 12 }; //5 Können zielsignale sein
             
 
             //Sammle abgehende Fahrstraßen zu Signalen in Modul.
             foreach (var mod in mSammlung)
             {
-                foreach (var refE in mod.ReferenzElemente)
+                foreach (var fstr in mod.FahrStr) //Start- und Zielsignale in den entsprechenden Modulen ein.
                 {
-                    if (refE.StrElement != null)
-                    {
-                        if (refE.StrElement.SignalNorm != null && gewünschteSignale.Contains(refE.StrElement.SignalNorm.Signaltyp))
-                        {
-                            mod.StartSignale.Add(refE);
-                        }
-                        if (refE.StrElement.SignalGegen != null && gewünschteSignale.Contains(refE.StrElement.SignalGegen.Signaltyp))
-                        {
-                            mod.StartSignale.Add(refE);
-                        }
-                        //if (refE.StrElement.SignalNorm != null && refE.StrElement.SignalGegen != null && gewünschteSignale.Contains(refE.StrElement.SignalNorm.Signaltyp))
-                        //    MessageBox.Show(mod.modName + ":" + refE.Info +"hat 2 Signale:\n" + refE.StrElement.SignalNorm.Name + "(" + refE.StrElement.SignalNorm.Signaltyp + ") und " + refE.StrElement.SignalGegen.Name + "(" + refE.StrElement.SignalGegen.Signaltyp + ")");
-                    }
+                    if (!(mod.StartSignale.Contains(fstr.Start)))
+                        mod.StartSignale.Add(fstr.Start);
+                    if (!(fstr.ZielMod.ZielSignale.Contains(fstr.Ziel)))
+                        fstr.ZielMod.ZielSignale.Add(fstr.Ziel);
                 }
-
-                var curStartSigList = new List<streckenModul.referenzElement>();
-                foreach (var fstr in mod.FahrStr)
-                {
-                    foreach (var startSig in mod.StartSignale)
-                    {
-                        if (fstr.Start == startSig)
-                        {
-                            startSig.abgehendeFahrstraßen.Add(fstr);
-                            if (!curStartSigList.Contains(startSig))
-                            {
-                                curStartSigList.Add(startSig);
-                            }
-                            break;
-                        }
-                    }
-                }
-                mod.StartSignale = curStartSigList;
             }
-
-            //MessageBox.Show(problemstellen, "Problemstellen Fahrstraßen", MessageBoxButtons.OK);
         }
 
         /// <summary>

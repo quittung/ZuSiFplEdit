@@ -1,16 +1,27 @@
 TODO - ZuSi 3 - Fahrplaneditor 
 
-V0.2
-- Kaputte st3 abfangen
-- Hauptfenster sollte Größenänderung zulassen
-- Datei speichern-Dialog bei fpn ausgeben, das ich gleich einen Namen eingeben kann / Schaltfläche fpn ausgeben überschreibt ohne Rückfrage eine bestehende Rohling.fpn
-- Module die noch keinen Nachbarn haben sind schwer zu finden. Man muss wissen wo sie sind, um sie nach dem Zoomen auch zu finden.
-- win32 Registry 
+V0.3
+- .st3 soll vollständig eingelesen werden 
+- detailliertere Karten
+- Seitenverhältnis des Karteninhalts beim Verändern der Größe beibehalten
+- Datei mit geblockten Modulen.
+- Draw abbrechen, wenn Karte verschoben oder gezoomt wurde
+- Streckenelemente verknüpfen
+- Einlesen intelligenter gestalten
+Menü Fahrplan in Zusi öffnen
+TODO:
+- Signale besser rendern
+- Signalauswahl fixen
+- Regelgleiserkennungn bei Routefinding
+- Startsignal beim Umdrehen nach Zielsignal (inkl. max. Abstand)
+- Umdrehen bei Routefinding
+
 
 V0.?
 - Stationsnamen besser platzieren.
 - Wenn es mehrere Module an der gleichen Stelle gibt, wird der Text überschrieben, z. B. Gersthofen_1990, Gersthofen_2016
 - Rahmen aufziehen, fügt mehrere Module hinzu oder entfernt 
+- Bessere Maßstabsanzeige
 
 V1
 - Vollständige Code-Doku
@@ -20,10 +31,33 @@ V1
 - Einen Taktfahrplan-Modus
 - Liste aller verfügbaren Befehlskonfigurationen zum Auswählen (Combobox vielleicht?)
 - Autoren-Informationen werden automatisch eingefügt
+- Graphischer Fahrplan
 
 
 Changelog
 V0.2
-
+- Umstieg auf .net4.0 (mit Zusi vorinstalliert)
+- Unterstützung von 32Bit
+- Fenstergröße kann jetzt verändert werden
+- Unlesbare .st3 sollten nicht mehr zum Absturz führen
+- Speicherort der Fahrplandatei kann jetzt frei gewählt werden
+- Module mit weniger als zwei vorhandenen Nachbarn (Netzgrenzen) und ausgewählte Module werden jetzt unabhängig von der Vergrößerung angezeigt
 
 Feedback:
+- .NET hat libs für Pfad-Basteley.
+
+Bugs:
+- Absturz bei Distanzabfrage, wenn kein Modul sichtbar ist.
+- Modvisible sollte module in einer gewissenn entfernung immer anzeigen.
+- Absturz, wenn speicherdialog abgebrochen
+- Memoryleak durch Framedrawing
+- Richtungen von Fahrstraßen(Norm)?
+- Betriebststellen[]
+- Signale[]?
+- PixZuSignal
+- StartSignalZuFahrstraße[]
+- Einige Signale werden nicht eingelesen.
+- Modulauswahl möglich, wenn modul nicht sichtbar
+- Fahrstraßen: Nächstes Signal, wenn nach Zielsignal umgedreht wird.
+- Distanzabfrage funktioniert bei sehr hohem Zoom nicht mehr. Vielleicht Distanzabfrage auf Koodirnaten anstatt von Pixeln umstellen.
+- Göttingen N11 mit P11 falsch verlinkt

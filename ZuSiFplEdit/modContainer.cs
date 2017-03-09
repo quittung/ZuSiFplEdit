@@ -4,90 +4,26 @@ using System.Collections.Generic;
 using System.Xml;
 using System.IO;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace ZuSiFplEdit
 {
     class modContainer
     {
-        public class streckenModul
-        {
-            /// <summary>
-            /// Relativer Pfad zum Modul in Zusi-Bibliothek
-            /// </summary>
-            public string modPath;
-            /// <summary>
-            /// Name des Moduls
-            /// </summary>
-            public string modName;
-
-            /// <summary>
-            /// UMT-Nordwert von Modul
-            /// </summary>
-            public int UTM_NS;
-            /// <summary>
-            /// UMT-Ostwert von Modul
-            /// </summary>
-            public int UTM_WE;
-            /// <summary>
-            /// UMT-Meridianzone von Modul
-            /// </summary>
-            public int UTM_Z1;
-            /// <summary>
-            /// UMT Latitude Band von Modul
-            /// </summary>
-            public char UTM_Z2;
-
-            /// <summary>
-            /// Pixel-Position auf X-Achse auf Karte beim letzten Zeichenvorgang
-            /// </summary>
-            public int PIX_X;
-            /// <summary>
-            /// Pixel-Position auf Y-Achse auf Karte beim letzten Zeichenvorgang
-            /// </summary>
-            public int PIX_Y;
-
-            /// <summary>
-            /// Enthält die umliegenden Module als String. Nach Verlinkung nicht mehr aktuell.
-            /// </summary>
-            public List<string> VerbindungenStr;
-            /// <summary>
-            /// Enthält Pointer zu den umliegenden Modulen.
-            /// </summary>
-            public List<streckenModul> Verbindungen;
-
-            /// <summary>
-            /// Wahr, wenn Modul weniger als 2 existierende Verbindungen im Datenbestand hat.
-            /// </summary>
-            public bool NetzGrenze;
-            public bool wichtig;
-            /// <summary>
-            /// Wahr, wenn Modul für Fahrplan ausgewählt wurde.
-            /// </summary>
-            public bool selected;
-
-            public streckenModul(string modulePath)
-            {
-                modPath = modulePath.Replace('/', '\\');
-                modPath = modPath.Substring(modPath.IndexOf("Routes"));
-                modName = speicherortZuName(modPath, '\\');
-                VerbindungenStr = new List<string>();
-                NetzGrenze = false;
-                wichtig = false;
-                selected = false;
-            }
-        }
+        
 
         public List<streckenModul> mSammlung = new List<streckenModul>();
         public string DirBase = "";
         public string DirRoute = "";
-        public int grenzeN;
-        public int grenzeS;
-        public int grenzeW;
-        public int grenzeE;
+
+        public long loadTime;
 
 
         public modContainer()
         {
+            var timeGesamt = new System.Diagnostics.Stopwatch();
+            timeGesamt.Start();
+
             //Durchläuft das Streckenverzeichnis und sucht nach allen .st3-Dateien
             try
             {
@@ -123,7 +59,6 @@ namespace ZuSiFplEdit
                             streckenModul aktModul = modulEinlesen(st3);
                             if (!(aktModul == null))
                             {
-                                grenzenEinlesen(aktModul);
                                 mSammlung.Add(aktModul);
                             } else
                             {
@@ -133,6 +68,15 @@ namespace ZuSiFplEdit
                     }
                 }
             }
+            
+            moduleVerlinken();
+
+            timeGesamt.Stop();
+            loadTime = timeGesamt.ElapsedMilliseconds;
+            //MessageBox.Show("Einlesen hat " + timeGesamt.ElapsedMilliseconds + " ms gedauert.", "Gesamtdauer des Einlesens", MessageBoxButtons.OK);
+
+
+
 
             if (st3Fehler.Count > 0)
             {
@@ -141,68 +85,16 @@ namespace ZuSiFplEdit
                 {
                     errMsg += "\n - " + st3;
                 }
+                errMsg += "\n\nDie betroffenen Module wurden ignoriert.";
                 MessageBox.Show(errMsg, "Fehler in .st3-Dateien", MessageBoxButtons.OK);
-            }
-
-            moduleVerlinken();
-        }
-        
-
-        void grenzenEinlesen(streckenModul aktModul)
-        {
-            if (mSammlung.Count == 1)
-            {
-                grenzeN = aktModul.UTM_NS;
-                grenzeS = aktModul.UTM_NS;
-                grenzeE = aktModul.UTM_WE;
-                grenzeW = aktModul.UTM_WE;
-            }
-            else
-            {
-                if (aktModul.UTM_NS > grenzeN) grenzeN = aktModul.UTM_NS;
-                if (aktModul.UTM_NS < grenzeS) grenzeS = aktModul.UTM_NS;
-                if (aktModul.UTM_WE > grenzeE) grenzeE = aktModul.UTM_WE;
-                if (aktModul.UTM_WE < grenzeW) grenzeW = aktModul.UTM_WE;
             }
         }
 
         streckenModul modulEinlesen(string Speicherort)
         {
-            
-            
-
             streckenModul aktMod = new streckenModul(Speicherort);
 
-            try
-            {
-                XmlReader aktModXml = XmlReader.Create(Speicherort);
-
-                while (aktModXml.Read())
-                {
-                    if ((aktModXml.NodeType == XmlNodeType.Element) && (aktModXml.Name == "UTM"))
-                    {
-                        aktMod.UTM_NS = Convert.ToInt32(aktModXml.GetAttribute("UTM_NS"));
-                        aktMod.UTM_WE = Convert.ToInt32(aktModXml.GetAttribute("UTM_WE"));
-                        aktMod.UTM_Z1 = Convert.ToInt32(aktModXml.GetAttribute("UTM_Zone"));
-                        aktMod.UTM_Z2 = aktModXml.GetAttribute("UTM_Zone2")[0];
-                    }
-
-                    if ((aktModXml.NodeType == XmlNodeType.Element) && (aktModXml.Name == "ModulDateien"))
-                    {
-                        aktModXml.Read();
-                        while (aktModXml.Name != "Datei") aktModXml.Read();
-                        string Dateiname = aktModXml.GetAttribute("Dateiname");
-
-                        if (!(Dateiname == null || aktMod.VerbindungenStr.Contains(Dateiname)))
-                            aktMod.VerbindungenStr.Add(speicherortZuName(Dateiname, '\\'));
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-            
+            if (!aktMod.isSane) return null;
 
             return aktMod;
         }
@@ -233,26 +125,137 @@ namespace ZuSiFplEdit
             {
                 foreach (var connection in mod.Verbindungen.ToArray())
                 {
-                    if (! connection.Verbindungen.Contains(mod))
+                    //if (! connection.Verbindungen.Contains(mod))
+                    //{
+                    //    mod.Verbindungen.Remove(connection);
+                    //}
+                }
+
+                if (mod.Verbindungen.Count < 2)
+                {
+                    mod.NetzGrenze = true;
+                    //if (true || mod.Verbindungen.Count != mod.VerbindungenStr.Count)
+                    //{
+                    //    string msgString = "Eingelesene Verbindungen:";
+                    //    foreach (var item in mod.VerbindungenStr)
+                    //    {
+                    //        msgString += "\n" + item;
+                    //    }
+                    //    msgString += "\nVerbliebene Verbindungen:";
+                    //    foreach (var item in mod.Verbindungen)
+                    //    {
+                    //        msgString += "\n" + item.modName;
+                    //    }
+                    //    MessageBox.Show(msgString, "Grenzreport für " + mod.modName, MessageBoxButtons.OK);
+                    //}
+                }
+                if ((mod.Verbindungen.Count > 2) || (mod.NetzGrenze)) mod.wichtig = true;
+                //DrawDist eintragen.
+                double dist = 0;
+                foreach (var con in mod.Verbindungen)
+                {
+                    double dx = mod.UTM_WE - con.UTM_WE;
+                    double dy = mod.UTM_NS - con.UTM_NS;
+
+                    double modDist = Math.Sqrt(dx * dx + dy * dy);
+
+                    if (modDist > dist) dist = modDist;
+                }
+                mod.drawDist = dist;
+            }
+
+            //string problemstellen = "";
+            //verlinke fahrstraßen mit referenzen.
+            foreach (var mod in mSammlung)
+            {
+                foreach (var fstr in mod.FahrStr)
+                {
+                    try
                     {
-                        mod.Verbindungen.Remove(connection);
+                        fstr.Start = sucheMod(fstr.StartMod).sucheReferenz(fstr.StartRef);
+                        fstr.Ziel = sucheMod(fstr.ZielMod).sucheReferenz(fstr.ZielRef);
+                    }
+                    catch (Exception e)
+                    {
+                        //problemstellen += mod.modName + ":" + fstr.FahrstrName + ":" + fstr.ZielMod + "\n";
+                    }
+                }
+            }
+
+            foreach (var mod in mSammlung)
+            {
+                foreach (var fstr in mod.FahrStr)
+                {
+                    fstr.folgeStraßen = new List<streckenModul.fahrStr>();
+
+                    if (!(fstr.Ziel == null))
+                    {
+                        foreach (var fort in sucheMod(fstr.ZielMod).FahrStr)
+                        {
+                            if (fstr.Ziel == fort.Start)
+                            {
+                                fstr.folgeStraßen.Add(fort);
+                            }
+                        }
+                    }
+                }
+            }
+
+            int[] gewünschteSignale = new int[] { 7, 8, 9, 10, 12 }; //5 Können zielsignale sein
+            
+
+            //Sammle abgehende Fahrstraßen zu Signalen in Modul.
+            foreach (var mod in mSammlung)
+            {
+                foreach (var refE in mod.ReferenzElemente)
+                {
+                    if (refE.StrElement != null)
+                    {
+                        if (refE.StrElement.SignalNorm != null && gewünschteSignale.Contains(refE.StrElement.SignalNorm.Signaltyp))
+                        {
+                            mod.StartSignale.Add(refE);
+                        }
+                        if (refE.StrElement.SignalGegen != null && gewünschteSignale.Contains(refE.StrElement.SignalGegen.Signaltyp))
+                        {
+                            mod.StartSignale.Add(refE);
+                        }
+                        //if (refE.StrElement.SignalNorm != null && refE.StrElement.SignalGegen != null && gewünschteSignale.Contains(refE.StrElement.SignalNorm.Signaltyp))
+                        //    MessageBox.Show(mod.modName + ":" + refE.Info +"hat 2 Signale:\n" + refE.StrElement.SignalNorm.Name + "(" + refE.StrElement.SignalNorm.Signaltyp + ") und " + refE.StrElement.SignalGegen.Name + "(" + refE.StrElement.SignalGegen.Signaltyp + ")");
                     }
                 }
 
-                if (mod.Verbindungen.Count < 2) mod.NetzGrenze = true;
-                if ((mod.Verbindungen.Count > 2) || (mod.NetzGrenze)) mod.wichtig = true; 
+                var curStartSigList = new List<streckenModul.referenzElement>();
+                foreach (var fstr in mod.FahrStr)
+                {
+                    foreach (var startSig in mod.StartSignale)
+                    {
+                        if (fstr.Start == startSig)
+                        {
+                            startSig.abgehendeFahrstraßen.Add(fstr);
+                            if (!curStartSigList.Contains(startSig))
+                            {
+                                curStartSigList.Add(startSig);
+                            }
+                            break;
+                        }
+                    }
+                }
+                mod.StartSignale = curStartSigList;
             }
+
+            //MessageBox.Show(problemstellen, "Problemstellen Fahrstraßen", MessageBoxButtons.OK);
         }
 
         /// <summary>
         /// Gibt Modul-Objekt für einen Modulnamen zurück
         /// </summary>
         /// <param name="modName">Name des Moduls</param>
-        streckenModul sucheMod(string modName)
+        public streckenModul sucheMod(string modName) 
         {
+            modName = modName.Substring(0, modName.Length - 5); //HACK: Jahreszahl wird ignoriert
             foreach (var mod in mSammlung)
             {
-                if (mod.modName == modName) return mod;
+                if (mod.modName.Contains(modName)) return mod;
             }
             return null;
         }
@@ -263,82 +266,12 @@ namespace ZuSiFplEdit
         /// </summary>
         /// <param name="Speicherort">Pfad zum Modul</param>
         /// /// <param name="DirSeparator">Verzeichnisseparator</param>
-        static string speicherortZuName(string Speicherort, char DirSeparator)
+        public static string speicherortZuName(string Speicherort, char DirSeparator)
         {
             string[] modNameAr = Speicherort.Split(DirSeparator);
             string modName = modNameAr[modNameAr.Length - 1];
             modName = modName.Substring(0, modName.Length - 4);
             return (modName);
-        }
-
-        /// <summary>
-        /// Erzeugt .fpn-Fragment aus aktuell ausgewählten Modulen.
-        /// </summary>
-        public void writeToFile(string path)
-        {
-            int mod_Count = 0;
-            int UTM_NS_avg = 0;
-            int UTM_WE_avg = 0;
-
-            int UTM_Z1 = 0;
-            char UTM_Z2 = ' ';
-
-            if (path == "") path = "Rohling.fpn";
-            var fpn_file = new System.IO.StreamWriter(path, false);
-
-            fpn_file.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-            fpn_file.WriteLine("<Zusi>");
-            fpn_file.WriteLine("<Info DateiTyp=\"Fahrplan\" Version=\"A.1\" MinVersion=\"A.1\">");
-            fpn_file.WriteLine("<AutorEintrag/>");
-            fpn_file.WriteLine("</Info>");
-            fpn_file.WriteLine("<Fahrplan>");
-            fpn_file.WriteLine("<BefehlsKonfiguration/>");
-            fpn_file.WriteLine("<Begruessungsdatei/>");
-
-            foreach (var mod in mSammlung)
-            {
-                if (mod.selected)
-                {
-                    //Vorbereitung zur Berechnung vom Referenzpunkt
-                    mod_Count++;
-                    UTM_NS_avg += mod.UTM_NS;
-                    UTM_WE_avg += mod.UTM_WE;
-
-                    UTM_Z1 = mod.UTM_Z1;
-                    UTM_Z2 = mod.UTM_Z2;
-
-                    //Schreibe XML für aktuelles Modul
-                    fpn_file.WriteLine("<StrModul>");
-                    fpn_file.WriteLine("<Datei Dateiname=\"" + mod.modPath + "\"/>");
-                    fpn_file.WriteLine("<p/>");
-                    fpn_file.WriteLine("<phi/>");
-                    fpn_file.WriteLine("</StrModul>");
-                }
-            }
-
-            //Abbrechen, wenn nichts ausgewählt.
-            if (mod_Count == 0)
-            {
-                fpn_file.WriteLine("<UTM/>");
-                fpn_file.WriteLine("</Fahrplan>");
-                fpn_file.WriteLine("</Zusi>");
-
-                fpn_file.Close();
-
-                return;
-
-            }
-
-            //Berechne UTM-Referenzpunkt
-            UTM_NS_avg = UTM_NS_avg / mod_Count;
-            UTM_WE_avg = UTM_WE_avg / mod_Count;
-
-            //Schreibe UTM-Referenzpunkt
-            fpn_file.WriteLine("<UTM UTM_WE=\"" + UTM_WE_avg + "\" UTM_NS=\"" + UTM_NS_avg + "\" UTM_Zone=\"" + UTM_Z1 + "\" UTM_Zone2=\"" + UTM_Z2 + "\"/>\"");
-            fpn_file.WriteLine("</Fahrplan>");
-            fpn_file.WriteLine("</Zusi>");
-
-            fpn_file.Close();
         }
     }
 }

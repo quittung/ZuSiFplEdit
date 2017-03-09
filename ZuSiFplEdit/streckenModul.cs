@@ -92,6 +92,7 @@ namespace ZuSiFplEdit
             public int RefTyp;
             public string Info;
             public streckenElement StrElement;
+            public Signal Signal;
 
             public List<fahrStr> abgehendeFahrstraßen;
 
@@ -187,7 +188,9 @@ namespace ZuSiFplEdit
         public List<streckenElement> StreckenElemente;
         public List<referenzElement> ReferenzElemente;
         public List<fahrStr> FahrStr;
+        public List<referenzElement> Signale;
         public List<referenzElement> StartSignale;
+        public List<referenzElement> ZielSignale;
 
         /// <summary>
         /// Enthält die umliegenden Module als String. Nach Verlinkung nicht mehr aktuell.
@@ -220,7 +223,9 @@ namespace ZuSiFplEdit
             StreckenElemente = new List<streckenElement>();
             ReferenzElemente = new List<referenzElement>();
             FahrStr = new List<fahrStr>();
+            Signale = new List<referenzElement>();
             StartSignale = new List<referenzElement>();
+            ZielSignale = new List<referenzElement>();
             VerbindungenStr = new List<string>();
             NetzGrenze = false;
             wichtig = false;
@@ -228,15 +233,16 @@ namespace ZuSiFplEdit
             isDetailed = true;
             
             isSane = true;
-            try
-            {
-                readData(modulePath);
-            }
-            catch (Exception e)
-            {
-                //MessageBox.Show(e.Message, "XML Error: " + modName, MessageBoxButtons.OK);
-                isSane = false;
-            }
+            readData(modulePath);
+            //try
+            //{
+            //    readData(modulePath);
+            //}
+            //catch (Exception)
+            //{
+            //    //MessageBox.Show(e.Message, "XML Error: " + modName, MessageBoxButtons.OK);
+            //    isSane = false;
+            //}
         }
 
         void readData(string Speicherort)
@@ -404,10 +410,7 @@ namespace ZuSiFplEdit
                         }
 
 
-                        
-                        
-                        if(!(Funktion == 2))
-                            StreckenElemente.Add(new streckenElement(Nr, spTrass, Anschluss, Funktion, Oberbau, g_X, g_Y, b_X, b_Y, SignalNorm, SignalGegen, AnschlussNorm, AnschlussGegen));
+                       StreckenElemente.Add(new streckenElement(Nr, spTrass, Anschluss, Funktion, Oberbau, g_X, g_Y, b_X, b_Y, SignalNorm, SignalGegen, AnschlussNorm, AnschlussGegen));
                         
 
                         
@@ -440,12 +443,52 @@ namespace ZuSiFplEdit
             }
 
             //Verlinke Referenzelemente mit Streckenelementen 
+            int nGesamt = 0;
+            int nDirekt = 0;
+            int nDiag = 0;
+            int nNull = 0;
             foreach (var refEl in ReferenzElemente)
             {
                 refEl.StrElement = sucheStrElement(refEl.StrElementNr);
+                //nGesamt++;
+                //if (refEl.StrNorm)
+                //{
+                //    if (refEl.StrElement.SignalNorm != null)
+                //    {
+                //        nDirekt++;
+                //    }
+                //    else if (refEl.StrElement.SignalGegen != null)
+                //    {
+                //        nDiag++;
+                //    } 
+                //    else
+                //    {
+                //        nNull++;
+                //    }
+                //}
+                //else
+                //{
+                //    if (refEl.StrElement.SignalNorm != null)
+                //    {
+                //        nDiag++;
+                //    }
+                //    else if (refEl.StrElement.SignalGegen != null)
+                //    {
+                //        nDirekt++;
+                //    }
+                //    else
+                //    {
+                //        nNull++;
+                //    }
+                //}
             }
+            //string report = nGesamt + " - Referenzelemente\n";
+            //report += nDirekt + " (" + ((float)nDirekt / (float)nGesamt * 100f).ToString("F1") + "%) - Direktverbindungen\n";
+            //report += nDiag + " (" + ((float)nDiag / (float)nGesamt * 100f).ToString("F1") + "%) - Diagonalverbindungen\n";
+            //report += nNull + " (" + ((float)nNull / (float)nGesamt * 100f).ToString("F1") + "%) - Keine Signale";
+            //MessageBox.Show(report, "Report " + modName);
 
-            
+
 
             timeKeeper.Stop();
             //List<int> oberbauTypen = new List<int>();

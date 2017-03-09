@@ -9,7 +9,12 @@ V0.3
 - Streckenelemente verknüpfen
 - Einlesen intelligenter gestalten
 Menü Fahrplan in Zusi öffnen
-
+TODO:
+- Signale besser rendern
+- Signalauswahl fixen
+- Regelgleiserkennungn bei Routefinding
+- Startsignal beim Umdrehen nach Zielsignal (inkl. max. Abstand)
+- Umdrehen bei Routefinding
 
 
 V0.?
@@ -26,6 +31,7 @@ V1
 - Einen Taktfahrplan-Modus
 - Liste aller verfügbaren Befehlskonfigurationen zum Auswählen (Combobox vielleicht?)
 - Autoren-Informationen werden automatisch eingefügt
+- Graphischer Fahrplan
 
 
 Changelog
@@ -49,5 +55,9 @@ Bugs:
 - Betriebststellen[]
 - Signale[]?
 - PixZuSignal
-- SignalZuFahrstraße[]
+- StartSignalZuFahrstraße[]
 - Einige Signale werden nicht eingelesen.
+- Modulauswahl möglich, wenn modul nicht sichtbar
+- Fahrstraßen: Nächstes Signal, wenn nach Zielsignal umgedreht wird.
+- Distanzabfrage funktioniert bei sehr hohem Zoom nicht mehr. Vielleicht Distanzabfrage auf Koodirnaten anstatt von Pixeln umstellen.
+- Göttingen N11 mit P11 falsch verlinkt

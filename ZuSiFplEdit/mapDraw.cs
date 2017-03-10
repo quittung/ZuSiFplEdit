@@ -11,6 +11,22 @@ namespace ZuSiFplEdit
 {
     class mapDraw
     {
+        class textField
+        {
+            public int X;
+            public int Y;
+            public string text;
+
+            public int len;
+
+            public textField(int X, int Y, string text)
+            {
+                this.X = X;
+                this.Y = Y;
+                this.text = text;
+            }
+        }
+
         List<streckenModul> modList;
         List<streckenModul> modVisible;
         ListBox ZFBox;
@@ -176,6 +192,8 @@ namespace ZuSiFplEdit
 
             framebuffer.Clear(Color.White);
 
+            var textManager = new List<textField>();
+
             Pen pen_unselected = new Pen(Color.Black);
             Pen pen_selected = new Pen(Color.Red);
 
@@ -220,7 +238,7 @@ namespace ZuSiFplEdit
                 {
                     foreach (streckenModul mod in modVisible)
                     {
-                        framebuffer.DrawString(mod.modName, new Font("Verdana", 8), Brushes.Black, mod.PIX_X + 6, mod.PIX_Y);
+                        textManager.Add(new textField(mod.PIX_X, mod.PIX_Y, mod.modName));
                     }
                 }
                 if (drawModule_Grenzen && pixPerGrad > 11)
@@ -261,12 +279,10 @@ namespace ZuSiFplEdit
 
                     foreach (var startSig in mod.StartSignale)
                     {
-                        if (drawSignal_Start)
+                        if (drawSignal_Start && pixPerGrad > 75)
                         {
-                            if (drawSignal_Namen && startSig.RefTyp == 4)
-                                framebuffer.DrawString(startSig.Signal.Signaltyp.ToString() + ":" + startSig.Signal.Name, new Font("Verdana", 8), Brushes.Black, coordToPix(startSig.StrElement.b_X, false) + 3, coordToPix(startSig.StrElement.b_Y, true) + 3);
-                            if (drawSignal_Namen && startSig.RefTyp == 0)
-                                framebuffer.DrawString(startSig.ToString(), new Font("Verdana", 8), Brushes.Black, coordToPix(startSig.StrElement.b_X, false) + 3, coordToPix(startSig.StrElement.b_Y, true) + 3);
+                            if (drawSignal_Namen)
+                                textManager.Add(new textField(coordToPix(startSig.StrElement.b_X, false), coordToPix(startSig.StrElement.b_Y, true), startSig.ToString()));
                             int circleSize = 4;
                             framebuffer.FillEllipse(Brushes.LightGreen, coordToPix(startSig.StrElement.b_X, false) - circleSize / 2, coordToPix(startSig.StrElement.b_Y, true) - circleSize / 2, circleSize, circleSize); 
                         }
@@ -274,10 +290,10 @@ namespace ZuSiFplEdit
 
                     foreach (var zielSig in mod.ZielSignale)
                     {
-                        if (drawSignal_Ziel)
+                        if (drawSignal_Ziel && pixPerGrad > 75)
                         {
-                            if (drawSignal_Namen && zielSig.RefTyp == 4)
-                                framebuffer.DrawString(zielSig.Signal.Signaltyp.ToString() + ":" + zielSig.Signal.Name, new Font("Verdana", 8), Brushes.Black, coordToPix(zielSig.StrElement.b_X, false) + 3, coordToPix(zielSig.StrElement.b_Y, true) + 3);
+                            if (drawSignal_Namen)
+                                textManager.Add(new textField(coordToPix(zielSig.StrElement.b_X, false), coordToPix(zielSig.StrElement.b_Y, true), zielSig.ToString()));
                             int circleSize = 4;
                             framebuffer.FillEllipse(Brushes.Red, coordToPix(zielSig.StrElement.b_X, false) - circleSize / 2, coordToPix(zielSig.StrElement.b_Y, true) - circleSize / 2, circleSize, circleSize); 
                         }
@@ -315,10 +331,57 @@ namespace ZuSiFplEdit
                     } 
                 }
             }
+
+            //textmanagement:
+            int fontSize = 8;
+            int lastCount = 0;
+            while (!(lastCount == textManager.Count))
+            {
+                lastCount = textManager.Count;
+                textManager = textReiniger(textManager);
+            }
+
+            foreach (var txt in textManager)
+            {
+                framebuffer.DrawString(txt.text, new Font("Verdana", fontSize), Brushes.Blue, txt.X + 6, txt.Y);
+            }
+
+
             frameTime.Stop();
             framebuffer.DrawString("N" + center_NS.ToString("F2") + " - E" + center_WE.ToString("F2") + " - " + pixPerGrad.ToString("F1") + "pix/km - " + frameTime.ElapsedMilliseconds + " ms/frame", new Font("Verdana", 10), new SolidBrush(Color.Red), 20, map_height_p - 20);
 
             return (frame);
+        }
+
+        List<textField> textReiniger(List<textField> textManager)
+        {
+            int fontSize = 10;
+            var textManaged = new List<textField>();
+            foreach (var txt in textManager)
+            {
+                bool toBeAdded = true;
+                txt.len = (int)framebuffer.MeasureString(txt.text, new Font("Verdana", fontSize)).Width;
+                foreach (var txtM in textManaged)
+                {
+                    if ((Math.Abs(txt.Y - txtM.Y) < fontSize))
+                    {
+                        if (((txt.X >= txtM.X) && (txt.X <= txtM.X + txtM.len)) || ((txt.X + txt.len >= txtM.X) && (txt.X + txt.len <= txtM.X + txtM.len)))
+                        {
+                            //txtM.X = (txt.X + txtM.X) / 2;
+                            txtM.Y = (txt.Y + txtM.Y) / 2;
+                            txtM.text += " | " + txt.text;
+                            txtM.len = (int)framebuffer.MeasureString(txtM.text, new Font("Verdana", fontSize)).Width;
+                            toBeAdded = false;
+                            break;
+                        }
+                    }
+                }
+                if (toBeAdded)
+                {
+                    textManaged.Add(txt);
+                }
+            }
+            return textManaged;
         }
 
         public streckenModul getNearestStation(int X, int Y)

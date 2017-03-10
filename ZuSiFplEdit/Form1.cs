@@ -503,6 +503,8 @@ namespace ZuSiFplEdit
 
         private void textBox_Gattung_TextChanged(object sender, EventArgs e)
         {
+            if (ZugFahrtBox.SelectedItem == null)
+                return;
             var act = (ZugFahrt)ZugFahrtBox.SelectedItem;
             act.Gattung = textBox_Gattung.Text;
             zlbUpdate();
@@ -517,6 +519,8 @@ namespace ZuSiFplEdit
 
         private void textBox_ZNummer_TextChanged(object sender, EventArgs e)
         {
+            if (ZugFahrtBox.SelectedItem == null)
+                return;
             textBox_ZNummer.BackColor = Color.White;
 
             int ZN = -1;
@@ -554,6 +558,8 @@ namespace ZuSiFplEdit
 
         private void updateZugFields()
         {
+            if (ZugFahrtBox.SelectedItem == null)
+                return;
             if (ZLBready)
             {
                 var act = (ZugFahrt)ZugFahrtBox.SelectedItem;
@@ -600,10 +606,15 @@ namespace ZuSiFplEdit
                     label_Fstr.Text = "Fahrweglänge ist " + (fstr_len/1000).ToString("F2") + " km";
                 }
             }
+
+            this.Invalidate();
+            Application.DoEvents();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (ZugFahrtBox.SelectedItem == null)
+                return;
             selectRouteStart = true;
             label_StartSig.Text = "Startsignal auf Karte wählen";
             kartenZeichner.setLayers("signal_ziel", false); 
@@ -613,6 +624,8 @@ namespace ZuSiFplEdit
 
         private void button2_Click(object sender, EventArgs e)
         {
+            if (ZugFahrtBox.SelectedItem == null)
+                return;
             selectRouteEnd = true;
             label_ZielSig.Text = "Zielsignal auf Karte wählen";
             kartenZeichner.setLayers("signal_start", false);
@@ -622,6 +635,8 @@ namespace ZuSiFplEdit
 
         private void button4_Click(object sender, EventArgs e)
         {
+            if (ZugFahrtBox.SelectedItem == null)
+                return;
             int löschZug = ZugFahrtBox.SelectedIndex;
             if(ZugFahrtBox.Items.Count > 1)
             {

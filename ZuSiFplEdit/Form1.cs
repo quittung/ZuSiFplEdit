@@ -184,12 +184,15 @@ namespace ZuSiFplEdit
                     mMap.Image = kartenZeichner.draw();
                 } else if (!mouseMoved) 
                 {
-                    var nächsteStation = kartenZeichner.getNearestStation(e.X, e.Y);
-                    if (kartenZeichner.getStationDistance(nächsteStation, e.X, e.Y) < 10)
+                    if (moduToolStripMenuItem.Checked && punkteToolStripMenuItem.Checked)
                     {
-                        nächsteStation.selected = !nächsteStation.selected;
-                        mMap.Image = kartenZeichner.draw();
-                        modListBox.SetSelected(Module.mSammlung.IndexOf(nächsteStation), nächsteStation.selected);
+                        var nächsteStation = kartenZeichner.getNearestStation(e.X, e.Y);
+                        if (kartenZeichner.getStationDistance(nächsteStation, e.X, e.Y) < 10)
+                        {
+                            nächsteStation.selected = !nächsteStation.selected;
+                            mMap.Image = kartenZeichner.draw();
+                            modListBox.SetSelected(Module.mSammlung.IndexOf(nächsteStation), nächsteStation.selected);
+                        }
                     }
                 }
 
@@ -201,34 +204,20 @@ namespace ZuSiFplEdit
                 var nächsteStation = kartenZeichner.getNearestStation(e.X, e.Y);
                 horribleHackVariableThatHoldsRightClickModule = nächsteStation;
                 tmpSignal = kartenZeichner.getNearestSignal(e.X, e.Y);
-                string Signame = "";
-                if (tmpSignal.StrElement.SignalNorm != null)
-                {
-                    Signame = tmpSignal.StrElement.SignalNorm.Name;
-                } else
-                {
-                    Signame = tmpSignal.StrElement.SignalGegen.Name;
-                }
+                if (nächsteStation == null || tmpSignal == null)
+                    return;
+
+                string Signame = tmpSignal.Info;
 
                 //MessageBox.Show(horribleHackVariableThatHoldsRightClickSignal.Info, "Nächstes Signal:", MessageBoxButtons.OK);
-
-                string startText = tmpSignal.Info + " als Startsignal festlegen";
-
-                string zielText = "Route zu " + tmpSignal.Info;
-                if (startSignal != null)
-                {
-                    zielText = "Route von " + startSignal.Info + " zu " + tmpSignal.Info;
-                }
-
+                
                 
 
                     MenuItem[] menuItems = new MenuItem[]{new MenuItem("Pixel: X" + e.X + " - Y" + e.Y),
                 new MenuItem("Koordinaten: X" + kartenZeichner.pixToCoord(e.X, false).ToString("F1") + " - Y" + kartenZeichner.pixToCoord(e.Y, true).ToString("F1")),
                 new MenuItem("Nächste Station: " + nächsteStation.modName + "; Distanz: " + kartenZeichner.getStationDistance(nächsteStation, e.X, e.Y).ToString()),
                 new MenuItem("Nächstes Signal: " + tmpSignal.Info + "-" + Signame + "; Distanz: " + (1000 * kartenZeichner.getSigDistance(tmpSignal, e.X, e.Y)).ToString("F2")),
-                new MenuItem(nächsteStation.modName + " im Explorer anzeigen", new EventHandler(showMod)),
-                new MenuItem(startText, new EventHandler(setStartSig)),
-                new MenuItem(zielText, new EventHandler(setZielSig))};
+                new MenuItem(nächsteStation.modName + " im Explorer anzeigen", new EventHandler(showMod))};
             
                 ContextMenu buttonMenu = new ContextMenu(menuItems);
                 buttonMenu.Show(mMap, new Point(e.X, e.Y));
@@ -393,7 +382,7 @@ namespace ZuSiFplEdit
         {
             if (sender == moduToolStripMenuItem)
             {
-                kartenZeichner.setLayers("module", moduToolStripMenuItem.Checked);
+                kartenZeichner.setLayers("module", moduToolStripMenuItem.Checked); 
             }
             else if (sender == punkteToolStripMenuItem)
             {

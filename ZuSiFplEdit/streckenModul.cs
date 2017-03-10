@@ -25,6 +25,11 @@ namespace ZuSiFplEdit
                 abs_X = ref_X + (rel_X / 1000f);
                 abs_Y = ref_Y + (rel_Y / 1000f);
             }
+            public PunktXY(double abs_X, double abs_Y)
+            {
+                this.abs_X = abs_X;
+                this.abs_Y = abs_Y;
+            }
         }
 
         public class Signal
@@ -97,7 +102,11 @@ namespace ZuSiFplEdit
             public int RefTyp;
             public string Info;
             public streckenElement StrElement;
+
             public Signal Signal;
+            public PunktXY SignalCoord;
+            public bool istStart;
+            public bool istZiel;
 
             public List<fahrStr> abgehendeFahrstraßen;
 
@@ -219,6 +228,7 @@ namespace ZuSiFplEdit
         public List<referenzElement> Signale;
         public List<referenzElement> StartSignale;
         public List<referenzElement> ZielSignale;
+        public List<referenzElement> StartUndZielSignale;
 
         /// <summary>
         /// Enthält die umliegenden Module als String. Nach Verlinkung nicht mehr aktuell.
@@ -251,9 +261,10 @@ namespace ZuSiFplEdit
             StreckenElemente = new List<streckenElement>();
             ReferenzElemente = new List<referenzElement>();
             FahrStr = new List<fahrStr>();
-            Signale = new List<referenzElement>();
+            Signale = new List<referenzElement>(); 
             StartSignale = new List<referenzElement>();
             ZielSignale = new List<referenzElement>();
+            StartUndZielSignale = new List<referenzElement>();
             VerbindungenStr = new List<string>();
             NetzGrenze = false;
             wichtig = false;
@@ -491,6 +502,7 @@ namespace ZuSiFplEdit
                 ReferenzElemente.Remove(badRef);
             }
 
+            //Signale zum einfacheren Zugriff standardisieren.
             foreach (var refEl in ReferenzElemente)
             {
                 if (refEl.RefTyp == 4)
@@ -500,10 +512,12 @@ namespace ZuSiFplEdit
                         if (refEl.StrElement.SignalGegen == null)
                         {
                             refEl.Signal = refEl.StrElement.SignalNorm;
+                            refEl.StrNorm = true;
                         }
                         else
                         {
                             refEl.Signal = refEl.StrElement.SignalGegen;
+                            refEl.StrNorm = false;
                         }
                     }
                     else if (refEl.StrElement.SignalNorm != null && refEl.StrElement.SignalGegen != null)
@@ -511,10 +525,12 @@ namespace ZuSiFplEdit
                         if (refEl.StrElement.SignalNorm.Name != "" && refEl.Info.Contains(refEl.StrElement.SignalNorm.Name))
                         {
                             refEl.Signal = refEl.StrElement.SignalNorm;
+                            refEl.StrNorm = true;
                         }
                         else if (refEl.StrElement.SignalGegen.Name != "" && refEl.Info.Contains(refEl.StrElement.SignalGegen.Name))
                         {
                             refEl.Signal = refEl.StrElement.SignalGegen;
+                            refEl.StrNorm = false;
                         }
                         else if (refEl.StrNorm)
                         {
@@ -524,11 +540,25 @@ namespace ZuSiFplEdit
                         {
                             refEl.Signal = refEl.StrElement.SignalGegen;
                         }
-                    } 
+                    }
+
+                    
+
+                    //Zum Index hinzufügen
                     if (refEl.Signal != null)
                     {
                         Signale.Add(refEl);
                     }
+                }
+
+                //Signalkoordinaten setzen
+                if (refEl.StrNorm)
+                {
+                    refEl.SignalCoord = new PunktXY(refEl.StrElement.b_X, refEl.StrElement.b_Y);
+                }
+                else
+                {
+                    refEl.SignalCoord = new PunktXY(refEl.StrElement.g_X, refEl.StrElement.g_Y);
                 }
             }
 

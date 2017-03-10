@@ -277,25 +277,32 @@ namespace ZuSiFplEdit
                         
                     }
 
-                    foreach (var startSig in mod.StartSignale)
+                    if (pixPerGrad > 75)
                     {
-                        if (drawSignal_Start && pixPerGrad > 75)
+                        if (drawSignal_Start && drawSignal_Ziel)
                         {
-                            if (drawSignal_Namen)
-                                textManager.Add(new textField(coordToPix(startSig.StrElement.b_X, false), coordToPix(startSig.StrElement.b_Y, true), startSig.ToString()));
-                            int circleSize = 4;
-                            framebuffer.FillEllipse(Brushes.LightGreen, coordToPix(startSig.StrElement.b_X, false) - circleSize / 2, coordToPix(startSig.StrElement.b_Y, true) - circleSize / 2, circleSize, circleSize); 
+                            foreach (var startZielSig in mod.StartUndZielSignale)
+                            {
+                                drawSignal(textManager, startZielSig);
+                            }
                         }
-                    }
-
-                    foreach (var zielSig in mod.ZielSignale)
-                    {
-                        if (drawSignal_Ziel && pixPerGrad > 75)
+                        else
                         {
-                            if (drawSignal_Namen)
-                                textManager.Add(new textField(coordToPix(zielSig.StrElement.b_X, false), coordToPix(zielSig.StrElement.b_Y, true), zielSig.ToString()));
-                            int circleSize = 4;
-                            framebuffer.FillEllipse(Brushes.Red, coordToPix(zielSig.StrElement.b_X, false) - circleSize / 2, coordToPix(zielSig.StrElement.b_Y, true) - circleSize / 2, circleSize, circleSize); 
+                            if (drawSignal_Start)
+                            {
+                                foreach (var startSig in mod.StartSignale)
+                                {
+                                    drawSignal(textManager, startSig);
+                                }
+                            }
+
+                            if (drawSignal_Ziel)
+                            {
+                                foreach (var zielSig in mod.ZielSignale)
+                                {
+                                    drawSignal(textManager, zielSig);
+                                }
+                            }
                         }
                     }
                 }
@@ -353,6 +360,79 @@ namespace ZuSiFplEdit
             return (frame);
         }
 
+        private void drawSignal(List<textField> textManager, streckenModul.referenzElement Signal)
+        {
+            if (drawSignal_Namen)
+                textManager.Add(new textField(coordToPix(Signal.SignalCoord.abs_X, false), coordToPix(Signal.SignalCoord.abs_Y, true), Signal.ToString()));
+            int circleSize = 4;
+
+            //Signaldreieck berechnen
+            //Spitze
+            int p1X = coordToPix(Signal.SignalCoord.abs_X, false);
+            if (p1X > map_width_p || p1X < 0)
+                return;
+            int p1Y = coordToPix(Signal.SignalCoord.abs_Y, true);
+            if (p1Y > map_width_p || p1Y < 0)
+                return;
+            //Vorbereitung für andere Punkte:
+            //Vektor zeigt zum anderen Ende
+            double VX = 0;
+            double VY = 0;
+            double p1Xcoord;
+            double p1Ycoord;
+            if (Signal.StrNorm)
+            {
+                p1Xcoord = Signal.StrElement.b_X;
+                p1Ycoord = Signal.StrElement.b_Y;
+                VX = Signal.StrElement.g_X - Signal.StrElement.b_X;
+                VY = Signal.StrElement.g_Y - Signal.StrElement.b_Y;
+            }
+            else
+            {
+                p1Xcoord = Signal.StrElement.g_X;
+                p1Ycoord = Signal.StrElement.g_Y;
+                VX = Signal.StrElement.b_X - Signal.StrElement.g_X;
+                VY = Signal.StrElement.b_Y - Signal.StrElement.g_Y;
+            }
+            //Normieren des Vektors
+            double vlen = (Math.Sqrt(VX * VX + VY * VY)) * pixPerGrad;
+            double VXnorm = VX / vlen;
+            double VYnorm = VY / vlen;
+            //Normalvektor berechnen
+            double VXnormnorm = VYnorm;
+            double VYnormnorm = -VXnorm;
+            //"Unterer" Punkt
+            double p2Xcoord = p1Xcoord + 8 * VXnorm + 4 * VXnormnorm;
+            double p2Ycoord = p1Ycoord + 8 * VYnorm + 4 * VYnormnorm;
+            int p2X = coordToPix(p2Xcoord, false);
+            int p2Y = coordToPix(p2Ycoord, true);
+            //"Oberer" Punkt
+            double p3Xcoord = p1Xcoord + 8 * VXnorm - 4 * VXnormnorm;
+            double p3Ycoord = p1Ycoord + 8 * VYnorm - 4 * VYnormnorm;
+            int p3X = coordToPix(p3Xcoord, false);
+            int p3Y = coordToPix(p3Ycoord, true);
+            //Sammeln in Array:
+            var points = new Point[3];
+            points[0] = new Point(p1X, p1Y);
+            points[1] = new Point(p2X, p2Y);
+            points[2] = new Point(p3X, p3Y);
+
+            //Farbe aussuchen
+            Brush SigCol = Brushes.Black;
+            if (Signal.istStart && Signal.istZiel)
+                SigCol = Brushes.Orange;
+            else
+            {
+                if (Signal.istStart)
+                    SigCol = Brushes.Green;
+                if (Signal.istZiel)
+                    SigCol = Brushes.Red;
+            }
+
+            framebuffer.FillPolygon(SigCol, points);
+            //framebuffer.FillEllipse(SigCol, coordToPix(Signal.SignalCoord.abs_X, false) - circleSize / 2, coordToPix(Signal.SignalCoord.abs_Y, true) - circleSize / 2, circleSize, circleSize);
+        }
+
         List<textField> textReiniger(List<textField> textManager)
         {
             int fontSize = 10;
@@ -388,6 +468,8 @@ namespace ZuSiFplEdit
         {
             double dist = -1;
             streckenModul nearestMod = null;
+            if (modVisible.Count == 0)
+                return null;
             foreach (streckenModul mod in modVisible)
             {
                 double modDist = getStationDistance(mod, X, Y);
@@ -478,8 +560,19 @@ namespace ZuSiFplEdit
 
         public double getSigDistance(streckenModul.referenzElement Signal, int X, int Y)
         {
-            double deltaX = Signal.StrElement.b_X - pixToCoord(X, false);
-            double deltaY = Signal.StrElement.b_Y - pixToCoord(Y, true);
+            double deltaX = 999;
+            double deltaY = 999;
+            try
+            {
+                deltaX = Signal.SignalCoord.abs_X - pixToCoord(X, false);
+                deltaY = Signal.SignalCoord.abs_Y - pixToCoord(Y, true);
+            }
+            catch (Exception)
+            {
+                deltaX = Signal.StrElement.b_X - pixToCoord(X, false);
+                deltaY = Signal.StrElement.b_Y - pixToCoord(Y, true);
+            }
+            
 
             double dist = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
             return dist;

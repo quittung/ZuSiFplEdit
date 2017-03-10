@@ -232,10 +232,17 @@ namespace ZuSiFplEdit
             {
                 foreach (var fstr in mod.FahrStr) //Start- und Zielsignale in den entsprechenden Modulen ein.
                 {
+                    fstr.Start.istStart = true;
                     if (!(mod.StartSignale.Contains(fstr.Start)))
                         mod.StartSignale.Add(fstr.Start);
+                    if (!(mod.StartUndZielSignale.Contains(fstr.Start)))
+                        mod.StartUndZielSignale.Add(fstr.Start);
+
+                    fstr.Ziel.istZiel = true;
                     if (!(fstr.ZielMod.ZielSignale.Contains(fstr.Ziel)))
                         fstr.ZielMod.ZielSignale.Add(fstr.Ziel);
+                    if (!(fstr.ZielMod.StartUndZielSignale.Contains(fstr.Ziel)))
+                        fstr.ZielMod.StartUndZielSignale.Add(fstr.Ziel);
                 }
             }
         }

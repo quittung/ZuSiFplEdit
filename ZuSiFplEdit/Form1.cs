@@ -100,7 +100,7 @@ namespace ZuSiFplEdit
                 }
                 this.Invalidate();
                 Application.DoEvents();
-                new fileops(Module.mSammlung, zList, saveFileDialog1.FileName);
+                new fileops(Module.mSammlung, zList, saveFileDialog1.FileName, Module.DirBase);
             }
         }    
 
@@ -449,7 +449,7 @@ namespace ZuSiFplEdit
                 Application.DoEvents();//Zeichnen
 
                 frameTime.Stop();
-                toolStripMenuItem1.Text = frameTime.ElapsedMilliseconds + " ms";
+                toolStripMenuItem1.Text = "Zeichendauer: " + frameTime.ElapsedMilliseconds + " ms";
 
                 updatingMap = false;                
             }

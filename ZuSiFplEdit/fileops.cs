@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 
 namespace ZuSiFplEdit
 {
@@ -10,13 +11,22 @@ namespace ZuSiFplEdit
     {
         List<streckenModul> mSammlung;
         List<modSelForm.ZugFahrt> Zugfahrten;
-        string path;
+        string basePath;
+        string fpnFullPath;
+        string fpnRelPath;
+        string fpnSubDir;
+        string fpnRelSubDir;
 
-        public fileops(List<streckenModul> mSammlung, List<modSelForm.ZugFahrt> Zugfahrten, string path)
+        public fileops(List<streckenModul> mSammlung, List<modSelForm.ZugFahrt> Zugfahrten, string path, string basePath)
         {
             this.mSammlung = mSammlung;
             this.Zugfahrten = Zugfahrten;
-            this.path = path;
+
+            this.basePath = basePath;
+            fpnFullPath = path;
+            fpnRelPath = fpnFullPath.Replace(basePath, "");
+            fpnSubDir = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path));
+            fpnRelSubDir = fpnFullPath.Replace(fpnSubDir, "");
 
             writeFPN();
             foreach (var zug in Zugfahrten)
@@ -38,8 +48,8 @@ namespace ZuSiFplEdit
             int UTM_Z1 = 0;
             char UTM_Z2 = ' ';
 
-            if (path == "") path = "Rohling.fpn";
-            var fpn_file = new StreamWriter(path, false);
+            if (fpnFullPath == "") fpnFullPath = "Rohling.fpn";
+            var fpn_file = new StreamWriter(fpnFullPath, false);
 
             fpn_file.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             fpn_file.WriteLine("<Zusi>");
@@ -53,7 +63,7 @@ namespace ZuSiFplEdit
             foreach (var zug in Zugfahrten)
             {
                 fpn_file.WriteLine("<Zug>");
-                fpn_file.WriteLine("<Datei Dateiname=\"Timetables\\Custom\\test\\" + zug.Gattung + zug.Zugnummer + ".trn\"/>");
+                fpn_file.WriteLine("<Datei Dateiname=\"" + Path.Combine(fpnRelSubDir, zug.Gattung + zug.Zugnummer + ".trn") + "\"/>");
                 fpn_file.WriteLine("</Zug>");
             }
 
@@ -105,7 +115,7 @@ namespace ZuSiFplEdit
 
         void writeTRN(modSelForm.ZugFahrt zug)
         {
-            string path = "C:\\games\\Zusi3\\Timetables\\Custom\\test\\" + zug.Gattung + zug.Zugnummer + ".trn";
+            string path = Path.Combine(fpnSubDir, zug.Gattung + zug.Zugnummer + ".trn");
             var trn_file = new StreamWriter(path, false);
 
             trn_file.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -114,7 +124,7 @@ namespace ZuSiFplEdit
             trn_file.WriteLine("<AutorEintrag/>");
             trn_file.WriteLine("</Info>");
             trn_file.WriteLine("<Zug Gattung=\"" + zug.Gattung + "\" Nummer=\"" + zug.Zugnummer + "\" Prio=\"1500\" Bremsstellung=\"4\" Rekursionstiefe=\"5\" FahrstrName=\"" + zug.route[0].FahrstrName.Replace(">", "&gt;") + "\" Zugtyp=\"1\" Buchfahrplandll=\"_InstSetup\\lib\\timetable\\Buchfahrplan_DB_1979.dll\">");
-            trn_file.WriteLine("<Datei Dateiname=\"Timetables\\Custom\\test.fpn\" NurInfo=\"1\"/>");
+            trn_file.WriteLine("<Datei Dateiname=\"" + fpnRelPath + "\" NurInfo=\"1\"/>");
 
             for (int i = 0; i < zug.route.Count; i++)
             {

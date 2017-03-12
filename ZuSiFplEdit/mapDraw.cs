@@ -315,10 +315,10 @@ namespace ZuSiFplEdit
                     {
                         if (fstr.Ziel != null)
                         {
-                            int start_x = coordToPix(fstr.Start.StrElement.b_X, false);
-                            int start_y = coordToPix(fstr.Start.StrElement.b_Y, true);
-                            int ziel_x = coordToPix(fstr.Ziel.StrElement.b_X, false);
-                            int ziel_y = coordToPix(fstr.Ziel.StrElement.b_Y, true);
+                            int start_x = coordToPix(fstr.Start.SignalCoord.abs_X, false);
+                            int start_y = coordToPix(fstr.Start.SignalCoord.abs_Y, true);
+                            int ziel_x = coordToPix(fstr.Ziel.SignalCoord.abs_X, false);
+                            int ziel_y = coordToPix(fstr.Ziel.SignalCoord.abs_Y, true);
 
                             //framebuffer.DrawString("Fstr:" + fstr.FahrstrName, new Font("Verdana", 8), Brushes.Black, start_x + 3, start_y + 3);
 

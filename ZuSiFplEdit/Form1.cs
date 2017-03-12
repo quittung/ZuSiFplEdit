@@ -61,9 +61,11 @@ namespace ZuSiFplEdit
             this.MouseWheel += new MouseEventHandler(mMap_MouseWheel);
             modListBox.SelectedIndexChanged += new EventHandler(modListBox_SelectedValueChanged);
 
-            appInit();
+#if DEBUG
+            this.Text += "  -  DEBUG";
+#endif
 
-            
+            appInit();
         }
 
         private void mMap_MouseWheel(object sender, MouseEventArgs e)

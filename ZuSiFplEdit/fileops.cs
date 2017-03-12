@@ -22,11 +22,37 @@ namespace ZuSiFplEdit
             this.mSammlung = mSammlung;
             this.Zugfahrten = Zugfahrten;
 
-            this.basePath = basePath;
-            fpnFullPath = path;
-            fpnRelPath = fpnFullPath.Replace(basePath, "");
-            fpnSubDir = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path));
-            fpnRelSubDir = fpnFullPath.Replace(fpnSubDir, "");
+            
+            if (basePath[basePath.Length - 1] != '\\')
+            {
+                basePath += "\\";
+            }
+            Uri basePath_uri = new Uri(basePath);
+
+            Uri fpnFullPath_uri = new Uri(path);
+            if (!basePath_uri.IsBaseOf(fpnFullPath_uri))
+            {
+                MessageBox.Show("Fahrplan ist nicht im Zusi-Datenverzeichnis: \n" + basePath_uri + "\n" + fpnFullPath_uri);
+                return;
+            }
+            Uri fpnRelPath_uri = basePath_uri.MakeRelativeUri(fpnFullPath_uri);
+
+            Uri fpnSubDir_uri = new Uri(Path.Combine(Path.GetDirectoryName(fpnFullPath_uri.LocalPath), Path.GetFileNameWithoutExtension(fpnFullPath_uri.LocalPath) + "\\"));
+            Uri fpnRelSubDir_uri = basePath_uri.MakeRelativeUri(fpnSubDir_uri);
+
+            this.basePath = basePath_uri.LocalPath;
+            this.fpnFullPath = fpnFullPath_uri.LocalPath;
+            this.fpnRelPath = fpnRelPath_uri.ToString().Replace('/', '\\');
+            this.fpnSubDir = fpnSubDir_uri.LocalPath;
+            this.fpnRelSubDir = fpnRelSubDir_uri.ToString().Replace('/', '\\');
+
+
+
+
+            if (!Directory.Exists(fpnSubDir))
+            {
+                Directory.CreateDirectory(fpnSubDir);
+            }
 
             writeFPN();
             foreach (var zug in Zugfahrten)
@@ -123,7 +149,7 @@ namespace ZuSiFplEdit
             trn_file.WriteLine("<Info DateiTyp=\"Zug\" Version=\"A.1\" MinVersion=\"A.1\">");
             trn_file.WriteLine("<AutorEintrag/>");
             trn_file.WriteLine("</Info>");
-            trn_file.WriteLine("<Zug Gattung=\"" + zug.Gattung + "\" Nummer=\"" + zug.Zugnummer + "\" Prio=\"1500\" Bremsstellung=\"4\" Rekursionstiefe=\"5\" FahrstrName=\"" + zug.route[0].FahrstrName.Replace(">", "&gt;") + "\" Zugtyp=\"1\" Buchfahrplandll=\"_InstSetup\\lib\\timetable\\Buchfahrplan_DB_1979.dll\">");
+            trn_file.WriteLine("<Zug Gattung=\"" + zug.Gattung + "\" Nummer=\"" + zug.Zugnummer + "\" Prio=\"1500\" Bremsstellung=\"4\" Rekursionstiefe=\"5\" FahrstrName=\"" + zug.route[0].FahrstrName.Replace(">", "&gt;") + "\" Zugtyp=\"1\" Buchfahrplandll=\"_InstSetup\\lib\\timetable\\Buchfahrplan_DB_2006.dll\">");
             trn_file.WriteLine("<Datei Dateiname=\"" + fpnRelPath + "\" NurInfo=\"1\"/>");
 
             for (int i = 0; i < zug.route.Count; i++)

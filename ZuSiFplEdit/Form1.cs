@@ -8,26 +8,11 @@ using System.Windows.Forms;
 
 namespace ZuSiFplEdit
 {
+    public delegate void SignalSelectEventHandler(string text);
+
     public partial class modSelForm : Form
     {
-        public class ZugFahrt
-        {
-            public string Gattung;
-            public int Zugnummer;
-            public streckenModul.referenzElement ZstartSignal;
-            public streckenModul.referenzElement ZzielSignal;
-            public List<streckenModul.fahrStr> route;
-
-            public ZugFahrt()
-            {
-
-            }
-
-            public override string ToString()
-            {
-                return (Gattung + " " + Zugnummer.ToString());
-            }
-        } 
+        
 
         modContainer Module;
         mapDraw kartenZeichner;
@@ -45,6 +30,7 @@ namespace ZuSiFplEdit
 
         bool ZLBready = true;
         List<ZugFahrt> ZugFahrten = new List<ZugFahrt>();
+        ZugForm ZugKonfigForm;
 
         int debugX = 0;
         int debugY = 0;
@@ -58,6 +44,10 @@ namespace ZuSiFplEdit
         {
             InitializeComponent();
 
+            ZugKonfigForm = new ZugForm();
+            ZugKonfigForm.Owner = this;
+            ZugForm.signalSelectionEvent += new SignalSelectEventHandler(signalSelect);
+
             this.MouseWheel += new MouseEventHandler(mMap_MouseWheel);
             modListBox.SelectedIndexChanged += new EventHandler(modListBox_SelectedValueChanged);
 
@@ -66,6 +56,23 @@ namespace ZuSiFplEdit
 #endif
 
             appInit();
+        }
+
+
+        private void signalSelect(string signalSelectType)
+        {
+            if (signalSelectType == "start")
+            {
+                selectRouteStart = true;
+                kartenZeichner.setLayers("signal_ziel", false);
+            }
+            if (signalSelectType == "ziel")
+            {
+                selectRouteEnd = true;
+                kartenZeichner.setLayers("signal_start", false);
+            }
+
+            this.Invalidate();
         }
 
         private void mMap_MouseWheel(object sender, MouseEventArgs e)
@@ -155,14 +162,14 @@ namespace ZuSiFplEdit
                     var act = (ZugFahrt)ZugFahrtBox.SelectedItem;
                     if (selectRouteStart)
                     {
-                        act.ZstartSignal = kartenZeichner.getNearestSignalStartZiel(e.X, e.Y, true);
+                        ZugKonfigForm.setSignal(kartenZeichner.getNearestSignalStartZiel(e.X, e.Y, true));
                         kartenZeichner.setLayers("signal_ziel", true);
                         this.Invalidate();
                         selectRouteStart = false;
                     }
                     else
                     {
-                        act.ZzielSignal = kartenZeichner.getNearestSignalStartZiel(e.X, e.Y, false);
+                        ZugKonfigForm.setSignal(kartenZeichner.getNearestSignalStartZiel(e.X, e.Y, true));
                         kartenZeichner.setLayers("signal_start", true); 
                         this.Invalidate();
                         selectRouteEnd = false;
@@ -643,6 +650,14 @@ namespace ZuSiFplEdit
             ZugFahrtBox.Items.RemoveAt(löschZug);
 
             updateZugFields();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if (ZugFahrtBox.SelectedItem == null)
+                return;
+            ZugKonfigForm.ZugFahrtLaden((ZugFahrt)ZugFahrtBox.SelectedItem);
+            ZugKonfigForm.Show();
         }
     }
 }

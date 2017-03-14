@@ -52,6 +52,7 @@
             this.label_Fstr = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.karteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.moduToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -194,16 +195,18 @@
             this.tableLayoutPanel2.Controls.Add(this.label_Fstr, 0, 5);
             this.tableLayoutPanel2.Controls.Add(this.button3, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.button4, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.button5, 0, 6);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 6;
+            this.tableLayoutPanel2.RowCount = 7;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 65F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(242, 515);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
@@ -217,7 +220,7 @@
             this.tableLayoutPanel4.Controls.Add(this.label_StartSig, 0, 0);
             this.tableLayoutPanel4.Controls.Add(this.label_ZielSig, 0, 1);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 433);
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 398);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.RowCount = 2;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -279,7 +282,7 @@
             this.tableLayoutPanel3.Controls.Add(this.textBox_Gattung, 0, 1);
             this.tableLayoutPanel3.Controls.Add(this.textBox_ZNummer, 1, 1);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 378);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 343);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -333,7 +336,7 @@
             this.ZugFahrtBox.FormattingEnabled = true;
             this.ZugFahrtBox.Location = new System.Drawing.Point(3, 73);
             this.ZugFahrtBox.Name = "ZugFahrtBox";
-            this.ZugFahrtBox.Size = new System.Drawing.Size(236, 299);
+            this.ZugFahrtBox.Size = new System.Drawing.Size(236, 264);
             this.ZugFahrtBox.TabIndex = 0;
             this.ZugFahrtBox.SelectedIndexChanged += new System.EventHandler(this.ZugFahrtBox_SelectedValueChanged);
             // 
@@ -341,7 +344,7 @@
             // 
             this.label_Fstr.AutoSize = true;
             this.label_Fstr.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label_Fstr.Location = new System.Drawing.Point(3, 495);
+            this.label_Fstr.Location = new System.Drawing.Point(3, 460);
             this.label_Fstr.Name = "label_Fstr";
             this.label_Fstr.Size = new System.Drawing.Size(236, 20);
             this.label_Fstr.TabIndex = 4;
@@ -369,6 +372,17 @@
             this.button4.Text = "Zug löschen";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // button5
+            // 
+            this.button5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button5.Location = new System.Drawing.Point(3, 483);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(236, 29);
+            this.button5.TabIndex = 6;
+            this.button5.Text = "button5";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // menuStrip1
             // 
@@ -403,7 +417,7 @@
             this.verbindungenToolStripMenuItem,
             this.punkteToolStripMenuItem});
             this.moduToolStripMenuItem.Name = "moduToolStripMenuItem";
-            this.moduToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.moduToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.moduToolStripMenuItem.Text = "Module";
             this.moduToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
@@ -411,7 +425,7 @@
             // 
             this.modulgrenzenToolStripMenuItem.CheckOnClick = true;
             this.modulgrenzenToolStripMenuItem.Name = "modulgrenzenToolStripMenuItem";
-            this.modulgrenzenToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.modulgrenzenToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.modulgrenzenToolStripMenuItem.Text = "Modulgrenzen";
             this.modulgrenzenToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
@@ -421,7 +435,7 @@
             this.namenToolStripMenuItem.CheckOnClick = true;
             this.namenToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.namenToolStripMenuItem.Name = "namenToolStripMenuItem";
-            this.namenToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.namenToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.namenToolStripMenuItem.Text = "Namen";
             this.namenToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
@@ -431,7 +445,7 @@
             this.verbindungenToolStripMenuItem.CheckOnClick = true;
             this.verbindungenToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.verbindungenToolStripMenuItem.Name = "verbindungenToolStripMenuItem";
-            this.verbindungenToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.verbindungenToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.verbindungenToolStripMenuItem.Text = "Verbindungen";
             this.verbindungenToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
@@ -441,7 +455,7 @@
             this.punkteToolStripMenuItem.CheckOnClick = true;
             this.punkteToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.punkteToolStripMenuItem.Name = "punkteToolStripMenuItem";
-            this.punkteToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
+            this.punkteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.punkteToolStripMenuItem.Text = "Punkte";
             this.punkteToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
@@ -451,17 +465,15 @@
             this.mToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.signalnamenToolStripMenuItem});
             this.mToolStripMenuItem.Name = "mToolStripMenuItem";
-            this.mToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.mToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.mToolStripMenuItem.Text = "Streckenplan";
             this.mToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
             // signalnamenToolStripMenuItem
             // 
-            this.signalnamenToolStripMenuItem.Checked = true;
             this.signalnamenToolStripMenuItem.CheckOnClick = true;
-            this.signalnamenToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.signalnamenToolStripMenuItem.Name = "signalnamenToolStripMenuItem";
-            this.signalnamenToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.signalnamenToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.signalnamenToolStripMenuItem.Text = "Signalnamen";
             this.signalnamenToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
@@ -469,7 +481,7 @@
             // 
             this.fahrstraenToolStripMenuItem.CheckOnClick = true;
             this.fahrstraenToolStripMenuItem.Name = "fahrstraenToolStripMenuItem";
-            this.fahrstraenToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.fahrstraenToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.fahrstraenToolStripMenuItem.Text = "Fahrstraßen";
             this.fahrstraenToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
@@ -479,7 +491,7 @@
             this.routeToolStripMenuItem.CheckOnClick = true;
             this.routeToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.routeToolStripMenuItem.Name = "routeToolStripMenuItem";
-            this.routeToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.routeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.routeToolStripMenuItem.Text = "Route";
             this.routeToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
@@ -578,6 +590,7 @@
         private System.Windows.Forms.ToolStripMenuItem signalnamenToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem routeToolStripMenuItem;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button5;
     }
 }
 

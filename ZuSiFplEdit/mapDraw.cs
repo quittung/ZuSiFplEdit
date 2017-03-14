@@ -55,7 +55,7 @@ namespace ZuSiFplEdit
         bool drawStrecke = false;
         bool drawSignal_Start = true;
         bool drawSignal_Ziel = true;
-        bool drawSignal_Namen = true;
+        bool drawSignal_Namen = false;
 
         bool drawFahrstrassen = false;
 
@@ -329,12 +329,17 @@ namespace ZuSiFplEdit
             }
             if (drawRoute && ZFBox.SelectedItem != null)
             {
-                var aktZugFahrt = (modSelForm.ZugFahrt)ZFBox.SelectedItem;
+                var aktZugFahrt = (ZugFahrt)ZFBox.SelectedItem;
                 if (aktZugFahrt.route != null)
                 {
                     foreach (var step in aktZugFahrt.route)
                     {
-                        framebuffer.DrawLine(Pens.Red, coordToPix(step.Start.StrElement.b_X, false), coordToPix(step.Start.StrElement.b_Y, true), coordToPix(step.Ziel.StrElement.b_X, false), coordToPix(step.Ziel.StrElement.b_Y, true));
+                        int start_x = coordToPix(step.Start.SignalCoord.abs_X, false);
+                        int start_y = coordToPix(step.Start.SignalCoord.abs_Y, true);
+                        int ziel_x = coordToPix(step.Ziel.SignalCoord.abs_X, false);
+                        int ziel_y = coordToPix(step.Ziel.SignalCoord.abs_Y, true);
+
+                        framebuffer.DrawLine(Pens.Red, start_x, start_y, ziel_x, ziel_y);
                     } 
                 }
             }

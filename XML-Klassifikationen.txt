@@ -1,22 +1,33 @@
-Signaltypen:
+.st3
+----------------------
+
+Signaltypen (Pure Raterei):
 1 - P-Tafel/Reines Schild
 2 - Weichenlaternen
 3 - Gleissperre
 5 - Zergsignale
-6 - Kombi-Halbregel/Vorsignal-1000Hz
+6 - Vorsignal-1000Hz (evtl. Kombi)
 7 - Kombi-Einfahr
-8 - (Brilon Wald)
+8 - Kombi-Einfahr
 9 - Ausfahr
 10 - Sbk
 12 - LZB
-13 -
+13 - Unsichtbar
 14 - 500Hz/BÜ
 ? - Kombi-Einfahr
 
-Gleisfunktionen:
+Gleisfunktionen (Binär):
 0 - Normales Gleis
 1 - Tunnel 
 2 - Keine Gleisfunktion
 4 - Weichenbausatz
 8 - Keine Schulter Rechts
 16 - Keine Schulter Links
+
+RefElTypen:
+0 - Aufgleispunkte
+1 - Modulgrenzen
+2 - Register
+3 - Weiche
+4 - Signale
+5 - Auflösepunkt

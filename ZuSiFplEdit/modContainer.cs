@@ -38,7 +38,7 @@ namespace ZuSiFplEdit
                 catch (Exception)
                 {
                     MessageBox.Show("Datenverzeichnis konnte nicht gefunden werden.", "Fataler Fehler", MessageBoxButtons.OK);
-                    Application.Exit();
+                    Environment.Exit(1);
                 }
             }
 

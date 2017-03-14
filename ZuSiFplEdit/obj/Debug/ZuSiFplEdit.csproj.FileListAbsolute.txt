@@ -13,3 +13,4 @@ C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.
 C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.pdb
 C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.csprojResolveAssemblyReference.cache
 C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.FormSignalSelect.resources
+C:\Users\Johannes Feltes\persdocs\ZuSiFplEdit\ZuSiFplEdit\obj\Debug\ZuSiFplEdit.ZugForm.resources

@@ -10,14 +10,14 @@ namespace ZuSiFplEdit
     class fileops
     {
         List<streckenModul> mSammlung;
-        List<modSelForm.ZugFahrt> Zugfahrten;
+        List<ZugFahrt> Zugfahrten;
         string basePath;
         string fpnFullPath;
         string fpnRelPath;
         string fpnSubDir;
         string fpnRelSubDir;
 
-        public fileops(List<streckenModul> mSammlung, List<modSelForm.ZugFahrt> Zugfahrten, string path, string basePath)
+        public fileops(List<streckenModul> mSammlung, List<ZugFahrt> Zugfahrten, string path, string basePath)
         {
             this.mSammlung = mSammlung;
             this.Zugfahrten = Zugfahrten;
@@ -139,7 +139,7 @@ namespace ZuSiFplEdit
             fpn_file.Close();
         }
 
-        void writeTRN(modSelForm.ZugFahrt zug)
+        void writeTRN(ZugFahrt zug)
         {
             string path = Path.Combine(fpnSubDir, zug.Gattung + zug.Zugnummer + ".trn");
             var trn_file = new StreamWriter(path, false);

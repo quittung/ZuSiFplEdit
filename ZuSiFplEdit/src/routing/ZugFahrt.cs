@@ -10,19 +10,34 @@ namespace ZuSiFplEdit
     {
         public class WayPoint
         {
+            /// <summary>
+            ///  Signal des Wegpunkts
+            /// </summary>
             public streckenModul.referenzElement Signal;
+            /// <summary>
+            ///  Enthält die Strecke zum nächsten zuletzt übergebenen Zielsignal, wenn möglich
+            /// </summary>
             public List<streckenModul.fahrStr> teilRoute;
 
+            /// <summary>
+            ///  Konstruktor für Wegpunkt von Signal
+            /// </summary>
             public WayPoint(streckenModul.referenzElement Signal)
             {
                 this.Signal = Signal;
             }
 
+            /// <summary>
+            ///  Setzt Strecke zum übergebenen Zielsignal
+            /// </summary>
             public void streckeBerechnen(streckenModul.referenzElement Zielsignal)
             {
                 teilRoute = fstrRouteSearchStart(Zielsignal);
             }
 
+            /// <summary>
+            ///  Gibt Strecke zu Zielsignal zurück
+            /// </summary>
             List<streckenModul.fahrStr> fstrRouteSearchStart(streckenModul.referenzElement ZielSignal)
             {
                 var Besucht = new List<streckenModul.fahrStr>();

@@ -24,25 +24,8 @@ namespace ZuSiFplEdit
             var timeGesamt = new System.Diagnostics.Stopwatch();
             timeGesamt.Start();
 
-            //Durchläuft das Streckenverzeichnis und sucht nach allen .st3-Dateien
-            try
-            {
-                DirBase = Microsoft.Win32.Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Zusi3", "DatenVerzeichnis", "").ToString();
-            }
-            catch (Exception)
-            {
-                try
-                {
-                    DirBase = Microsoft.Win32.Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Zusi3", "DatenVerzeichnis", "").ToString();
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("Datenverzeichnis konnte nicht gefunden werden.", "Fataler Fehler", MessageBoxButtons.OK);
-                    Environment.Exit(1);
-                }
-            }
+            FindeDatenVerzeichnis();
 
-            
             if (DirBase[DirBase.Length - 1] != '\\') DirBase += '\\';
             DirRoute = DirBase + "Routes\\Deutschland\\";
 
@@ -54,21 +37,14 @@ namespace ZuSiFplEdit
                 {
                     foreach (string st3 in Directory.GetFiles(mod, "*.st3"))
                     {
-                        if (! st3.Contains("ummy"))
+                        if (!st3.Contains("ummy"))
                         {
-                            streckenModul aktModul = modulEinlesen(st3);
-                            if (!(aktModul == null))
-                            {
-                                mSammlung.Add(aktModul);
-                            } else
-                            {
-                                st3Fehler.Add(st3);
-                            }
+                            ModulEinlesen(st3, st3Fehler);
                         }
                     }
                 }
             }
-            
+
             moduleVerlinken();
 
             timeGesamt.Stop();
@@ -90,15 +66,51 @@ namespace ZuSiFplEdit
             }
         }
 
-        streckenModul modulEinlesen(string Speicherort)
+
+        /// <summary>
+        /// Liest ein Modul ein und hängt es der passenden Liste an
+        /// </summary>
+        private void ModulEinlesen(string Speicherort, List<string> st3Fehler)
         {
             streckenModul aktMod = new streckenModul(Speicherort);
 
-            if (!aktMod.isSane) return null;
-
-            return aktMod;
+            if (aktMod.isSane == true)
+            {
+                mSammlung.Add(aktMod);
+            }
+            else
+            {
+                st3Fehler.Add(Speicherort);
+            }
         }
 
+
+        /// <summary>
+        /// Liest das Datenverzeichnis aus der Registry ein
+        /// </summary>
+        private void FindeDatenVerzeichnis()
+        {
+            try
+            {
+                //Registry-Key auf win64
+                DirBase = Microsoft.Win32.Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Zusi3", "DatenVerzeichnis", "").ToString();
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    //Registry-Key auf win32
+                    DirBase = Microsoft.Win32.Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Zusi3", "DatenVerzeichnis", "").ToString();
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Datenverzeichnis konnte nicht gefunden werden.", "Fataler Fehler", MessageBoxButtons.OK);
+                    Environment.Exit(1);
+                }
+            }
+        }
+        
+    
         //Wandelt die als String gespeicherten Verbindungen in Pointer um.
         void moduleVerlinken()
         {

@@ -6,21 +6,27 @@ using System.Windows.Forms;
 
 namespace ZuSiFplEdit
 {
+    /// <summary>
+    /// Enthält Informationen zu einer Zugfahrt inkl. Zugnummer, Gattung und Route
+    /// </summary>
     public class ZugFahrt
     {
+        /// <summary>
+        /// Enthält Informationen zu einem Wegpunkt und Funktionen zur Wegfindung
+        /// </summary>
         public class WayPoint
         {
             /// <summary>
-            ///  Signal des Wegpunkts
+            /// Signal des Wegpunkts
             /// </summary>
             public streckenModul.referenzElement Signal;
             /// <summary>
-            ///  Enthält die Strecke zum nächsten zuletzt übergebenen Zielsignal, wenn möglich
+            /// Enthält die Strecke zum nächsten zuletzt übergebenen Zielsignal, wenn möglich
             /// </summary>
             public List<streckenModul.fahrStr> teilRoute;
 
             /// <summary>
-            ///  Konstruktor für Wegpunkt von Signal
+            /// Konstruktor für Wegpunkt von Signal
             /// </summary>
             public WayPoint(streckenModul.referenzElement Signal)
             {
@@ -28,7 +34,7 @@ namespace ZuSiFplEdit
             }
 
             /// <summary>
-            ///  Setzt Strecke zum übergebenen Zielsignal
+            /// Setzt Strecke zum übergebenen Zielsignal
             /// </summary>
             public void streckeBerechnen(streckenModul.referenzElement Zielsignal)
             {
@@ -36,7 +42,7 @@ namespace ZuSiFplEdit
             }
 
             /// <summary>
-            ///  Gibt Strecke zu Zielsignal zurück
+            /// Gibt Strecke zu Zielsignal zurück
             /// </summary>
             List<streckenModul.fahrStr> fstrRouteSearchStart(streckenModul.referenzElement ZielSignal)
             {
@@ -50,6 +56,9 @@ namespace ZuSiFplEdit
                 return null;
             }
 
+            /// <summary>
+            /// Rekursiver Teil der Streckensuche
+            /// </summary>
             List<streckenModul.fahrStr> fstrRouteSearch(streckenModul.fahrStr Aktuell, streckenModul.referenzElement ZielSignal, List<streckenModul.fahrStr> Besucht)
             {
                 Besucht.Add(Aktuell);
@@ -85,13 +94,36 @@ namespace ZuSiFplEdit
             }
         }
 
+        /// <summary>
+        /// Enthält die Zuggattung (z.B. RB, IC)
+        /// </summary>
         public string Gattung;
+        /// <summary>
+        /// Enthält eine im Fahplankontext einmalige Zugnummer
+        /// </summary>
         public int Zugnummer;
+        /// <summary>
+        /// Veraltet: Enthält Startsignal der Zugfahrt. Ersetzt durch Wegpunkt-System.
+        /// </summary>
+        [Obsolete]
         public streckenModul.referenzElement ZstartSignal;
+        /// <summary>
+        /// Veraltet: Enthält Zielsignal der Zugfahrt. Ersetzt durch Wegpunkt-System.
+        /// </summary>
+        [Obsolete]
         public streckenModul.referenzElement ZzielSignal;
+        /// <summary>
+        /// Enthält alle Wegpunkte der Zugfahrt
+        /// </summary>
         public List<WayPoint> WayPoints;
+        /// <summary>
+        /// Enthält die Route der Zugfahrt als Liste von Fahrstraßen, wenn berechnet. 
+        /// </summary>
         public List<streckenModul.fahrStr> route;
 
+        /// <summary>
+        /// Konstruktor der Klasse ZugFahrt
+        /// </summary>
         public ZugFahrt()
         {
             WayPoints = new List<WayPoint>();
@@ -103,6 +135,9 @@ namespace ZuSiFplEdit
             return (Gattung + " " + Zugnummer.ToString());
         }
 
+        /// <summary>
+        /// Berechnet die Route der Zugfahrt aus Wegpunkten soweit wie möglich
+        /// </summary>
         public void routeBerechnen()
         {
             route.Clear();
@@ -135,5 +170,6 @@ namespace ZuSiFplEdit
                 }
             }
         }
+
     }
 }

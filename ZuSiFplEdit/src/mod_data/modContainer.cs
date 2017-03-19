@@ -8,6 +8,9 @@ using System.Linq;
 
 namespace ZuSiFplEdit
 {
+    /// <summary>
+    /// Sammelt, vernetzt und verwaltet Streckenmodule
+    /// </summary>
     class modContainer
     {
         
@@ -128,7 +131,7 @@ namespace ZuSiFplEdit
                     {
                         aktModul.NetzGrenze = true;
                         //aktModul.VerbindungenStr.Remove(connectionString);
-                    }
+                    }   
                 }
             }
 

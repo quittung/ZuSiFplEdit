@@ -63,7 +63,7 @@ namespace ZuSiFplEdit
 
             ladeAnzeige.instantProgress(ladeAnzeige.progressBar1, 3, "Verlinke Module...");
 
-            moduleVerlinken();
+            moduleVerlinken(ladeAnzeige);
 
             ladeAnzeige.instantProgress(ladeAnzeige.progressBar1, 4, "Finalisiere...");
 
@@ -134,8 +134,11 @@ namespace ZuSiFplEdit
         
     
         //Wandelt die als String gespeicherten Verbindungen in Pointer um.
-        void moduleVerlinken()
+        void moduleVerlinken(form_lade ladeAnzeige)
         {
+            ladeAnzeige.progressBar2.Maximum = 3;
+            ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 0, "Verlinke Module...");
+
             //MessageBox.Show("Module werden jetzt verlinkt.", "Debugnachricht", MessageBoxButtons.OK);
             foreach (streckenModul aktModul in mSammlung)
             {
@@ -198,6 +201,8 @@ namespace ZuSiFplEdit
                 mod.drawDist = dist;
             }
 
+
+            ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 1, "Verlinke Fahrstraßen mit Signalen...");
             //string problemstellen = "";
             //verlinke fahrstraßen mit referenzen.
             var unvollständigeFahrstraßen = new List<streckenModul.fahrStr>();
@@ -240,6 +245,8 @@ namespace ZuSiFplEdit
                 }
             }
 
+
+            ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 2, "Verlinke Fahrstraßen mit Folgestraßen...");
             //Folgestraßen eintragen
             foreach (var mod in mSammlung)
             {
@@ -259,8 +266,9 @@ namespace ZuSiFplEdit
                     }
                 }
             }
-            
 
+
+            ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 3, "Sammle Start- und Zielsignale...");
             //Sammle abgehende Fahrstraßen zu Signalen in Modul.
             foreach (var mod in mSammlung)
             {

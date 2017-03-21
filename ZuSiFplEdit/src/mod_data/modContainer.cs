@@ -26,29 +26,46 @@ namespace ZuSiFplEdit
         {
             var timeGesamt = new System.Diagnostics.Stopwatch();
             timeGesamt.Start();
+            
+            var ladeAnzeige = new form_lade();
+            ladeAnzeige.Show();
+            ladeAnzeige.Beschreibung.Text = "Suche Datenverzeichnis...";
+            ladeAnzeige.Update();
 
             FindeDatenVerzeichnis();
+            
+            ladeAnzeige.instantProgress(ladeAnzeige.progressBar1, 1, "Suche Module...");
 
             if (DirBase[DirBase.Length - 1] != '\\') DirBase += '\\';
             DirRoute = DirBase + "Routes\\Deutschland\\";
 
-            List<string> st3Fehler = new List<string>();
-
+            List<string> modulPaths = new List<string>();
             foreach (string grid in Directory.GetDirectories(DirRoute))
             {
                 foreach (string mod in Directory.GetDirectories(grid))
                 {
                     foreach (string st3 in Directory.GetFiles(mod, "*.st3"))
                     {
-                        if (!st3.Contains("ummy"))
-                        {
-                            ModulEinlesen(st3, st3Fehler);
-                        }
+                        modulPaths.Add(st3);
                     }
                 }
             }
 
+            ladeAnzeige.progressBar2.Maximum = modulPaths.Count - 1;
+            ladeAnzeige.instantProgress(ladeAnzeige.progressBar1, 2, "Lese Module...");
+
+            List<string> st3Fehler = new List<string>();
+            for (int i = 0; i < modulPaths.Count; i++)
+            {
+                ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, i, "Lese Module [" + (i + 1) + "/" + modulPaths.Count + "] - " + modulPaths[i].Split('\\').Last());
+                ModulEinlesen(modulPaths[i], st3Fehler);
+            }
+
+            ladeAnzeige.instantProgress(ladeAnzeige.progressBar1, 3, "Verlinke Module...");
+
             moduleVerlinken();
+
+            ladeAnzeige.instantProgress(ladeAnzeige.progressBar1, 4, "Finalisiere...");
 
             timeGesamt.Stop();
             loadTime = timeGesamt.ElapsedMilliseconds;
@@ -67,6 +84,8 @@ namespace ZuSiFplEdit
                 errMsg += "\n\nDie betroffenen Module wurden ignoriert.";
                 MessageBox.Show(errMsg, "Fehler in .st3-Dateien", MessageBoxButtons.OK);
             }
+
+            ladeAnzeige.Dispose();
         }
 
 

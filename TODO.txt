@@ -1,29 +1,37 @@
 TODO - ZuSi 3 - Fahrplaneditor 
+Diese Zeit soll langfristig durch das Github-Issue-Tracking ersetzt werden
 
-V0.3
-- .st3 soll vollständig eingelesen werden 
-- detailliertere Karten
-- Seitenverhältnis des Karteninhalts beim Verändern der Größe beibehalten
-- Datei mit geblockten Modulen.
-- Draw abbrechen, wenn Karte verschoben oder gezoomt wurde
-- Streckenelemente verknüpfen
-- Einlesen intelligenter gestalten
-Menü Fahrplan in Zusi öffnen
+
+
+
 TODO:
-- Signale besser rendern
-- Signalauswahl fixen
-- Regelgleiserkennungn bei Routefinding
-- Startsignal beim Umdrehen nach Zielsignal (inkl. max. Abstand)
-- Umdrehen bei Routefinding
+Fahrstraßen richtig enden lassen
 
+V0.4
+ TODO:
+ - Zug/Fahrplan sofort starten (tmp-trn)
+ - Zugpositionsanzeige
+ - Ladeanzeige
+ - Kassel Hbf verschwindet
+ - Autoauswahl der Module nimmt wirklich nur Start und Zielsignale und nicht, was dazwischen ist.
+ - Wegpunkte
 
 V0.?
+- Meer Layer
+- Namen der Betriebsstellen
+- Textausrichtung flackert
+- Regelgleiserkennungn bei Routefinding
+- Modvisible sollte module in einer gewissenn entfernung immer anzeigen.
+- Startsignal beim Umdrehen nach Zielsignal (inkl. max. Abstand)
+- Routefinding mit Umdrehen
+- Menü Fahrplan in Zusi öffnen
 - Stationsnamen besser platzieren.
 - Wenn es mehrere Module an der gleichen Stelle gibt, wird der Text überschrieben, z. B. Gersthofen_1990, Gersthofen_2016
 - Rahmen aufziehen, fügt mehrere Module hinzu oder entfernt 
 - Bessere Maßstabsanzeige
-
-V1
+- Fahrstraßen: Nächstes Signal, wenn nach Zielsignal umgedreht wird.
+- Distanzabfrage funktioniert bei sehr hohem Zoom nicht mehr. Vielleicht Distanzabfrage auf Koodirnaten anstatt von Pixeln umstellen.
+- Zug sofort fahren, dabei den Fpl in tmp-Verzeichnis speichern
 - Vollständige Code-Doku
 - Modulauswahl nach Anfangs- und Endpunkt
 - Richtiger Gleisplan
@@ -32,7 +40,13 @@ V1
 - Liste aller verfügbaren Befehlskonfigurationen zum Auswählen (Combobox vielleicht?)
 - Autoren-Informationen werden automatisch eingefügt
 - Graphischer Fahrplan
-
+- Elemente in Arrays für Schnelligkeit?
+- Vorschlag für Zusi: Overwrite UTM-Center in trn-file
+- Betriebststellen[]
+- Seitenverhältnis des Karteninhalts beim Verändern der Größe beibehalten
+- Datei mit geblockten Modulen.
+- Draw abbrechen, wenn Karte verschoben oder gezoomt wurde
+- Streckenelemente verknüpfen
 
 Changelog
 V0.2
@@ -43,21 +57,21 @@ V0.2
 - Speicherort der Fahrplandatei kann jetzt frei gewählt werden
 - Module mit weniger als zwei vorhandenen Nachbarn (Netzgrenzen) und ausgewählte Module werden jetzt unabhängig von der Vergrößerung angezeigt
 
+V0.3
+- Streckendateien werden vollständiger eingelesen
+- Addition einer Streckenkarte und Fahrstraßenplan
+- Addition von einfacher Zugverwaltung
+- Bessere Textplatzierung in der Karte
+
+
 Feedback:
-- .NET hat libs für Pfad-Basteley.
+
 
 Bugs:
-- Absturz bei Distanzabfrage, wenn kein Modul sichtbar ist.
-- Modvisible sollte module in einer gewissenn entfernung immer anzeigen.
-- Absturz, wenn speicherdialog abgebrochen
-- Memoryleak durch Framedrawing
-- Richtungen von Fahrstraßen(Norm)?
-- Betriebststellen[]
-- Signale[]?
-- PixZuSignal
-- StartSignalZuFahrstraße[]
-- Einige Signale werden nicht eingelesen.
-- Modulauswahl möglich, wenn modul nicht sichtbar
-- Fahrstraßen: Nächstes Signal, wenn nach Zielsignal umgedreht wird.
-- Distanzabfrage funktioniert bei sehr hohem Zoom nicht mehr. Vielleicht Distanzabfrage auf Koodirnaten anstatt von Pixeln umstellen.
-- Göttingen N11 mit P11 falsch verlinkt
+ 
+ 
+ Große Feature, die noch kommen:
+ - Zugzusammenstellung
+ - Wenden und trotzdem den Weg finden 
+ - Wegpunkte
+ - Intellentere Fahrwegauswahl

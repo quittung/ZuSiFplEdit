@@ -136,7 +136,7 @@ namespace ZuSiFplEdit
         //Wandelt die als String gespeicherten Verbindungen in Pointer um.
         void moduleVerlinken(form_lade ladeAnzeige)
         {
-            ladeAnzeige.progressBar2.Maximum = 3;
+            ladeAnzeige.progressBar2.Maximum = 4;
             ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 0, "Verlinke Module...");
 
             //MessageBox.Show("Module werden jetzt verlinkt.", "Debugnachricht", MessageBoxButtons.OK);
@@ -202,6 +202,33 @@ namespace ZuSiFplEdit
             }
 
 
+            //ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 0, "Verlinke Streckenelemente...");
+            ////Verlinke Streckenelemente
+            //foreach (var mod in mSammlung)
+            //{
+            //    foreach (var strE in mod.StreckenElemente)
+            //    {
+            //        strE.AnschlussNorm = new List<streckenModul.streckenElement>();
+            //        if (strE.AnschlussNormInt.Count > 0)
+            //        {
+            //            foreach (var normElement in strE.AnschlussNormInt)
+            //            {
+            //                strE.AnschlussNorm.Add(mod.sucheStrElement(normElement));
+            //            }
+            //        }
+
+            //        strE.AnschlussGegen = new List<streckenModul.streckenElement>();
+            //        if (strE.AnschlussGegenInt.Count > 0)
+            //        {
+            //            foreach (var gegenElement in strE.AnschlussGegenInt)
+            //            {
+            //                strE.AnschlussGegen.Add(mod.sucheStrElement(gegenElement));
+            //            }
+            //        }
+            //    }
+            //}
+
+
             ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 1, "Verlinke Fahrstraßen mit Signalen...");
             //string problemstellen = "";
             //verlinke fahrstraßen mit referenzen.
@@ -245,6 +272,8 @@ namespace ZuSiFplEdit
                 }
             }
 
+            
+
 
             ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 2, "Verlinke Fahrstraßen mit Folgestraßen...");
             //Folgestraßen eintragen
@@ -252,7 +281,7 @@ namespace ZuSiFplEdit
             {
                 foreach (var fstr in mod.FahrStr)
                 {
-                    fstr.folgeStraßen = new List<streckenModul.fahrStr>();
+                    fstr.folgestraßen = new List<streckenModul.fahrStr>();
 
                     if (!(fstr.Ziel == null))
                     {
@@ -260,7 +289,7 @@ namespace ZuSiFplEdit
                         {
                             if (fstr.Ziel == fort.Start)
                             {
-                                fstr.folgeStraßen.Add(fort);
+                                fstr.folgestraßen.Add(fort);
                             }
                         }
                     }
@@ -285,6 +314,18 @@ namespace ZuSiFplEdit
                         fstr.ZielMod.ZielSignale.Add(fstr.Ziel);
                     if (!(fstr.ZielMod.StartUndZielSignale.Contains(fstr.Ziel)))
                         fstr.ZielMod.StartUndZielSignale.Add(fstr.Ziel);
+                }
+            }
+
+            ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 4, "Finde Wendeziele...");
+            //Finde Wendesignale
+            //TODO: Verschieben direkt vor Routefinding
+            foreach (var mod in mSammlung)
+            {
+                foreach (var fstr in mod.FahrStr)
+                {
+                    ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 4, "Finde Wendeziele (" + mod.modName + " - " + fstr.Ziel.Info + ")...");
+                    fstr.wendesignale = findeWendeziele(fstr.Ziel);
                 }
             }
         }
@@ -315,6 +356,145 @@ namespace ZuSiFplEdit
             string modName = modNameAr[modNameAr.Length - 1];
             modName = modName.Substring(0, modName.Length - 4);
             return (modName);
+        }
+
+
+        List<streckenModul.referenzElement> findeWendeziele(streckenModul.referenzElement wendeStart)
+        {
+            verbindeStreckenelement(wendeStart.StrElement);
+
+            //Wähle richtige Richtung zum Suchen
+            List<streckenModul.streckenElement> nächsteElemente;
+            if (wendeStart.StrNorm)
+            {
+                nächsteElemente = wendeStart.StrElement.AnschlussGegen;
+            }
+            else
+            {
+                nächsteElemente = wendeStart.StrElement.AnschlussNorm;
+            }
+
+            //Ziele suchen
+            List<streckenModul.referenzElement> Zielsignale = new List<streckenModul.referenzElement>();
+
+            if (nächsteElemente.Count > 0)
+            {
+                foreach (var element in nächsteElemente)
+                {
+                    var ZielsignaleTeil = WendesignalTraverse(element, wendeStart.StrElement);
+                    if (ZielsignaleTeil != null)
+                    {
+                        Zielsignale.AddRange(ZielsignaleTeil);
+                    }
+                }
+            }
+
+            //if (Zielsignale.Count == 0)
+            //{
+            //    string report = "Habe " + Zielsignale.Count + " Wendeziele für " + wendeStart.Info + " gefunden: \n";
+            //    foreach (var Zielsignal in Zielsignale)
+            //    {
+            //        report += Zielsignal.ToString() + "\n";
+            //    }
+            //    MessageBox.Show(report); 
+            //}
+
+            return Zielsignale;
+        }
+
+        List<streckenModul.referenzElement> WendesignalTraverse(streckenModul.streckenElement aktuellesStreckenElement, streckenModul.streckenElement letztesStreckenelement)
+        {
+            verbindeStreckenelement(aktuellesStreckenElement);
+
+            bool bewegungsrichtungIstNorm = true;
+
+            var nächsteElemente = findeNächsteStreckenelemente(aktuellesStreckenElement, letztesStreckenelement, out bewegungsrichtungIstNorm);
+
+
+            var Zielsignale = new List<streckenModul.referenzElement>();
+
+            //Ist Zielsignal in diesem Element vorhanden?
+            if (aktuellesStreckenElement.signalReferenz != null)
+            {
+                if (aktuellesStreckenElement.signalReferenz.istStart && (aktuellesStreckenElement.signalReferenz.StrNorm == bewegungsrichtungIstNorm))
+                {
+                    Zielsignale.Add(aktuellesStreckenElement.signalReferenz);
+                    return Zielsignale;
+                }
+            }
+            
+            //Zum nächsten Element weiterziehen.
+            if (nächsteElemente.Count > 0)
+            {
+                foreach (var element in nächsteElemente)
+                {
+                    Zielsignale.AddRange(WendesignalTraverse(element, aktuellesStreckenElement));
+                }
+            }
+
+            return Zielsignale;
+        }
+
+        void verbindeStreckenelement(streckenModul.streckenElement verbindungsElement)
+        {
+            verbindeStreckenelement(verbindungsElement, null);
+        }
+
+        void verbindeStreckenelement(streckenModul.streckenElement verbindungsElement, streckenModul.streckenElement herkunftsElement)
+        {
+            //TODO: Herkunftselement einbeziehen
+            //TODO: Neue Verbindungen zurückverbinden
+            //TODO: Verbindungen zu anderen Modulen ermöglichen
+            //TODO: Codverdoppelung zurückbauen
+            if (!verbindungsElement.verlinkt)
+            {
+                verbindungsElement.AnschlussNorm = new List<streckenModul.streckenElement>();
+                if (verbindungsElement.AnschlussNormInt.Count > 0)
+                {
+                    foreach (var normElement in verbindungsElement.AnschlussNormInt)
+                    {
+                        verbindungsElement.AnschlussNorm.Add(verbindungsElement.Modul.sucheStrElement(normElement));
+                    }
+                }
+
+                verbindungsElement.AnschlussGegen = new List<streckenModul.streckenElement>();
+                if (verbindungsElement.AnschlussGegenInt.Count > 0)
+                {
+                    foreach (var gegenElement in verbindungsElement.AnschlussGegenInt)
+                    {
+                        verbindungsElement.AnschlussGegen.Add(verbindungsElement.Modul.sucheStrElement(gegenElement));
+                    }
+                }
+
+                verbindungsElement.verlinkt = true; 
+            }
+        }
+
+        List<streckenModul.streckenElement> findeNächsteStreckenelemente(streckenModul.streckenElement aktuellesStreckenElement, streckenModul.streckenElement letztesStreckenelement, out bool bewegungsrichtungIstNorm)
+        {
+            verbindeStreckenelement(aktuellesStreckenElement);
+
+            //Finde das richte Ende
+            if (aktuellesStreckenElement.AnschlussNorm.Count > 0)
+            {
+                if (aktuellesStreckenElement.AnschlussNorm.Contains(letztesStreckenelement))
+                {
+                    bewegungsrichtungIstNorm = false;
+                    return aktuellesStreckenElement.AnschlussGegen;
+                }
+            }
+
+            if (aktuellesStreckenElement.AnschlussGegen.Count > 0)
+            {
+                if (aktuellesStreckenElement.AnschlussGegen.Contains(letztesStreckenelement))
+                {
+                    bewegungsrichtungIstNorm = true;
+                    return aktuellesStreckenElement.AnschlussNorm;
+                }
+            }
+
+            bewegungsrichtungIstNorm = false;
+            return new List<streckenModul.streckenElement>(); ;
         }
     }
 }

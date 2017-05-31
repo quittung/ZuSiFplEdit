@@ -56,25 +56,34 @@ namespace ZuSiFplEdit
 
         public class streckenElement
         {
+            public streckenModul Modul;
+            public bool verlinkt;
+
             public int Nr;
             public float spTrass;
             public int Anschluss;
             public int Funktion;
             public string Oberbau;
+            public referenzElement signalReferenz;
 
             public double g_X;
             public double g_Y;
             public double b_X;
             public double b_Y;
 
-            public int AnschlussNorm;
-            public int AnschlussGegen;
+            public List<int> AnschlussNormInt;
+            public List<int> AnschlussGegenInt;
+            public List<streckenElement> AnschlussNorm;
+            public List<streckenElement> AnschlussGegen;
 
             public Signal SignalNorm;
             public Signal SignalGegen;
 
-            public streckenElement(int Nr, float spTrass, int Anschluss, int Funktion, string Oberbau, double g_X, double g_Y, double b_X, double b_Y, Signal SignalNorm, Signal SignalGegen, int AnschlussNorm, int AnschlussGegen)
+            public streckenElement(streckenModul Modul, int Nr, float spTrass, int Anschluss, int Funktion, string Oberbau, double g_X, double g_Y, double b_X, double b_Y, Signal SignalNorm, Signal SignalGegen, List<int> AnschlussNorm, List<int> AnschlussGegen)
             {
+                this.Modul = Modul;
+                this.verlinkt = false;
+
                 this.Nr = Nr;
                 this.spTrass = spTrass;
                 this.Anschluss = Anschluss;
@@ -89,13 +98,15 @@ namespace ZuSiFplEdit
                 this.SignalNorm = SignalNorm;
                 this.SignalGegen = SignalGegen;
 
-                this.AnschlussNorm = AnschlussNorm;
-                this.AnschlussGegen = AnschlussGegen;
+                this.AnschlussNormInt = AnschlussNorm;
+                this.AnschlussGegenInt = AnschlussGegen;
         }
         }
 
         public class referenzElement
         {
+            public streckenModul Modul;
+
             public int ReferenzNr;
             public int StrElementNr;
             public bool StrNorm;
@@ -110,8 +121,10 @@ namespace ZuSiFplEdit
 
             public List<fahrStr> abgehendeFahrstraßen;
 
-            public referenzElement(int ReferenzNr, int StrElement, bool StrNorm, int RefTyp, string Info)
+            public referenzElement(streckenModul Modul, int ReferenzNr, int StrElement, bool StrNorm, int RefTyp, string Info)
             {
+                this.Modul = Modul;
+
                 this.ReferenzNr = ReferenzNr;
                 StrElementNr = StrElement;
                 this.StrNorm = StrNorm;
@@ -162,7 +175,8 @@ namespace ZuSiFplEdit
             public referenzElement Ziel;
             public streckenModul ZielMod;
 
-            public List<fahrStr> folgeStraßen;
+            public List<fahrStr> folgestraßen;
+            public List<referenzElement> wendesignale;
 
             public fahrStr(string FahrstrName, string FahrstrStrecke, int RglGgl, string FahrstrTyp, float Laenge, int StartRef, string StartMod_Str, int ZielRef, string ZielMod_Str)
             {
@@ -367,7 +381,7 @@ namespace ZuSiFplEdit
                         int RefTyp = Convert.ToInt32(modXml.GetAttribute("RefTyp"));
                         string Info = modXml.GetAttribute("Info");
 
-                        ReferenzElemente.Add(new referenzElement(ReferenzNr, StrElement, StrNorm, RefTyp, Info));
+                        ReferenzElemente.Add(new referenzElement(this, ReferenzNr, StrElement, StrNorm, RefTyp, Info));
                         if (RefTyp == 1)
                         {
                             string verbindungsName = Info;
@@ -404,8 +418,8 @@ namespace ZuSiFplEdit
                         b_Y = UTM_NS + (b_Y / 1000);
 
 
-                        int AnschlussNorm = -1;
-                        int AnschlussGegen = -1;
+                        var AnschlussNorm = new List<int>();
+                        var AnschlussGegen = new List<int>();
                         Signal SignalNorm = null;
                         Signal SignalGegen = null;
                         while ((!(modXml.NodeType == XmlNodeType.EndElement && modXml.Name == "StrElement")) && modXml.Read())
@@ -442,18 +456,23 @@ namespace ZuSiFplEdit
                                     while ((!(modXml.Name == "InfoGegenRichtung")) && (!(modXml.Name == "StrElement")) && modXml.Read()) { }
                                 }
                             }
-                            if (modXml.Name == "NachNorm" && modXml.NodeType == XmlNodeType.Element)
+
+                            //TODO: Verbindungen zu anderen Modulen einlesen
+                            while ((!(modXml.Name == "StrElement")) && modXml.Read())
                             {
-                                AnschlussNorm = Convert.ToInt32(modXml.GetAttribute("Nr"));
-                            }
-                            if (modXml.Name == "NachGegen" && modXml.NodeType == XmlNodeType.Element)
-                            {
-                                AnschlussGegen = Convert.ToInt32(modXml.GetAttribute("Nr"));
+                                if (modXml.Name == "NachNorm" && modXml.NodeType == XmlNodeType.Element)
+                                {
+                                    AnschlussNorm.Add(Convert.ToInt32(modXml.GetAttribute("Nr")));
+                                }
+                                if (modXml.Name == "NachGegen" && modXml.NodeType == XmlNodeType.Element)
+                                {
+                                    AnschlussGegen.Add(Convert.ToInt32(modXml.GetAttribute("Nr")));
+                                }
                             }
                         }
 
 
-                       StreckenElemente.Add(new streckenElement(Nr, spTrass, Anschluss, Funktion, Oberbau, g_X, g_Y, b_X, b_Y, SignalNorm, SignalGegen, AnschlussNorm, AnschlussGegen));
+                       StreckenElemente.Add(new streckenElement(this, Nr, spTrass, Anschluss, Funktion, Oberbau, g_X, g_Y, b_X, b_Y, SignalNorm, SignalGegen, AnschlussNorm, AnschlussGegen));
                         
 
                         
@@ -507,6 +526,9 @@ namespace ZuSiFplEdit
             {
                 if (refEl.RefTyp == 4)
                 {
+
+                    refEl.StrElement.signalReferenz = refEl;
+
                     if (refEl.StrElement.SignalNorm == null ^ refEl.StrElement.SignalGegen == null)
                     {
                         if (refEl.StrElement.SignalGegen == null)

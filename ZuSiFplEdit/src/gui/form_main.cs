@@ -315,7 +315,7 @@ namespace ZuSiFplEdit
             }
             else
             {
-                foreach (var folge in Aktuell.folgeStraßen)
+                foreach (var folge in Aktuell.folgestraßen)
                 {
                     if ((!(Besucht.Contains(folge))) && (folge.Ziel != null))
                     {

@@ -154,6 +154,7 @@ namespace ZuSiFplEdit
 
             for (int i = 0; i < zug.route.Count; i++)
             {
+                //Richtiges Signal aussuchen
                 streckenModul.Signal nextSignal = null;
                 if (zug.route[i].Ziel.StrElement.SignalNorm != null)
                 {
@@ -164,13 +165,23 @@ namespace ZuSiFplEdit
                     nextSignal = zug.route[i].Ziel.StrElement.SignalGegen;
                 }
 
+
                 if (i == 0)
                 {
                     trn_file.WriteLine("<FahrplanEintrag Ank=\"2017-02-27 12:00:00\" Abf=\"2017-02-27 12:01:00\" Betrst=\"" + nextSignal.Betriebstelle + "\">");
                 }
                 else
                 {
-                    trn_file.WriteLine("<FahrplanEintrag Betrst=\"" + nextSignal.Betriebstelle + "\">");
+                    if ((i < (zug.route.Count - 1)) && (zug.route[i].Ziel != zug.route[i + 1].Start))
+                    {
+                        MessageBox.Show("Baue Wendung ein.");
+                        //BUG: Wende braucht Zeiten
+                        trn_file.WriteLine("<FahrplanEintrag Betrst=\"" + nextSignal.Betriebstelle + "\" FzgVerbandAktion=\"2\" FzgVerbandWendeSignalabstand=\"70\">");
+                    }
+                    else
+                    {
+                        trn_file.WriteLine("<FahrplanEintrag Betrst=\"" + nextSignal.Betriebstelle + "\">");
+                    }
                 }
                 trn_file.WriteLine("<FahrplanSignalEintrag FahrplanSignal=\"" + nextSignal.Name + "\"/>");
                 trn_file.WriteLine("</FahrplanEintrag>");

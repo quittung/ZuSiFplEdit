@@ -49,8 +49,11 @@ namespace ZuSiFplEdit
                 var Besucht = new List<streckenModul.fahrStr>();
                 foreach (var start_fstr in Signal.abgehendeFahrstraßen)
                 {
-                    var rList = fstrRouteSearch(start_fstr, ZielSignal, Besucht);
-                    if (rList != null) return rList;
+                    for (int i = -1; i < 10; i++)
+                    {
+                        var rList = fstrRouteSearch(start_fstr, ZielSignal, Besucht, 0, i);
+                        if (rList != null) return rList; 
+                    }
                 }
 
                 return null;
@@ -59,32 +62,60 @@ namespace ZuSiFplEdit
             /// <summary>
             /// Rekursiver Teil der Streckensuche
             /// </summary>
-            List<streckenModul.fahrStr> fstrRouteSearch(streckenModul.fahrStr Aktuell, streckenModul.referenzElement ZielSignal, List<streckenModul.fahrStr> Besucht)
+            //TODO: Wenden einbauen
+            List<streckenModul.fahrStr> fstrRouteSearch(streckenModul.fahrStr Aktuell, streckenModul.referenzElement ZielSignal, List<streckenModul.fahrStr> Besucht, int rekursionstiefe, int wendetiefe)
             {
                 Besucht.Add(Aktuell);
+                //Sofort aufhören, wenn Zielsignal gefunden.
                 if (Aktuell.Ziel.StrElement == ZielSignal.StrElement)
                 {
                     var Lizte = new List<streckenModul.fahrStr>();
                     Lizte.Add(Aktuell);
                     return (Lizte);
                 }
-                else
+
+
+                if (rekursionstiefe == wendetiefe)
                 {
-                    foreach (var folge in Aktuell.folgestraßen)
+                    if (Aktuell.wendesignale.Count > 0)
                     {
-                        if ((!(Besucht.Contains(folge))) && (folge.Ziel != null))
+                        foreach (var wSignal in Aktuell.wendesignale)
                         {
-                            var rList = fstrRouteSearch(folge, ZielSignal, Besucht);
-                            if (!(rList == null))
+                            foreach (var wSFstr in wSignal.abgehendeFahrstraßen)
                             {
-                                rList.Insert(0, Aktuell);
-                                return rList;
+                                var rList = fstrRouteSearch(wSFstr, ZielSignal, Besucht, rekursionstiefe + 1, wendetiefe); if (!(rList == null))
+                                {
+                                    rList.Insert(0, Aktuell);
+                                    return rList;
+                                }
                             }
-                            Besucht.Add(Aktuell);
                         }
+                    }
+                    else
+                    {
+                        return null;
                     }
                 }
 
+
+                //Weiter vorwärts suchen.
+                foreach (var folge in Aktuell.folgestraßen)
+                {
+                    if ((!(Besucht.Contains(folge))) && (folge.Ziel != null))
+                    {
+                        var rList = fstrRouteSearch(folge, ZielSignal, Besucht, rekursionstiefe + 1, wendetiefe);
+                        if (!(rList == null))
+                        {
+                            //MessageBox.Show("Weg gefunden nach " + rekursionstiefe + " Rekursionen.");
+                            rList.Insert(0, Aktuell);
+                            return rList;
+                        }
+                        Besucht.Add(Aktuell);
+                    }
+                }
+                
+
+                //MessageBox.Show("Gebe auf nach " + rekursionstiefe + " Rekursionen.");
                 return null;
             }
 

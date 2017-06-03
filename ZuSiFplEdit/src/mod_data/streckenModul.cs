@@ -458,8 +458,8 @@ namespace ZuSiFplEdit
                             }
 
                             //TODO: Verbindungen zu anderen Modulen einlesen
-                            while ((!(modXml.Name == "StrElement")) && modXml.Read())
-                            {
+                            //while ((!(modXml.Name == "StrElement")) && modXml.Read())
+                            //{
                                 if (modXml.Name == "NachNorm" && modXml.NodeType == XmlNodeType.Element)
                                 {
                                     AnschlussNorm.Add(Convert.ToInt32(modXml.GetAttribute("Nr")));
@@ -468,7 +468,7 @@ namespace ZuSiFplEdit
                                 {
                                     AnschlussGegen.Add(Convert.ToInt32(modXml.GetAttribute("Nr")));
                                 }
-                            }
+                            //}
                         }
 
 

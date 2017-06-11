@@ -62,7 +62,6 @@ namespace ZuSiFplEdit
             /// <summary>
             /// Rekursiver Teil der Streckensuche
             /// </summary>
-            //TODO: Wenden einbauen
             List<streckenModul.fahrStr> fstrRouteSearch(streckenModul.fahrStr Aktuell, streckenModul.referenzElement ZielSignal, List<streckenModul.fahrStr> Besucht, int rekursionstiefe, int wendetiefe)
             {
                 Besucht.Add(Aktuell);
@@ -147,10 +146,23 @@ namespace ZuSiFplEdit
         /// Enthält alle Wegpunkte der Zugfahrt
         /// </summary>
         public List<WayPoint> WayPoints;
+
+        /// <summary>
+        /// </summary>
+        public float route_länge;
+        /// <summary>
+        /// </summary>
+        public long route_dauer;
         /// <summary>
         /// Enthält die Route der Zugfahrt als Liste von Fahrstraßen, wenn berechnet. 
         /// </summary>
         public List<streckenModul.fahrStr> route;
+        /// <summary>
+        /// </summary>
+        public DateTime[] route_ankunft;
+        /// <summary>
+        /// </summary>
+        public DateTime[] route_abfahrt;
 
         /// <summary>
         /// Konstruktor der Klasse ZugFahrt
@@ -196,7 +208,56 @@ namespace ZuSiFplEdit
                     else
                     {
                         MessageBox.Show("Die Route konnte nur bis \"" + route[route.Count - 1].Ziel.Info + "\" bestimmt werden.");
-                        return;
+                        break;
+                    }
+                }
+            }
+            route_metadaten_berechen();
+        }
+
+        public void route_metadaten_berechen()
+        {
+            route_ankunft = new DateTime[route.Count];
+            route_abfahrt = new DateTime[route.Count];
+
+            float v_ms_max = 20;
+
+            route_dauer = 0;
+            route_länge = 0;
+
+            route_ankunft[0] = Convert.ToDateTime("2017-02-27 12:00:00");
+            route_abfahrt[0] = Convert.ToDateTime("2017-02-27 12:00:20");
+
+            for (int i = 1; i < route.Count; i++)
+            {
+                //Strecke suchen
+                float strecke_cur = route[i].Laenge;
+                //Zeit berechnen
+                long zeit_cur = (long)(strecke_cur / v_ms_max);
+                //Strecke aufaddieren
+                route_länge += strecke_cur;
+                //Zeit aufaddieren
+                route_dauer += zeit_cur;
+
+
+                //Zeiten eintragen
+                if (i != 0)
+                {
+                    DateTime letzteZeit;
+                    if ((route_abfahrt[i - 1] == null) || (route_abfahrt[i - 1] == new DateTime()))
+                    {
+                        letzteZeit = route_ankunft[i - 1];
+                    }
+                    else
+                    {
+                        letzteZeit = route_abfahrt[i - 1];
+                    }
+
+                    route_ankunft[i] = letzteZeit.AddSeconds(zeit_cur);
+
+                    if ((i < (route.Count - 1)) && (route[i].Ziel != route[i + 1].Start)) //Wendeerkennung
+                    {
+                        route_abfahrt[i] = route_ankunft[i].AddSeconds(30);
                     }
                 }
             }

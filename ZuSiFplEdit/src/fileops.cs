@@ -166,23 +166,16 @@ namespace ZuSiFplEdit
                 }
 
 
-                if (i == 0)
-                {
-                    trn_file.WriteLine("<FahrplanEintrag Ank=\"2017-02-27 12:00:00\" Abf=\"2017-02-27 12:01:00\" Betrst=\"" + nextSignal.Betriebstelle + "\">");
-                }
-                else
-                {
-                    if ((i < (zug.route.Count - 1)) && (zug.route[i].Ziel != zug.route[i + 1].Start))
-                    {
-                        MessageBox.Show("Baue Wendung ein.");
-                        //BUG: Wende braucht Zeiten
-                        trn_file.WriteLine("<FahrplanEintrag Betrst=\"" + nextSignal.Betriebstelle + "\" FzgVerbandAktion=\"2\" FzgVerbandWendeSignalabstand=\"70\">");
-                    }
-                    else
-                    {
-                        trn_file.WriteLine("<FahrplanEintrag Betrst=\"" + nextSignal.Betriebstelle + "\">");
-                    }
-                }
+                trn_file.Write("<FahrplanEintrag");
+                if ((zug.route_ankunft[i] != null) && (zug.route_ankunft[i] != new DateTime()))
+                    trn_file.Write(" Ank=\"" + zug.route_ankunft[i].ToString("yy-MM-dd HH:mm:ss") + "\"");
+                if ((zug.route_abfahrt[i] != null) && (zug.route_abfahrt[i] != new DateTime()))
+                    trn_file.Write(" Abf=\"" + zug.route_abfahrt[i].ToString("yy-MM-dd HH:mm:ss") + "\"");
+                trn_file.Write(" Betrst=\"" + nextSignal.Betriebstelle + "\"");
+                if ((i < (zug.route.Count - 1)) && (zug.route[i].Ziel != zug.route[i + 1].Start)) //Wendeerkennung
+                    trn_file.Write(" FzgVerbandAktion=\"2\" FzgVerbandWendeSignalabstand=\"70\"");
+                trn_file.WriteLine(">");
+                
                 trn_file.WriteLine("<FahrplanSignalEintrag FahrplanSignal=\"" + nextSignal.Name + "\"/>");
                 trn_file.WriteLine("</FahrplanEintrag>");
             }

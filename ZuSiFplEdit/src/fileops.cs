@@ -149,7 +149,7 @@ namespace ZuSiFplEdit
             trn_file.WriteLine("<Info DateiTyp=\"Zug\" Version=\"A.1\" MinVersion=\"A.1\">");
             trn_file.WriteLine("<AutorEintrag/>");
             trn_file.WriteLine("</Info>");
-            trn_file.WriteLine("<Zug Gattung=\"" + zug.Gattung + "\" Nummer=\"" + zug.Zugnummer + "\" Prio=\"1500\" Bremsstellung=\"4\" Rekursionstiefe=\"5\" FahrstrName=\"" + zug.route[0].FahrstrName.Replace(">", "&gt;") + "\" Zugtyp=\"1\" Buchfahrplandll=\"_InstSetup\\lib\\timetable\\Buchfahrplan_DB_2006.dll\">");
+            trn_file.WriteLine("<Zug Gattung=\"" + zug.Gattung + "\" Nummer=\"" + zug.Zugnummer + "\" Prio=\"2500\" Bremsstellung=\"4\" Rekursionstiefe=\"5\" FahrstrName=\"" + zug.route[0].FahrstrName.Replace(">", "&gt;") + "\" Zugtyp=\"1\" Buchfahrplandll=\"_InstSetup\\lib\\timetable\\Buchfahrplan_DB_2006.dll\">");
             trn_file.WriteLine("<Datei Dateiname=\"" + fpnRelPath + "\" NurInfo=\"1\"/>");
 
             for (int i = 0; i < zug.route.Count; i++)
@@ -172,8 +172,8 @@ namespace ZuSiFplEdit
                 if ((zug.route_abfahrt[i] != null) && (zug.route_abfahrt[i] != new DateTime()))
                     trn_file.Write(" Abf=\"" + zug.route_abfahrt[i].ToString("yy-MM-dd HH:mm:ss") + "\"");
                 trn_file.Write(" Betrst=\"" + nextSignal.Betriebstelle + "\"");
-                if ((i < (zug.route.Count - 1)) && (zug.route[i].Ziel != zug.route[i + 1].Start)) //Wendeerkennung
-                    trn_file.Write(" FzgVerbandAktion=\"2\" FzgVerbandWendeSignalabstand=\"70\"");
+                if (((i < (zug.route.Count - 1)) && (zug.route[i].Ziel != zug.route[i + 1].Start)) || (zug.route[i].FahrstrName == "Wendehilfsfahrstraße")) //Wendeerkennung
+                    trn_file.Write(" FzgVerbandAktion=\"2\" FzgVerbandWendeSignalabstand=\"250\"");
                 trn_file.WriteLine(">");
                 
                 trn_file.WriteLine("<FahrplanSignalEintrag FahrplanSignal=\"" + nextSignal.Name + "\"/>");
@@ -183,6 +183,7 @@ namespace ZuSiFplEdit
             trn_file.WriteLine("<FahrzeugVarianten Bezeichnung=\"default\" ZufallsWert=\"1\">");
             trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
             trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Dieseltriebwagen\\RegioShuttle\\RS1.rv.fzg\"/>");
+            //trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektroloks\\TRAXX\\TRAXX_AC2.rv.fzg\"/>");
             trn_file.WriteLine("</FahrzeugInfo>");
             trn_file.WriteLine("</FahrzeugVarianten>");
             trn_file.WriteLine("</Zug>");

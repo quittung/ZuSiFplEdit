@@ -326,6 +326,7 @@ namespace ZuSiFplEdit
                 {
                     ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 4, "Finde Wendeziele (" + mod.modName + " - " + fstr.Ziel.Info + ")...");
                     fstr.wendesignale = findeWendeziele(fstr.Ziel);
+                    fstr.Ziel.wendeSignale = fstr.wendesignale; //HACK: Manche Signale erhalten keine Wendesignale.
                 }
             }
         }

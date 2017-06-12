@@ -47,9 +47,10 @@ namespace ZuSiFplEdit
             List<streckenModul.fahrStr> fstrRouteSearchStart(streckenModul.referenzElement ZielSignal)
             {
                 var Besucht = new List<streckenModul.fahrStr>();
-                foreach (var start_fstr in Signal.abgehendeFahrstraßen)
+                for (int i = -1; i < 10; i++)
                 {
-                    for (int i = -1; i < 10; i++)
+                    Besucht = new List<streckenModul.fahrStr>();
+                    foreach (var start_fstr in Signal.abgehendeFahrstraßen)
                     {
                         var rList = fstrRouteSearch(start_fstr, ZielSignal, Besucht, 0, i);
                         if (rList != null) return rList; 
@@ -76,15 +77,42 @@ namespace ZuSiFplEdit
 
                 if (rekursionstiefe == wendetiefe)
                 {
+                    if ((Aktuell.Start.wendeSignale != null) && (Aktuell.Start.wendeSignale.Count > 0))
+                    {
+                        foreach (var wSignal in Aktuell.Start.wendeSignale)
+                        {
+                            if (wSignal == ZielSignal)
+                            {
+                                streckenModul.fahrStr hilfsfstr = erstelleWendehilfsfahrstraße(Aktuell, ZielSignal);
+                                var Lizte = new List<streckenModul.fahrStr>();
+                                Lizte.Add(hilfsfstr);
+                                return (Lizte);
+                            }
+                        }
+                    }
+                    
                     if (Aktuell.wendesignale.Count > 0)
                     {
+                        
                         foreach (var wSignal in Aktuell.wendesignale)
                         {
+                            if (wSignal == ZielSignal)
+                            {
+                                streckenModul.fahrStr hilfsfstr = erstelleWendehilfsfahrstraße(Aktuell, ZielSignal);
+                                var Lizte = new List<streckenModul.fahrStr>();
+                                Lizte.Add(Aktuell);
+                                Lizte.Add(hilfsfstr);
+                                return (Lizte);
+                            }
                             foreach (var wSFstr in wSignal.abgehendeFahrstraßen)
                             {
-                                var rList = fstrRouteSearch(wSFstr, ZielSignal, Besucht, rekursionstiefe + 1, wendetiefe); if (!(rList == null))
+                                var rList = fstrRouteSearch(wSFstr, ZielSignal, Besucht, rekursionstiefe + 1, wendetiefe);
+                                if (!(rList == null))
                                 {
+                                    //TODO: Implement commented stuff.
+                                    //streckenModul.fahrStr hilfsfstr = erstelleWendehilfsfahrstraße(Aktuell, ZielSignal);
                                     rList.Insert(0, Aktuell);
+                                    //rList.Add(hilfsfstr);
                                     return rList;
                                 }
                             }
@@ -116,6 +144,16 @@ namespace ZuSiFplEdit
 
                 //MessageBox.Show("Gebe auf nach " + rekursionstiefe + " Rekursionen.");
                 return null;
+            }
+
+            private static streckenModul.fahrStr erstelleWendehilfsfahrstraße(streckenModul.fahrStr Aktuell, streckenModul.referenzElement ZielSignal)
+            {
+                var hilfsfstr = new streckenModul.fahrStr("Wendehilfsfahrstraße", "0", 2, "TypZug", 0, ZielSignal.ReferenzNr, ZielSignal.Modul.modName, ZielSignal.ReferenzNr, ZielSignal.Modul.modName);
+                hilfsfstr.StartMod = Aktuell.ZielMod;
+                hilfsfstr.ZielMod = ZielSignal.Modul;
+                hilfsfstr.Start = Aktuell.Ziel;
+                hilfsfstr.Ziel = ZielSignal;
+                return hilfsfstr;
             }
 
             public override string ToString()
@@ -253,10 +291,11 @@ namespace ZuSiFplEdit
                         letzteZeit = route_abfahrt[i - 1];
                     }
 
-                    route_ankunft[i] = letzteZeit.AddSeconds(zeit_cur);
+                    route_abfahrt[i] = letzteZeit.AddSeconds(zeit_cur);
 
-                    if ((i < (route.Count - 1)) && (route[i].Ziel != route[i + 1].Start)) //Wendeerkennung
+                    if (((i < (route.Count - 1)) && (route[i].Ziel != route[i + 1].Start)) || (route[i].FahrstrName == "Wendehilfsfahrstraße")) //Wendeerkennung
                     {
+                        route_ankunft[i] = route_abfahrt[i];
                         route_abfahrt[i] = route_ankunft[i].AddSeconds(30);
                     }
                 }

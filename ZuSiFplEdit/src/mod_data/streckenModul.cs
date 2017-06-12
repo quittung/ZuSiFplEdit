@@ -120,6 +120,7 @@ namespace ZuSiFplEdit
             public bool istZiel;
 
             public List<fahrStr> abgehendeFahrstraßen;
+            public List<referenzElement> wendeSignale;
 
             public referenzElement(streckenModul Modul, int ReferenzNr, int StrElement, bool StrNorm, int RefTyp, string Info)
             {

@@ -172,7 +172,7 @@ namespace ZuSiFplEdit
                 if ((zug.route_abfahrt[i] != null) && (zug.route_abfahrt[i] != new DateTime()))
                     trn_file.Write(" Abf=\"" + zug.route_abfahrt[i].ToString("yy-MM-dd HH:mm:ss") + "\"");
                 trn_file.Write(" Betrst=\"" + nextSignal.Betriebstelle + "\"");
-                if (((i < (zug.route.Count - 1)) && (zug.route[i].Ziel != zug.route[i + 1].Start)) || (zug.route[i].FahrstrName == "Wendehilfsfahrstraße")) //Wendeerkennung
+                if ((i < (zug.route.Count - 1)) && (zug.route[i + 1].FahrstrTyp == "TypWende")) //Wendeerkennung
                     trn_file.Write(" FzgVerbandAktion=\"2\" FzgVerbandWendeSignalabstand=\"250\"");
                 trn_file.WriteLine(">");
                 

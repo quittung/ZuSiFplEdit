@@ -30,6 +30,14 @@ namespace ZuSiFplEdit
                 this.abs_X = abs_X;
                 this.abs_Y = abs_Y;
             }
+
+            public double distanceTo(PunktXY target)
+            {
+                double distX = target.abs_X - abs_X;
+                double distY = target.abs_Y - abs_Y;
+
+                return (Math.Sqrt(distX * distX + distY * distY));
+            }
         }
 
         public class Signal
@@ -38,14 +46,16 @@ namespace ZuSiFplEdit
             public string Stellwerk;
             public string Betriebstelle;
             public int Signaltyp;
+            public bool Gegengleis;
 
 
-            public Signal(string Name, string Stellwerk, string Betriebstelle, int Signaltyp)
+            public Signal(string Name, string Stellwerk, string Betriebstelle, int Signaltyp, bool Gegengleis)
             {
                 this.Name = Name;
                 this.Stellwerk = Stellwerk;
                 this.Betriebstelle = Betriebstelle;
                 this.Signaltyp = Signaltyp;
+                this.Gegengleis = Gegengleis;
             }
 
             public override string ToString()
@@ -165,6 +175,7 @@ namespace ZuSiFplEdit
             public int RglGgl;
             public string FahrstrTyp;
             public float Laenge;
+            public float LaengeGewichtet;
 
             public int StartRef;
             public string StartMod_Str;
@@ -186,11 +197,30 @@ namespace ZuSiFplEdit
                 this.RglGgl = RglGgl;
                 this.FahrstrTyp = FahrstrTyp;
                 this.Laenge = Laenge;
-                
+                this.LaengeGewichtet = gewichteLänge();
+
                 this.StartRef = StartRef;
                 this.StartMod_Str = StartMod_Str;
                 this.ZielRef = ZielRef;
                 this.ZielMod_Str = ZielMod_Str;
+            }
+
+            float gewichteLänge()
+            {
+                //TODO: Weichen mit in Gewichtung aufnehmen?
+                float gewichtung = 1;
+                if (RglGgl == 0) // Bahnhofsgleis
+                    gewichtung *= 1.2f;
+                if (RglGgl == 1) // Eingleisige Strecke
+                    gewichtung *= 1.3f;
+                if (RglGgl == 2) // Endet im Regelgleis
+                    gewichtung *= 1f;
+                if (RglGgl == 3) // Endet im Gegengleis
+                    gewichtung *= 1.2f;
+                if (FahrstrTyp == "TypWende")
+                    gewichtung *= 2f;
+
+                return (Laenge * gewichtung);
             }
 
             public override string ToString()
@@ -437,7 +467,7 @@ namespace ZuSiFplEdit
                                     string Stellwerk = modXml.GetAttribute("Stellwerk");
                                     string Betriebstelle = modXml.GetAttribute("NameBetriebsstelle");
                                     int Signaltyp = Convert.ToInt32(modXml.GetAttribute("SignalTyp"));
-                                    SignalNorm = new Signal(Name, Stellwerk, Betriebstelle, Signaltyp);
+                                    SignalNorm = new Signal(Name, Stellwerk, Betriebstelle, Signaltyp, false);
                                     while ((!(modXml.Name == "InfoNormRichtung")) && (!(modXml.Name == "StrElement")) && modXml.Read()) { }
                                 }
                             }
@@ -453,7 +483,7 @@ namespace ZuSiFplEdit
                                     string Stellwerk = modXml.GetAttribute("Stellwerk");
                                     string Betriebstelle = modXml.GetAttribute("NameBetriebsstelle");
                                     int Signaltyp = Convert.ToInt32(modXml.GetAttribute("SignalTyp"));
-                                    SignalGegen = new Signal(Name, Stellwerk, Betriebstelle, Signaltyp);
+                                    SignalGegen = new Signal(Name, Stellwerk, Betriebstelle, Signaltyp, true);
                                     while ((!(modXml.Name == "InfoGegenRichtung")) && (!(modXml.Name == "StrElement")) && modXml.Read()) { }
                                 }
                             }

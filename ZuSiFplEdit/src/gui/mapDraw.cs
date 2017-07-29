@@ -322,7 +322,18 @@ namespace ZuSiFplEdit
 
                             //framebuffer.DrawString("Fstr:" + fstr.FahrstrName, new Font("Verdana", 8), Brushes.Black, start_x + 3, start_y + 3);
 
-                            framebuffer.DrawLine(Pens.Orange, start_x, start_y, ziel_x, ziel_y); 
+
+                            if (fstr.RglGgl == 0)
+                                framebuffer.DrawLine(Pens.Green, start_x, start_y, ziel_x, ziel_y);
+                            if (fstr.RglGgl == 1)
+                                framebuffer.DrawLine(Pens.Blue, start_x, start_y, ziel_x, ziel_y);
+                            if (fstr.RglGgl == 2)
+                                framebuffer.DrawLine(Pens.YellowGreen, start_x, start_y, ziel_x, ziel_y);
+                            if (fstr.RglGgl == 3)
+                                framebuffer.DrawLine(Pens.Red, start_x, start_y, ziel_x, ziel_y);
+
+                            //if (fstr.FahrstrTyp == "TypWende")
+                            //    framebuffer.DrawLine(Pens.Red, start_x, start_y, ziel_x, ziel_y); 
                         }
                     }
                 }

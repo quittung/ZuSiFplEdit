@@ -131,8 +131,8 @@ namespace ZuSiFplEdit
                 }
             }
         }
-        
-    
+
+
         //Wandelt die als String gespeicherten Verbindungen in Pointer um.
         void moduleVerlinken(form_lade ladeAnzeige)
         {
@@ -153,7 +153,7 @@ namespace ZuSiFplEdit
                     {
                         aktModul.NetzGrenze = true;
                         //aktModul.VerbindungenStr.Remove(connectionString);
-                    }   
+                    }
                 }
             }
 
@@ -272,7 +272,7 @@ namespace ZuSiFplEdit
                 }
             }
 
-            
+
 
 
             ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 2, "Verlinke Fahrstraßen mit Folgestraßen...");
@@ -320,15 +320,48 @@ namespace ZuSiFplEdit
             ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 4, "Finde Wendeziele...");
             //Finde Wendesignale
             //TODO: Verschieben direkt vor Routefinding
+            //int[] test = new int[4];
             foreach (var mod in mSammlung)
             {
+                List<streckenModul.fahrStr> neueFahrstraßen = new List<streckenModul.fahrStr>();
                 foreach (var fstr in mod.FahrStr)
                 {
+                    //test[fstr.RglGgl]++;
+
                     ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 4, "Finde Wendeziele (" + mod.modName + " - " + fstr.Ziel.Info + ")...");
                     fstr.wendesignale = findeWendeziele(fstr.Ziel);
                     fstr.Ziel.wendeSignale = fstr.wendesignale; //HACK: Manche Signale erhalten keine Wendesignale.
+                    
+                    //Füge WendeHilfsFahrStraßen hinzu
+                    foreach (var wendeSignal in fstr.wendesignale)
+                    {
+                        var wendeHilfsStraße = erstelleWendehilfsfahrstraße(fstr.Ziel, wendeSignal);
+
+                        fstr.folgestraßen.Add(wendeHilfsStraße);
+                        fstr.Ziel.abgehendeFahrstraßen.Add(wendeHilfsStraße);
+                        neueFahrstraßen.Add(wendeHilfsStraße);
+                    }
                 }
+                mod.FahrStr.AddRange(neueFahrstraßen);
             }
+            //string result = "";
+            //foreach (var num in test)
+            //{
+            //    result += num + "\r\n";
+            //}
+            //MessageBox.Show(result);
+        }
+
+        private static streckenModul.fahrStr erstelleWendehilfsfahrstraße(streckenModul.referenzElement StartSignal, streckenModul.referenzElement ZielSignal)
+        {
+            var distanz = (float)StartSignal.SignalCoord.distanceTo(ZielSignal.SignalCoord) * 1000f;
+            var hilfsfstr = new streckenModul.fahrStr("Wendehilfsfahrstraße", "0", 4, "TypWende", distanz, StartSignal.ReferenzNr, StartSignal.Modul.modName, ZielSignal.ReferenzNr, ZielSignal.Modul.modName); //TODO: RglGgl
+            hilfsfstr.StartMod = StartSignal.Modul;
+            hilfsfstr.ZielMod = ZielSignal.Modul;
+            hilfsfstr.Start = StartSignal;
+            hilfsfstr.Ziel = ZielSignal;
+            hilfsfstr.folgestraßen = ZielSignal.abgehendeFahrstraßen;
+            return hilfsfstr;
         }
 
         /// <summary>

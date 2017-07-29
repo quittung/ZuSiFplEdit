@@ -31,3 +31,9 @@ RefElTypen:
 3 - Weiche
 4 - Signale
 5 - Auflösepunkt
+
+Farhstraßen: RglGgl
+0 - Viele gleichwetige Fahrwege, z.B. Bahnhof
+1 - Eingleisige strecke
+2 - Endet im Regelgleis
+3 - Endet im Gegengleis

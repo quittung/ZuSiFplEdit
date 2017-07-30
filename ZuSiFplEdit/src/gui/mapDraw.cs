@@ -507,7 +507,7 @@ namespace ZuSiFplEdit
             return dist;
         }
 
-        public streckenModul.referenzElement getNearestSignalStartZiel(int X, int Y, bool start)
+        public streckenModul.referenzElement getNearestSignalStartZiel(int X, int Y, bool start) //TODO: Genauigkeit verbessern, Mehr Auswahl bei nahen Signalen
         {
             double closestDist = -1;
             List<streckenModul.referenzElement> Ergebnis = new List<streckenModul.referenzElement>();

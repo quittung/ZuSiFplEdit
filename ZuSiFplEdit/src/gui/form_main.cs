@@ -169,7 +169,7 @@ namespace ZuSiFplEdit
                     }
                     else
                     {
-                        ZugKonfigForm.setSignal(kartenZeichner.getNearestSignalStartZiel(e.X, e.Y, true));
+                        ZugKonfigForm.setSignal(kartenZeichner.getNearestSignalStartZiel(e.X, e.Y, false));
                         kartenZeichner.setLayers("signal_start", true); 
                         this.Invalidate();
                         selectRouteEnd = false;

@@ -118,6 +118,9 @@ namespace ZuSiFplEdit
                     
                     OpenNodes.Sort(CompareAStarByOverallLength);
 
+                    if (OpenNodes.Count == 0)
+                        return;
+
                     CurrentNode = OpenNodes[0];
                     OpenNodes.RemoveAt(0);
 
@@ -402,7 +405,16 @@ namespace ZuSiFplEdit
                         letzteZeit = route_abfahrt[i - 1];
                     }
 
-                    route_ankunft[i] = letzteZeit.AddSeconds(zeit_cur);
+                    if (((i < (route.Count - 1)) && (route[i + 1].FahrstrTyp == "TypWende")) || (i == route.Count - 1)) //Wendeerkennung
+                    {
+                        route_ankunft[i] = letzteZeit.AddSeconds(zeit_cur);
+                        route_abfahrt[i] = route_ankunft[i].AddSeconds(30);
+                    }
+                    else
+                    {
+                        route_abfahrt[i] = letzteZeit.AddSeconds(zeit_cur);
+                    }
+                        
 
                     //route_abfahrt[i] = letzteZeit.AddSeconds(zeit_cur);
 

@@ -37,3 +37,7 @@ Farhstraßen: RglGgl
 1 - Eingleisige strecke
 2 - Endet im Regelgleis
 3 - Endet im Gegengleis
+
+Fahrplan: 
+Durchfahrt: 					Abfahrt optional
+Halt, Wende, Endhalt: 	Ankunft zwingend, Abfahrt optional

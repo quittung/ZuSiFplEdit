@@ -100,5 +100,19 @@ namespace ZuSiFplEdit
             }
             Sync();
         }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            //Höchstgeschwindigkeit wurde verändert.
+            try
+            {
+                textBox1.BackColor = Color.White;
+                FormZugFahrt.vMax = (float)Convert.ToDouble(textBox1.Text) / 3.6f;
+            }
+            catch (Exception)
+            {
+                textBox1.BackColor = Color.PaleVioletRed;
+            }
+        }
     }
 }

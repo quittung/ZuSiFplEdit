@@ -299,6 +299,8 @@ namespace ZuSiFplEdit
         /// </summary>
         public List<WayPoint> WayPoints;
 
+        public float vMax;
+
         /// <summary>
         /// </summary>
         public float route_länge;
@@ -323,6 +325,7 @@ namespace ZuSiFplEdit
         {
             WayPoints = new List<WayPoint>();
             route = new List<streckenModul.fahrStr>();
+            vMax = 20;
         }
 
         public override string ToString()

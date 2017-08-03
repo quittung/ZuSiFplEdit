@@ -112,7 +112,7 @@ namespace ZuSiFplEdit
 
                 this.AnschlussNormInt = AnschlussNorm;
                 this.AnschlussGegenInt = AnschlussGegen;
-        }
+            }
 
             public streckenElement(XmlReader partialXmlReader, streckenModul Modul)
             {
@@ -177,7 +177,7 @@ namespace ZuSiFplEdit
                             while ((!(partialXmlReader.Name == "InfoGegenRichtung")) && (!(partialXmlReader.Name == "StrElement")) && partialXmlReader.Read()) { }
                         }
                     }
-                    
+
 
                     if (partialXmlReader.Name == "NachNorm" && partialXmlReader.NodeType == XmlNodeType.Element)
                     {
@@ -280,6 +280,26 @@ namespace ZuSiFplEdit
 
         public class fahrStr
         {
+            public class fstrPunkt
+            {
+                public int RefInt;
+                public string RefModString;
+                public referenzElement Ref;
+
+                
+                public fstrPunkt(XmlReader partialXmlReader, string punktTyp)
+                {
+                    while (partialXmlReader.Read())
+                    {
+                        if (partialXmlReader.NodeType != XmlNodeType.EndElement && partialXmlReader.Name == punktTyp)
+                            RefInt = Convert.ToInt32(partialXmlReader.GetAttribute("Ref"));
+
+                        if (partialXmlReader.Name == "Datei")
+                            RefModString = modContainer.speicherortZuName(partialXmlReader.GetAttribute("Dateiname"), '\\');
+                    }
+                }
+            }
+
             public string FahrstrName;
             public string FahrstrStrecke;
             public int RglGgl;
@@ -300,6 +320,8 @@ namespace ZuSiFplEdit
             public List<fahrStr> folgestraßen;
             public List<referenzElement> wendesignale;
 
+            public List<fstrPunkt> wegpunkte;
+
             [Obsolete]
             public fahrStr(string FahrstrName, string FahrstrStrecke, int RglGgl, string FahrstrTyp, float Laenge, int StartRef, string StartMod_Str, int ZielRef, string ZielMod_Str)
             {
@@ -309,7 +331,6 @@ namespace ZuSiFplEdit
                 this.FahrstrTyp = FahrstrTyp;
                 this.Laenge = Laenge;
                 this.LaengeGewichtet = gewichteLänge();
-                //MessageBox.Show(FahrstrName + "\r\n" + RglGgl + " + " + Laenge + " => " + LaengeGewichtet);
 
                 this.StartRef = StartRef;
                 this.StartMod_Str = StartMod_Str;
@@ -326,7 +347,6 @@ namespace ZuSiFplEdit
                 FahrstrTyp = partialXmlReader.GetAttribute("FahrstrTyp");
                 Laenge = Convert.ToSingle(partialXmlReader.GetAttribute("Laenge"), CultureInfo.InvariantCulture.NumberFormat);
                 LaengeGewichtet = gewichteLänge();
-                //MessageBox.Show(FahrstrName + "\r\n" + RglGgl + " + " + Laenge + " => " + LaengeGewichtet);
 
                 while (!(partialXmlReader.Name == "FahrstrStart")) partialXmlReader.Read();
                 StartRef = Convert.ToInt32(partialXmlReader.GetAttribute("Ref"));
@@ -338,6 +358,17 @@ namespace ZuSiFplEdit
                 ZielRef = Convert.ToInt32(partialXmlReader.GetAttribute("Ref"));
                 while (!(partialXmlReader.Name == "Datei")) partialXmlReader.Read();
                 ZielMod_Str = modContainer.speicherortZuName(partialXmlReader.GetAttribute("Dateiname"), '\\');
+
+                wegpunkte = new List<fstrPunkt>();
+                while (partialXmlReader.Read())
+                {
+                    if (partialXmlReader.Name == "FahrstrWeiche")
+                        wegpunkte.Add(new fstrPunkt(partialXmlReader.ReadSubtree(), "FahrstrWeiche"));
+
+                    if (partialXmlReader.Name == "FahrstrSignal")
+                        wegpunkte.Add(new fstrPunkt(partialXmlReader.ReadSubtree(), "FahrstrSignal"));
+                }
+
             }
 
             float gewichteLänge()
@@ -441,7 +472,7 @@ namespace ZuSiFplEdit
             StreckenElemente = new List<streckenElement>();
             ReferenzElemente = new List<referenzElement>();
             FahrStr = new List<fahrStr>();
-            Signale = new List<referenzElement>(); 
+            Signale = new List<referenzElement>();
             StartSignale = new List<referenzElement>();
             ZielSignale = new List<referenzElement>();
             StartUndZielSignale = new List<referenzElement>();
@@ -450,7 +481,7 @@ namespace ZuSiFplEdit
             wichtig = false;
             selected = false;
             isDetailed = true;
-            
+
             isSane = true;
             readData(modulePath);
             //try
@@ -474,7 +505,7 @@ namespace ZuSiFplEdit
             modXml.Read();
             if (modXml.NodeType == XmlNodeType.XmlDeclaration) modXml.Read();
             while (!(modXml.NodeType == XmlNodeType.Element && modXml.Name == "Strecke")) modXml.Read();
-            
+
             //Vorgeplänkel einlesen
             while (modXml.Read())
             {
@@ -511,7 +542,8 @@ namespace ZuSiFplEdit
                     {
                         modXml.Read();
 
-                        while (modXml.Read() && !(modXml.Name == "Huellkurve")){
+                        while (modXml.Read() && !(modXml.Name == "Huellkurve"))
+                        {
                             if (modXml.Name == "PunktXYZ")
                             {
                                 double rel_X = Convert.ToSingle(modXml.GetAttribute("X"), CultureInfo.InvariantCulture.NumberFormat);
@@ -561,7 +593,7 @@ namespace ZuSiFplEdit
 
                     if (modXml.Name == "StrElement")
                         StreckenElemente.Add(new streckenElement(modXml.ReadSubtree(), this));
-                    
+
                     if (modXml.Name == "Fahrstrasse")
                         FahrStr.Add(new fahrStr(modXml.ReadSubtree()));
                 }
@@ -569,7 +601,7 @@ namespace ZuSiFplEdit
             }
 
             //Verlinke Referenzelemente mit Streckenelementen 
-            
+
             var schlechteReferenzen = new List<referenzElement>();
             foreach (var refEl in ReferenzElemente)
             {
@@ -628,7 +660,7 @@ namespace ZuSiFplEdit
                         }
                     }
 
-                    
+
 
                     //Zum Index hinzufügen
                     if (refEl.Signal != null)

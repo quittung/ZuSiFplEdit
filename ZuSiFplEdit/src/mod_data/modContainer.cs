@@ -26,32 +26,24 @@ namespace ZuSiFplEdit
         {
             var timeGesamt = new System.Diagnostics.Stopwatch();
             timeGesamt.Start();
-            
+
             var ladeAnzeige = new form_lade();
             ladeAnzeige.Show();
             ladeAnzeige.Beschreibung.Text = "Suche Datenverzeichnis...";
             ladeAnzeige.Update();
 
             FindeDatenVerzeichnis();
-            
+
+
+
             ladeAnzeige.instantProgress(ladeAnzeige.progressBar1, 1, "Suche Module...");
 
-            if (DirBase[DirBase.Length - 1] != '\\') DirBase += '\\';
-            DirRoute = DirBase + "Routes\\Deutschland\\";
-
-            List<string> modulPaths = new List<string>();
-            foreach (string grid in Directory.GetDirectories(DirRoute))
-            {
-                foreach (string mod in Directory.GetDirectories(grid))
-                {
-                    foreach (string st3 in Directory.GetFiles(mod, "*.st3"))
-                    {
-                        modulPaths.Add(st3);
-                    }
-                }
-            }
+            List<string> modulPaths = erzeugeST3Liste();
 
             ladeAnzeige.progressBar2.Maximum = modulPaths.Count - 1;
+
+
+
             ladeAnzeige.instantProgress(ladeAnzeige.progressBar1, 2, "Lese Module...");
 
             List<string> st3Fehler = new List<string>();
@@ -61,9 +53,13 @@ namespace ZuSiFplEdit
                 ModulEinlesen(modulPaths[i], st3Fehler);
             }
 
+
+
             ladeAnzeige.instantProgress(ladeAnzeige.progressBar1, 3, "Verlinke Module...");
 
             moduleVerlinken(ladeAnzeige);
+
+
 
             ladeAnzeige.instantProgress(ladeAnzeige.progressBar1, 4, "Finalisiere...");
 
@@ -72,8 +68,7 @@ namespace ZuSiFplEdit
             //MessageBox.Show("Einlesen hat " + timeGesamt.ElapsedMilliseconds + " ms gedauert.", "Gesamtdauer des Einlesens", MessageBoxButtons.OK);
 
 
-
-
+            //Einlesefehler an Nutzer melden
             if (st3Fehler.Count > 0)
             {
                 string errMsg = "Fehler beim Laden der folgenden Module:";
@@ -86,6 +81,23 @@ namespace ZuSiFplEdit
             }
 
             ladeAnzeige.Dispose();
+        }
+
+        private List<string> erzeugeST3Liste()
+        {
+            List<string> modulPaths = new List<string>();
+            foreach (string grid in Directory.GetDirectories(DirRoute))
+            {
+                foreach (string mod in Directory.GetDirectories(grid))
+                {
+                    foreach (string st3 in Directory.GetFiles(mod, "*.st3"))
+                    {
+                        modulPaths.Add(st3);
+                    }
+                }
+            }
+
+            return modulPaths;
         }
 
 
@@ -130,6 +142,9 @@ namespace ZuSiFplEdit
                     Environment.Exit(1);
                 }
             }
+
+            if (DirBase[DirBase.Length - 1] != '\\') DirBase += '\\';
+            DirRoute = DirBase + "Routes\\Deutschland\\";
         }
 
 
@@ -250,6 +265,12 @@ namespace ZuSiFplEdit
                         fstr.Start.abgehendeFahrstraßen.Add(fstr);
                     }
                     fstr.ZielMod = sucheMod(fstr.ZielMod_Str);
+
+                    foreach (var wegpunkt in fstr.wegpunkte)
+                    {
+                        wegpunkt.Ref = sucheMod(wegpunkt.RefModString).sucheReferenz(wegpunkt.RefInt);
+                    }
+
                     if (fstr.ZielMod == null)
                     {
                         unvollständigeFahrstraßen.Add(fstr);
@@ -318,15 +339,12 @@ namespace ZuSiFplEdit
             }
 
             ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 4, "Finde Wendeziele...");
-            //Finde Wendesignale
-            //TODO: Verschieben direkt vor Routefinding
-            //int[] test = new int[4];
+
             foreach (var mod in mSammlung)
             {
                 List<streckenModul.fahrStr> neueFahrstraßen = new List<streckenModul.fahrStr>();
                 foreach (var fstr in mod.FahrStr)
                 {
-                    //test[fstr.RglGgl]++;
 
                     ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 4, "Finde Wendeziele (" + mod.modName + " - " + fstr.Ziel.Info + ")...");
                     fstr.wendesignale = findeWendeziele(fstr.Ziel);
@@ -344,12 +362,6 @@ namespace ZuSiFplEdit
                 }
                 mod.FahrStr.AddRange(neueFahrstraßen);
             }
-            //string result = "";
-            //foreach (var num in test)
-            //{
-            //    result += num + "\r\n";
-            //}
-            //MessageBox.Show(result);
         }
 
         private static streckenModul.fahrStr erstelleWendehilfsfahrstraße(streckenModul.referenzElement StartSignal, streckenModul.referenzElement ZielSignal)

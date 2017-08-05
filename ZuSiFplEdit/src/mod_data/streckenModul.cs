@@ -286,9 +286,17 @@ namespace ZuSiFplEdit
                 public string RefModString;
                 public referenzElement Ref;
 
-                
+                public bool Weiche = false;
+                public double position;
+                public double lengthToNextPoint;
+                public double vMax;
+
+
                 public fstrPunkt(XmlReader partialXmlReader, string punktTyp)
                 {
+                    if (punktTyp == "FahrstrWeiche")
+                        Weiche = true;
+
                     while (partialXmlReader.Read())
                     {
                         if (partialXmlReader.NodeType != XmlNodeType.EndElement && partialXmlReader.Name == punktTyp)
@@ -297,6 +305,14 @@ namespace ZuSiFplEdit
                         if (partialXmlReader.Name == "Datei")
                             RefModString = modContainer.speicherortZuName(partialXmlReader.GetAttribute("Dateiname"), '\\');
                     }
+                }
+
+                public void complete(referenzElement Ref)
+                {
+                    this.Ref = Ref;
+
+                    //position = Ref.StrElement.InfoNorm.km;
+                    //vMax = Ref.StrElement.InfoNorm.vMax;
                 }
             }
 
@@ -321,8 +337,8 @@ namespace ZuSiFplEdit
             public List<referenzElement> wendesignale;
 
             public List<fstrPunkt> wegpunkte;
-
-            [Obsolete]
+            
+            //Sollte nur für nicht aus XML eingelesene Fahrstraßen (also Wendehilfsfahrstraßen) eingesetzt werden
             public fahrStr(string FahrstrName, string FahrstrStrecke, int RglGgl, string FahrstrTyp, float Laenge, int StartRef, string StartMod_Str, int ZielRef, string ZielMod_Str)
             {
                 this.FahrstrName = FahrstrName;
@@ -784,6 +800,11 @@ namespace ZuSiFplEdit
             }
 
             return null;
+        }
+
+        public override string ToString()
+        {
+            return ("Modul " + modName);
         }
     }
 }

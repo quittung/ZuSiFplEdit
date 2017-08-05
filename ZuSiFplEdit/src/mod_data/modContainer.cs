@@ -175,31 +175,9 @@ namespace ZuSiFplEdit
             //Delete one-sided connections.
             foreach (streckenModul mod in mSammlung)
             {
-                foreach (var connection in mod.Verbindungen.ToArray())
-                {
-                    //if (! connection.Verbindungen.Contains(mod))
-                    //{
-                    //    mod.Verbindungen.Remove(connection);
-                    //}
-                }
-
                 if (mod.Verbindungen.Count < 2)
                 {
                     mod.NetzGrenze = true;
-                    //if (true || mod.Verbindungen.Count != mod.VerbindungenStr.Count)
-                    //{
-                    //    string msgString = "Eingelesene Verbindungen:";
-                    //    foreach (var item in mod.VerbindungenStr)
-                    //    {
-                    //        msgString += "\n" + item;
-                    //    }
-                    //    msgString += "\nVerbliebene Verbindungen:";
-                    //    foreach (var item in mod.Verbindungen)
-                    //    {
-                    //        msgString += "\n" + item.modName;
-                    //    }
-                    //    MessageBox.Show(msgString, "Grenzreport für " + mod.modName, MessageBoxButtons.OK);
-                    //}
                 }
                 if ((mod.Verbindungen.Count > 2) || (mod.NetzGrenze)) mod.wichtig = true;
                 //DrawDist eintragen.
@@ -268,7 +246,9 @@ namespace ZuSiFplEdit
 
                     foreach (var wegpunkt in fstr.wegpunkte)
                     {
-                        wegpunkt.Ref = sucheMod(wegpunkt.RefModString).sucheReferenz(wegpunkt.RefInt);
+                        var refMod = sucheMod(wegpunkt.RefModString);
+                        if (refMod != null)
+                            wegpunkt.complete(refMod.sucheReferenz(wegpunkt.RefInt));
                     }
 
                     if (fstr.ZielMod == null)

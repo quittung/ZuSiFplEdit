@@ -5,6 +5,7 @@ using System.Xml;
 using System.IO;
 using System.Windows.Forms;
 using System.Linq;
+using System.Threading;
 
 namespace ZuSiFplEdit
 {
@@ -21,6 +22,7 @@ namespace ZuSiFplEdit
 
         public long loadTime;
 
+        int workingThreads = 0;
 
         public modContainer()
         {
@@ -36,7 +38,7 @@ namespace ZuSiFplEdit
 
 
 
-            ladeAnzeige.instantProgress(ladeAnzeige.progressBar1, 1, "Suche Module...");
+            ladeAnzeige.instantProgress(false, 1, "Suche Module...");
 
             List<string> modulPaths = erzeugeST3Liste();
 
@@ -44,24 +46,52 @@ namespace ZuSiFplEdit
 
 
 
-            ladeAnzeige.instantProgress(ladeAnzeige.progressBar1, 2, "Lese Module...");
+            ladeAnzeige.instantProgress(false, 2, "Lese Module...");
+
 
             List<string> st3Fehler = new List<string>();
+            tpparam[] ThreadParams = new tpparam[modulPaths.Count];
+            
             for (int i = 0; i < modulPaths.Count; i++)
             {
-                ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, i, "Lese Module [" + (i + 1) + "/" + modulPaths.Count + "] - " + modulPaths[i].Split('\\').Last());
-                ModulEinlesen(modulPaths[i], st3Fehler);
+                ThreadParams[i] = new tpparam(modulPaths.Count, i, modulPaths[i], st3Fehler, ladeAnzeige);
+                ThreadPool.QueueUserWorkItem(ThreadPoolCallback, ThreadParams[i]);
+                workingThreads++;
+                ladeAnzeige.instantProgress(true, i, "Lese Module [" + (i + 1) + "/" + modulPaths.Count + "] - " + modulPaths[i].Split('\\').Last());
+
+                //Ursprünglicher Code:
+                //ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, i, "Lese Module [" + (i + 1) + "/" + modulPaths.Count + "] - " + modulPaths[i].Split('\\').Last());
+                //ModulEinlesen(modulPaths[i], st3Fehler);
             }
 
+            bool working = true;
+            while (working)
+            {
+                working = false;
+                foreach (var ThreadParam in ThreadParams)
+                {
+                    if (ThreadParam.working)
+                    {
+                        working = true;
+                        break;
+                    }   
+                }
+                Thread.Sleep(50);
+                if (mSammlung.Count > 0)
+                {
+                    ladeAnzeige.instantProgress(true, mSammlung.Count - 1, "Lese Module [" + (mSammlung.Count) + "/" + modulPaths.Count + "] - " + mSammlung.Last().modName);
+                }
+            }
+            Console.WriteLine("All calculations are complete.");
 
 
-            ladeAnzeige.instantProgress(ladeAnzeige.progressBar1, 3, "Verlinke Module...");
+            ladeAnzeige.instantProgress(false, 3, "Verlinke Module...");
 
             moduleVerlinken(ladeAnzeige);
 
 
 
-            ladeAnzeige.instantProgress(ladeAnzeige.progressBar1, 4, "Finalisiere...");
+            ladeAnzeige.instantProgress(false, 4, "Finalisiere...");
 
             timeGesamt.Stop();
             loadTime = timeGesamt.ElapsedMilliseconds;
@@ -81,6 +111,38 @@ namespace ZuSiFplEdit
             }
 
             ladeAnzeige.Dispose();
+        }
+
+        class tpparam
+        {
+            public int totalThreadCount;
+            public int threadIndex;
+            public string modulPath;
+            public List<string> st3Fehler;
+            public form_lade ladeAnzeige;
+            public bool working;
+
+            public tpparam(int totalThreadCount, int threadIndex, string modulPath, List<string> st3Fehler, form_lade ladeAnzeige)
+            {
+                this.totalThreadCount = totalThreadCount;
+                this.threadIndex = threadIndex;
+                this.modulPath = modulPath;
+                this.st3Fehler = st3Fehler;
+                this.ladeAnzeige = ladeAnzeige;
+                this.working = true;
+            }
+        }
+
+        // Wrapper method for use with thread pool.
+        public void ThreadPoolCallback(Object threadContext)
+        {
+            tpparam ThreadParams = (tpparam)threadContext;
+            int threadIndex = ThreadParams.threadIndex;
+            Console.WriteLine("S - " + threadIndex);
+            ModulEinlesen(ThreadParams.modulPath, ThreadParams.st3Fehler);
+            ThreadParams.working = false;
+            workingThreads--;
+            Console.WriteLine("E - " + threadIndex + " | " + workingThreads + " pending...");
         }
 
         private List<string> erzeugeST3Liste()
@@ -152,7 +214,7 @@ namespace ZuSiFplEdit
         void moduleVerlinken(form_lade ladeAnzeige)
         {
             ladeAnzeige.progressBar2.Maximum = 4;
-            ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 0, "Verlinke Module...");
+            ladeAnzeige.instantProgress(true, 0, "Verlinke Module...");
 
             //MessageBox.Show("Module werden jetzt verlinkt.", "Debugnachricht", MessageBoxButtons.OK);
             foreach (streckenModul aktModul in mSammlung)
@@ -222,7 +284,7 @@ namespace ZuSiFplEdit
             //}
 
 
-            ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 1, "Verlinke Fahrstraßen mit Signalen...");
+            ladeAnzeige.instantProgress(true, 1, "Verlinke Fahrstraßen mit Signalen...");
             //string problemstellen = "";
             //verlinke fahrstraßen mit referenzen.
             var unvollständigeFahrstraßen = new List<streckenModul.fahrStr>();
@@ -276,7 +338,7 @@ namespace ZuSiFplEdit
 
 
 
-            ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 2, "Verlinke Fahrstraßen mit Folgestraßen...");
+            ladeAnzeige.instantProgress(true, 2, "Verlinke Fahrstraßen mit Folgestraßen...");
             //Folgestraßen eintragen
             foreach (var mod in mSammlung)
             {
@@ -298,7 +360,7 @@ namespace ZuSiFplEdit
             }
 
 
-            ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 3, "Sammle Start- und Zielsignale...");
+            ladeAnzeige.instantProgress(true, 3, "Sammle Start- und Zielsignale...");
             //Sammle abgehende Fahrstraßen zu Signalen in Modul.
             foreach (var mod in mSammlung)
             {
@@ -318,7 +380,7 @@ namespace ZuSiFplEdit
                 }
             }
 
-            ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 4, "Finde Wendeziele...");
+            ladeAnzeige.instantProgress(true, 4, "Finde Wendeziele...");
 
             foreach (var mod in mSammlung)
             {
@@ -326,7 +388,7 @@ namespace ZuSiFplEdit
                 foreach (var fstr in mod.FahrStr)
                 {
 
-                    ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 4, "Finde Wendeziele (" + mod.modName + " - " + fstr.Ziel.Info + ")...");
+                    ladeAnzeige.instantProgress(true, 4, "Finde Wendeziele (" + mod.modName + " - " + fstr.Ziel.Info + ")...");
                     fstr.wendesignale = findeWendeziele(fstr.Ziel);
                     fstr.Ziel.wendeSignale = fstr.wendesignale; //HACK: Manche Signale erhalten keine Wendesignale.
                     

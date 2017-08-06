@@ -43,6 +43,8 @@ namespace ZuSiFplEdit
                 public aStarNode PreviousNode;
                 public streckenModul.fahrStr PreviousVertex;
 
+                public float vMax = 45f;
+
                 public aStarNode(streckenModul.referenzElement Node, aStarNode PreviousNode, streckenModul.fahrStr PreviousVertex, streckenModul.referenzElement target)
                 {
                     this.Node = Node;
@@ -52,16 +54,16 @@ namespace ZuSiFplEdit
                     if (PreviousNode == null)
                         DistanceFromStart = 0;
                     else
-                        DistanceFromStart = PreviousNode.DistanceFromStart + PreviousVertex.LaengeGewichtet;
+                        DistanceFromStart = PreviousNode.DistanceFromStart + PreviousVertex.berechneFahrdauer(vMax);
 
-                    HeuristicDistanceToTarget = Node.SignalCoord.distanceTo(target.SignalCoord) * 1000f;
+                    HeuristicDistanceToTarget = Node.SignalCoord.distanceTo(target.SignalCoord) * 1000f / vMax;
 
                     OverallDistance = DistanceFromStart + HeuristicDistanceToTarget;
                 }
 
                 public void updateNode(aStarNode PreviousNode, streckenModul.fahrStr PreviousVertex)
                 {
-                    var alternativeDistanceFromStart = PreviousNode.DistanceFromStart + PreviousVertex.LaengeGewichtet;
+                    var alternativeDistanceFromStart = PreviousNode.DistanceFromStart + PreviousVertex.berechneFahrdauer(vMax);
                     if (DistanceFromStart > alternativeDistanceFromStart)
                     {
                         this.PreviousNode = PreviousNode;
@@ -130,6 +132,7 @@ namespace ZuSiFplEdit
 
 
                 teilRoute = new List<streckenModul.fahrStr>();
+                Console.WriteLine("Geschätzte Fahrzeit: " + new DateTime().AddSeconds(CurrentNode.OverallDistance).ToString("HH:mm:ss"));
                 while (true)
                 {
                     if (CurrentNode.PreviousNode == null)
@@ -380,8 +383,8 @@ namespace ZuSiFplEdit
             route_dauer = 0;
             route_länge = 0;
 
-            route_ankunft[0] = Convert.ToDateTime("2017-02-27 12:00:00");
-            route_abfahrt[0] = Convert.ToDateTime("2017-02-27 12:00:20");
+            //route_ankunft[0] = Convert.ToDateTime("2017-02-27 12:00:00");
+            route_abfahrt[0] = Convert.ToDateTime("2017-02-27 12:00:00");
 
             for (int i = 1; i < route.Count; i++)
             {

@@ -149,7 +149,7 @@ namespace ZuSiFplEdit
             trn_file.WriteLine("<Info DateiTyp=\"Zug\" Version=\"A.1\" MinVersion=\"A.1\">");
             trn_file.WriteLine("<AutorEintrag/>");
             trn_file.WriteLine("</Info>");
-            trn_file.WriteLine("<Zug Gattung=\"" + zug.Gattung + "\" Nummer=\"" + zug.Zugnummer + "\" Prio=\"2500\" Bremsstellung=\"4\" Rekursionstiefe=\"5\" FahrstrName=\"" + zug.route[0].FahrstrName.Replace(">", "&gt;") + "\" Zugtyp=\"1\" Buchfahrplandll=\"_InstSetup\\lib\\timetable\\Buchfahrplan_DB_2006.dll\">");
+            trn_file.WriteLine("<Zug Gattung=\"" + zug.Gattung + "\" Nummer=\"" + zug.Zugnummer + "\" Prio=\"5000\" Bremsstellung=\"4\" Rekursionstiefe=\"5\" FahrstrName=\"" + zug.route[0].FahrstrName.Replace(">", "&gt;") + "\" Zugtyp=\"1\" Buchfahrplandll=\"_InstSetup\\lib\\timetable\\Buchfahrplan_DB_2006.dll\">");
             trn_file.WriteLine("<Datei Dateiname=\"" + fpnRelPath + "\" NurInfo=\"1\"/>");
 
             for (int i = 0; i < zug.route.Count; i++)
@@ -181,9 +181,54 @@ namespace ZuSiFplEdit
             }
 
             trn_file.WriteLine("<FahrzeugVarianten Bezeichnung=\"default\" ZufallsWert=\"1\">");
-            trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
-            trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Dieseltriebwagen\\RegioShuttle\\RS1.rv.fzg\"/>");
+            //trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
+
+            //trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Dieseltriebwagen\\RegioShuttle\\RS1.rv.fzg\"/>");
+
             //trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektroloks\\TRAXX\\TRAXX_AC2.rv.fzg\"/>");
+            
+            trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"2\" IDNeben=\"1\" DotraModus=\"1\" SASchaltung=\"3\">");
+            trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\401.rv.fzg\"/>");
+            trn_file.WriteLine("</FahrzeugInfo>");
+            trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
+            trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\802_Bvmz.rv.fzg\"/>");
+            trn_file.WriteLine("</FahrzeugInfo>");
+            trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
+            trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\802_Bvmz.rv.fzg\"/>");
+            trn_file.WriteLine("</FahrzeugInfo>");
+            trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
+            trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\802_Bvmz.rv.fzg\"/>");
+            trn_file.WriteLine("</FahrzeugInfo>");
+            trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
+            trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\802_Bvmz.rv.fzg\"/>");
+            trn_file.WriteLine("</FahrzeugInfo>");
+            trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
+            trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\802_Bvmz.rv.fzg\"/>");
+            trn_file.WriteLine("</FahrzeugInfo>");
+            trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
+            trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\802_Bvmz.rv.fzg\"/>");
+            trn_file.WriteLine("</FahrzeugInfo>");
+            trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
+            trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\802_Bvmz.rv.fzg\"/>");
+            trn_file.WriteLine("</FahrzeugInfo>");
+            trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
+            trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\804_WSmz.rv.fzg\"/>");
+            trn_file.WriteLine("</FahrzeugInfo>");
+            trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
+            trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\803_BSmz.rv.fzg\"/>");
+            trn_file.WriteLine("</FahrzeugInfo>");
+            trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
+            trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\801_Avmz.rv.fzg\"/>");
+            trn_file.WriteLine("</FahrzeugInfo>");
+            trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
+            trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\801_Avmz.rv.fzg\"/>");
+            trn_file.WriteLine("</FahrzeugInfo>");
+            trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
+            trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\801_Avmz.rv.fzg\"/>");
+            trn_file.WriteLine("</FahrzeugInfo>");
+            trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"2\" IDNeben=\"1\" DotraModus=\"1\" SASchaltung=\"3\" Gedreht=\"1\">");
+            trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\401.rv.fzg\"/>");
+
             trn_file.WriteLine("</FahrzeugInfo>");
             trn_file.WriteLine("</FahrzeugVarianten>");
             trn_file.WriteLine("</Zug>");

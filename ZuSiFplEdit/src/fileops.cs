@@ -154,30 +154,33 @@ namespace ZuSiFplEdit
 
             for (int i = 0; i < zug.route.Count; i++)
             {
-                //Richtiges Signal aussuchen
-                streckenModul.Signal nextSignal = null;
-                if (zug.route[i].Ziel.StrElement.SignalNorm != null)
+                if (zug.includeSignal[i])
                 {
-                    nextSignal = zug.route[i].Ziel.StrElement.SignalNorm;
-                }
-                else
-                {
-                    nextSignal = zug.route[i].Ziel.StrElement.SignalGegen;
-                }
+                    //Richtiges Signal aussuchen
+                    streckenModul.Signal nextSignal = null;
+                    if (zug.route[i].Ziel.StrElement.SignalNorm != null)
+                    {
+                        nextSignal = zug.route[i].Ziel.StrElement.SignalNorm;
+                    }
+                    else
+                    {
+                        nextSignal = zug.route[i].Ziel.StrElement.SignalGegen;
+                    }
 
 
-                trn_file.Write("<FahrplanEintrag");
-                if ((zug.route_ankunft[i] != null) && (zug.route_ankunft[i] != new DateTime()))
-                    trn_file.Write(" Ank=\"" + zug.route_ankunft[i].ToString("yy-MM-dd HH:mm:ss") + "\"");
-                if ((zug.route_abfahrt[i] != null) && (zug.route_abfahrt[i] != new DateTime()))
-                    trn_file.Write(" Abf=\"" + zug.route_abfahrt[i].ToString("yy-MM-dd HH:mm:ss") + "\"");
-                trn_file.Write(" Betrst=\"" + nextSignal.Betriebstelle + "\"");
-                if ((i < (zug.route.Count - 1)) && (zug.route[i + 1].FahrstrTyp == "TypWende")) //Wendeerkennung
-                    trn_file.Write(" FzgVerbandAktion=\"2\" FzgVerbandWendeSignalabstand=\"250\"");
-                trn_file.WriteLine(">");
-                
-                trn_file.WriteLine("<FahrplanSignalEintrag FahrplanSignal=\"" + nextSignal.Name + "\"/>");
-                trn_file.WriteLine("</FahrplanEintrag>");
+                    trn_file.Write("<FahrplanEintrag");
+                    if ((zug.route_ankunft[i] != null) && (zug.route_ankunft[i] != new DateTime()))
+                        trn_file.Write(" Ank=\"" + zug.route_ankunft[i].ToString("yy-MM-dd HH:mm:ss") + "\"");
+                    if ((zug.route_abfahrt[i] != null) && (zug.route_abfahrt[i] != new DateTime()))
+                        trn_file.Write(" Abf=\"" + zug.route_abfahrt[i].ToString("yy-MM-dd HH:mm:ss") + "\"");
+                    trn_file.Write(" Betrst=\"" + nextSignal.Betriebstelle + "\"");
+                    if ((i < (zug.route.Count - 1)) && (zug.route[i + 1].FahrstrTyp == "TypWende")) //Wendeerkennung
+                        trn_file.Write(" FzgVerbandAktion=\"2\" FzgVerbandWendeSignalabstand=\"250\"");
+                    trn_file.WriteLine(">");
+
+                    trn_file.WriteLine("<FahrplanSignalEintrag FahrplanSignal=\"" + nextSignal.Name + "\"/>");
+                    trn_file.WriteLine("</FahrplanEintrag>"); 
+                }
             }
 
             trn_file.WriteLine("<FahrzeugVarianten Bezeichnung=\"default\" ZufallsWert=\"1\">");

@@ -43,7 +43,7 @@ namespace ZuSiFplEdit
                 public aStarNode PreviousNode;
                 public streckenModul.fahrStr PreviousVertex;
 
-                public float vMax = 45f;
+                public float vMax = 77f;
 
                 public aStarNode(streckenModul.referenzElement Node, aStarNode PreviousNode, streckenModul.fahrStr PreviousVertex, streckenModul.referenzElement target)
                 {
@@ -54,7 +54,7 @@ namespace ZuSiFplEdit
                     if (PreviousNode == null)
                         DistanceFromStart = 0;
                     else
-                        DistanceFromStart = PreviousNode.DistanceFromStart + PreviousVertex.berechneFahrdauer(vMax);
+                        DistanceFromStart = PreviousNode.DistanceFromStart + PreviousVertex.berechneFahrdauerGewichtet(vMax);
 
                     HeuristicDistanceToTarget = Node.SignalCoord.distanceTo(target.SignalCoord) * 1000f / vMax;
 
@@ -63,7 +63,7 @@ namespace ZuSiFplEdit
 
                 public void updateNode(aStarNode PreviousNode, streckenModul.fahrStr PreviousVertex)
                 {
-                    var alternativeDistanceFromStart = PreviousNode.DistanceFromStart + PreviousVertex.berechneFahrdauer(vMax);
+                    var alternativeDistanceFromStart = PreviousNode.DistanceFromStart + PreviousVertex.berechneFahrdauerGewichtet(vMax);
                     if (DistanceFromStart > alternativeDistanceFromStart)
                     {
                         this.PreviousNode = PreviousNode;
@@ -321,6 +321,8 @@ namespace ZuSiFplEdit
         /// </summary>
         public DateTime[] route_abfahrt;
 
+        public List<bool> includeSignal; //Signal in Fahrplan aufnehmen in Abhängigkeit von Wichtigkeit/abgehenden Fahrstraßen etc.
+
         /// <summary>
         /// Konstruktor der Klasse ZugFahrt
         /// </summary>
@@ -328,7 +330,8 @@ namespace ZuSiFplEdit
         {
             WayPoints = new List<WayPoint>();
             route = new List<streckenModul.fahrStr>();
-            vMax = 20;
+            includeSignal = new List<bool>();
+            vMax = 77;
         }
 
         public override string ToString()
@@ -342,6 +345,8 @@ namespace ZuSiFplEdit
         public void routeBerechnen()
         {
             route.Clear();
+            includeSignal.Clear();
+
 
             if (WayPoints.Count < 2)
             {
@@ -355,6 +360,11 @@ namespace ZuSiFplEdit
                 if (WayPoints[i].teilRoute != null)
                 {
                     route.AddRange(WayPoints[i].teilRoute);
+                    for (int b = 1; b < WayPoints[i].teilRoute.Count; b++)
+                    {
+                        includeSignal.Add(false);
+                    }
+                    includeSignal.Add(true);
                 }
                 else
                 {
@@ -370,11 +380,14 @@ namespace ZuSiFplEdit
                     }
                 }
             }
+            includeSignal[0] = true;
             route_metadaten_berechen();
         }
 
         public void route_metadaten_berechen()
         {
+            
+
             route_ankunft = new DateTime[route.Count];
             route_abfahrt = new DateTime[route.Count];
 
@@ -391,7 +404,7 @@ namespace ZuSiFplEdit
                 //Strecke suchen
                 float strecke_cur = route[i].Laenge;
                 //Zeit berechnen
-                long zeit_cur = (long)(strecke_cur / v_ms_max);
+                long zeit_cur = (long)route[i].berechneFahrdauer(vMax);
                 //Strecke aufaddieren
                 route_länge += strecke_cur;
                 //Zeit aufaddieren
@@ -401,6 +414,9 @@ namespace ZuSiFplEdit
                 //Zeiten eintragen
                 if (i != 0)
                 {
+                    if (route[i].Start.fsAnzahl > 1)
+                        includeSignal[i] = true;
+
                     DateTime letzteZeit;
                     if ((route_abfahrt[i - 1] == null) || (route_abfahrt[i - 1] == new DateTime()))
                     {
@@ -413,6 +429,7 @@ namespace ZuSiFplEdit
 
                     if (((i < (route.Count - 1)) && (route[i + 1].FahrstrTyp == "TypWende")) || (i == route.Count - 1)) //Wendeerkennung
                     {
+                        includeSignal[i] = true;
                         route_ankunft[i] = letzteZeit.AddSeconds(zeit_cur);
                         route_abfahrt[i] = route_ankunft[i].AddSeconds(30);
                     }

@@ -256,6 +256,7 @@ namespace ZuSiFplEdit
 
             public List<fahrStr> abgehendeFahrstraßen;
             public List<referenzElement> wendeSignale;
+            public int fsAnzahl = 0;
 
             [Obsolete]
             public referenzElement(streckenModul Modul, int ReferenzNr, int StrElement, bool StrNorm, int RefTyp, string Info)
@@ -459,7 +460,29 @@ namespace ZuSiFplEdit
             }
 
             //TODO: Geschwindigkeit genauer berechnen
+            public float berechneFahrdauerGewichtet(float vMax)
+            {
+                vMax = vMaxBestimmen(vMax);
+
+                return (LaengeGewichtet / vMax);
+
+                //Ganz einfach:
+                //return (LaengeGewichtet / vMax);
+            }
+
             public float berechneFahrdauer(float vMax)
+            {
+                vMax = vMaxBestimmen(vMax);
+
+                //Console.WriteLine(this.ToString() + " - " + vMax);
+
+                return (Laenge / vMax);
+
+                //Ganz einfach:
+                //return (LaengeGewichtet / vMax);
+            }
+
+            private float vMaxBestimmen(float vMax)
             {
                 float vMaxSig = -1f;
 
@@ -467,23 +490,17 @@ namespace ZuSiFplEdit
                 {
                     foreach (var WegPunkt in wegpunkte)
                     {
-                        if (!WegPunkt.Weiche)
-                            vMaxSig = WegPunkt.Ref.Signal.vSig[WegPunkt.SignalZeile];
+                        if ((!WegPunkt.Weiche) && (WegPunkt.SignalZeile != 0))
+                            vMaxSig = WegPunkt.Ref.Signal.vSig[WegPunkt.SignalZeile - 1];
                     }
                 }
 
-                if (vMaxSig < 0)
+                if (vMaxSig <= 0)
                     vMaxSig = this.Start.StrElement.SigVmax;
-                
+
                 if (vMaxSig > 0)
                     vMax = Math.Min(vMax, vMaxSig);
-
-                //Console.WriteLine(this.ToString() + " - " + vMax);
-
-                return (LaengeGewichtet / vMax);
-
-                //Ganz einfach:
-                //return (LaengeGewichtet / vMax);
+                return vMax;
             }
 
             public override string ToString()

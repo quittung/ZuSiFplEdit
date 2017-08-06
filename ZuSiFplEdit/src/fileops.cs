@@ -83,7 +83,7 @@ namespace ZuSiFplEdit
             fpn_file.WriteLine("<AutorEintrag/>");
             fpn_file.WriteLine("</Info>");
             fpn_file.WriteLine("<Fahrplan  AnfangsZeit=\"2017-02-27 12:00:00\">");
-            fpn_file.WriteLine("<BefehlsKonfiguration/>");
+            fpn_file.WriteLine("<BefehlsKonfiguration Dateiname=\"Signals\\Deutschland\\Befehle\\408_2003.authority.xml\"/>");
             fpn_file.WriteLine("<Begruessungsdatei/>");
 
             foreach (var zug in Zugfahrten)

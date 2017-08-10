@@ -132,12 +132,20 @@ namespace ZuSiFplEdit
 
 
                 teilRoute = new List<streckenModul.fahrStr>();
+
+                Console.WriteLine("");
+                Console.WriteLine("");
                 Console.WriteLine("Geschätzte Fahrzeit: " + new DateTime().AddSeconds(CurrentNode.OverallDistance).ToString("HH:mm:ss"));
+
                 while (true)
                 {
                     if (CurrentNode.PreviousNode == null)
                         break;
                     teilRoute.Insert(0, CurrentNode.PreviousVertex);
+
+                    //CurrentNode.PreviousVertex.Durchschnittsgeschwindigkeit = CurrentNode.PreviousVertex.vMaxBestimmen(1000);
+                    //Console.WriteLine(CurrentNode.PreviousVertex.FahrstrName + " " + CurrentNode.PreviousVertex.RglGgl + " " + CurrentNode.PreviousVertex.Durchschnittsgeschwindigkeit);
+
                     CurrentNode = CurrentNode.PreviousNode;
                 }
             }
@@ -390,9 +398,7 @@ namespace ZuSiFplEdit
 
             route_ankunft = new DateTime[route.Count];
             route_abfahrt = new DateTime[route.Count];
-
-            float v_ms_max = 20;
-
+            
             route_dauer = 0;
             route_länge = 0;
 

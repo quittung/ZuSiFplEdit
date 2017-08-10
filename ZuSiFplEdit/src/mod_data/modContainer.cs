@@ -345,6 +345,8 @@ namespace ZuSiFplEdit
                 foreach (var fstr in mod.FahrStr)
                 {
                     fstr.Start.fsAnzahl++;
+                    //
+
                     fstr.folgestraßen = new List<streckenModul.fahrStr>();
 
                     if (!(fstr.Ziel == null))

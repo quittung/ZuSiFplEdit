@@ -391,6 +391,8 @@ namespace ZuSiFplEdit
             public List<referenzElement> wendesignale;
 
             public List<fstrPunkt> wegpunkte;
+
+            public float Durchschnittsgeschwindigkeit;
             
             //Sollte nur für nicht aus XML eingelesene Fahrstraßen (also Wendehilfsfahrstraßen) eingesetzt werden
             public fahrStr(string FahrstrName, string FahrstrStrecke, int RglGgl, string FahrstrTyp, float Laenge, int StartRef, string StartMod_Str, int ZielRef, string ZielMod_Str)
@@ -406,6 +408,7 @@ namespace ZuSiFplEdit
                 this.StartMod_Str = StartMod_Str;
                 this.ZielRef = ZielRef;
                 this.ZielMod_Str = ZielMod_Str;
+
             }
 
             public fahrStr(XmlReader partialXmlReader)
@@ -438,7 +441,6 @@ namespace ZuSiFplEdit
                     if (partialXmlReader.Name == "FahrstrSignal")
                         wegpunkte.Add(new fstrPunkt(partialXmlReader.ReadSubtree(), "FahrstrSignal"));
                 }
-
             }
 
             float gewichteLänge()
@@ -446,15 +448,15 @@ namespace ZuSiFplEdit
                 //TODO: Weichen mit in Gewichtung aufnehmen?
                 float gewichtung = 1;
                 if (RglGgl == 0) // Bahnhofsgleis
-                    gewichtung *= 1.1f;
+                    gewichtung *= 1f;
                 if (RglGgl == 1) // Eingleisige Strecke
-                    gewichtung *= 1.3f;
+                    gewichtung *= 1f;
                 if (RglGgl == 2) // Endet im Regelgleis
                     gewichtung *= 1f;
                 if (RglGgl == 3) // Endet im Gegengleis
-                    gewichtung *= 1.5f;
+                    gewichtung *= 1.2f;
                 if (FahrstrTyp == "TypWende")
-                    gewichtung *= 2f;
+                    gewichtung *= 1f;
 
                 return (Laenge * gewichtung);
             }
@@ -463,6 +465,13 @@ namespace ZuSiFplEdit
             public float berechneFahrdauerGewichtet(float vMax)
             {
                 vMax = vMaxBestimmen(vMax);
+
+                if (FahrstrName.Contains("Warburg"))
+                    Console.WriteLine(FahrstrName + "  " + vMax + " " + RglGgl);
+
+                //if (vMax > 45)
+                //    MessageBox.Show(this.ToString() + " - " + vMax);
+
 
                 return (LaengeGewichtet / vMax);
 
@@ -482,7 +491,7 @@ namespace ZuSiFplEdit
                 //return (LaengeGewichtet / vMax);
             }
 
-            private float vMaxBestimmen(float vMax)
+            public float vMaxBestimmen(float vMax)
             {
                 float vMaxSig = -1f;
 
@@ -498,8 +507,26 @@ namespace ZuSiFplEdit
                 if (vMaxSig <= 0)
                     vMaxSig = this.Start.StrElement.SigVmax;
 
+                
+
+                if (FahrstrTyp == "TypWende")
+                    vMaxSig = 5; //Für Wende wird 20km/h angenommen.
+                if ((RglGgl == 3) && (vMaxSig > 20 ))
+                    vMaxSig = 5; //Für schnelle Gegengleisfahrten wird 20km/h angenommen.
+
+                if (vMaxSig <= 0)
+                    vMaxSig = 5;
+
+                //if ((FahrstrTyp != "TypLZB") && (vMaxSig > 45)) //Bei Fahrstraßen mit zu wenig Infos ausserhalb der LZB wird vMax 160km/h angenommen.
+                //    vMaxSig = 45;
+
                 if (vMaxSig > 0)
                     vMax = Math.Min(vMax, vMaxSig);
+                else
+                    Console.WriteLine("NLF: " + FahrstrName);
+
+
+
                 return vMax;
             }
 

@@ -179,8 +179,7 @@ namespace ZuSiFplEdit
                     {
                         act.route = fstrRouteSearchStart(act.ZstartSignal, act.ZzielSignal);
                     }
-
-                    updateZugFields();
+                    
                     mMap.Image = kartenZeichner.draw();
                     return;
                 }
@@ -464,12 +463,11 @@ namespace ZuSiFplEdit
             }
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void Neuer_Zug_button_Click(object sender, EventArgs e)
         {
-            
             var tmpZugfahrt = new ZugFahrt();
 
-            tmpZugfahrt.Gattung = "RB";
+            tmpZugfahrt.Gattung = "RB \r\n";
             
             int ZugNummer = 0;
             bool ZugNummerBesetzt = true;
@@ -499,15 +497,6 @@ namespace ZuSiFplEdit
             return ZugNummerBesetzt;
         }
 
-        private void textBox_Gattung_TextChanged(object sender, EventArgs e)
-        {
-            if (ZugFahrtBox.SelectedItem == null)
-                return;
-            var act = (ZugFahrt)ZugFahrtBox.SelectedItem;
-            act.Gattung = textBox_Gattung.Text;
-            zlbUpdate();
-        }
-
         void zlbUpdate()
         {
             ZLBready = false;
@@ -515,120 +504,9 @@ namespace ZuSiFplEdit
             ZLBready = true;
         }
 
-        private void textBox_ZNummer_TextChanged(object sender, EventArgs e)
-        {
-            if (ZugFahrtBox.SelectedItem == null)
-                return;
-            textBox_ZNummer.BackColor = Color.White;
-
-            int ZN = -1;
-            try
-            {
-                ZN = Convert.ToInt32(textBox_ZNummer.Text);
-            }
-            catch (Exception)
-            {
-                textBox_ZNummer.BackColor = Color.Red;
-                //HACK: Bei Backspace soll keine Fehlermeldung kommen.
-                MessageBox.Show("Keine gültige Zugnummer", "Fehler", MessageBoxButtons.OK);
-                return;
-            }
-
-            
-            var act = (ZugFahrt)ZugFahrtBox.SelectedItem;
-            if (ZNBesetzt(ZN))
-            {
-                if (ZN != act.Zugnummer)
-                    textBox_ZNummer.BackColor = Color.Red;
-            } 
-            else
-            {
-                act.Zugnummer = ZN;
-
-                zlbUpdate();
-            }
-        }
-
+        
         private void ZugFahrtBox_SelectedValueChanged(object sender, EventArgs e)
         {
-            updateZugFields();
-        }
-
-        private void updateZugFields()
-        {
-            if (ZugFahrtBox.SelectedItem == null)
-                return;
-            if (ZLBready)
-            {
-                var act = (ZugFahrt)ZugFahrtBox.SelectedItem;
-
-                textBox_Gattung.Text = act.Gattung;
-                textBox_ZNummer.Text = act.Zugnummer.ToString();
-
-                if (act.ZstartSignal == null)
-                {
-                    label_StartSig.Text = "Startsignal unbekannt";
-                }
-                else
-                {
-                    label_StartSig.Text = act.ZstartSignal.ToString();
-                }
-
-                if (act.ZzielSignal == null)
-                {
-                    label_ZielSig.Text = "Zielsignal unbekannt";
-                }
-                else
-                {
-                    label_ZielSig.Text = act.ZzielSignal.ToString();
-                }
-
-                if (act.route == null)
-                {
-                    if (act.ZstartSignal == null || act.ZzielSignal == null)
-                    {
-                        label_Fstr.Text = "Start- und/oder Zielsignal nicht gesetzt";
-                    } 
-                    else
-                    {
-                        label_Fstr.Text = "Fahrweg konnte nicht gefunden werden";
-                    }
-                }
-                else
-                {
-                    double fstr_len = 0;
-                    foreach (var fstr in act.route)
-                    {
-                        fstr_len += fstr.Laenge;
-                    }
-                    label_Fstr.Text = "Fahrweglänge ist " + (fstr_len/1000).ToString("F2") + " km";
-                }
-            }
-
-            this.Invalidate();
-            Application.DoEvents();
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            if (ZugFahrtBox.SelectedItem == null)
-                return;
-            selectRouteStart = true;
-            label_StartSig.Text = "Startsignal auf Karte wählen";
-            kartenZeichner.setLayers("signal_ziel", false); 
-            this.Invalidate();
-            //Startsignal wird bei MouseUp && MouseButton == Links gesetzt.
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            if (ZugFahrtBox.SelectedItem == null)
-                return;
-            selectRouteEnd = true;
-            label_ZielSig.Text = "Zielsignal auf Karte wählen";
-            kartenZeichner.setLayers("signal_start", false);
-            this.Invalidate();
-            //Zielsignal wird bei MouseUp && MouseButton == Links gesetzt.
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -648,15 +526,14 @@ namespace ZuSiFplEdit
                 }
             }
             ZugFahrtBox.Items.RemoveAt(löschZug);
-
-            updateZugFields();
+            
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
             if (ZugFahrtBox.SelectedItem == null)
                 return;
-            ZugKonfigForm.ZugFahrtLaden((ZugFahrt)ZugFahrtBox.SelectedItem);
+            ZugKonfigForm.setZug((ZugFahrt)ZugFahrtBox.SelectedItem);
             ZugKonfigForm.Show();
         }
     }

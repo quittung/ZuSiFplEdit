@@ -38,22 +38,13 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.label_StartSig = new System.Windows.Forms.Label();
-            this.label_ZielSig = new System.Windows.Forms.Label();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.textBox_Gattung = new System.Windows.Forms.TextBox();
-            this.textBox_ZNummer = new System.Windows.Forms.TextBox();
             this.ZugFahrtBox = new System.Windows.Forms.ListBox();
-            this.label_Fstr = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
+            this.ZF_bearbeiten = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.dateiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.speichernUnterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.karteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.moduToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modulgrenzenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -67,8 +58,6 @@
             this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ladezeitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.dateiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.speichernUnterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.mMap)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -79,8 +68,6 @@
             this.tableLayoutPanel1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -191,167 +178,30 @@
             // 
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel4, 0, 4);
-            this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel3, 0, 3);
-            this.tableLayoutPanel2.Controls.Add(this.ZugFahrtBox, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.label_Fstr, 0, 5);
             this.tableLayoutPanel2.Controls.Add(this.button3, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.button4, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.button5, 0, 6);
+            this.tableLayoutPanel2.Controls.Add(this.ZF_bearbeiten, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.ZugFahrtBox, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.button4, 0, 2);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 7;
+            this.tableLayoutPanel2.RowCount = 4;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 65F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 409F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(242, 515);
             this.tableLayoutPanel2.TabIndex = 0;
-            // 
-            // tableLayoutPanel4
-            // 
-            this.tableLayoutPanel4.ColumnCount = 2;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 66.66666F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel4.Controls.Add(this.button1, 1, 0);
-            this.tableLayoutPanel4.Controls.Add(this.button2, 1, 1);
-            this.tableLayoutPanel4.Controls.Add(this.label_StartSig, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.label_ZielSig, 0, 1);
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 398);
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 2;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(236, 59);
-            this.tableLayoutPanel4.TabIndex = 2;
-            // 
-            // button1
-            // 
-            this.button1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button1.Location = new System.Drawing.Point(160, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(73, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Auswahl";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // button2
-            // 
-            this.button2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button2.Location = new System.Drawing.Point(160, 32);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(73, 24);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "Auswahl";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // label_StartSig
-            // 
-            this.label_StartSig.AutoSize = true;
-            this.label_StartSig.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label_StartSig.Location = new System.Drawing.Point(3, 0);
-            this.label_StartSig.Name = "label_StartSig";
-            this.label_StartSig.Size = new System.Drawing.Size(151, 29);
-            this.label_StartSig.TabIndex = 2;
-            this.label_StartSig.Text = "Startsignal unbekannt";
-            this.label_StartSig.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label_ZielSig
-            // 
-            this.label_ZielSig.AutoSize = true;
-            this.label_ZielSig.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label_ZielSig.Location = new System.Drawing.Point(3, 29);
-            this.label_ZielSig.Name = "label_ZielSig";
-            this.label_ZielSig.Size = new System.Drawing.Size(151, 30);
-            this.label_ZielSig.TabIndex = 3;
-            this.label_ZielSig.Text = "Zielsignal unbekannt";
-            this.label_ZielSig.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // tableLayoutPanel3
-            // 
-            this.tableLayoutPanel3.ColumnCount = 2;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30F));
-            this.tableLayoutPanel3.Controls.Add(this.label1, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.label2, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.textBox_Gattung, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.textBox_ZNummer, 1, 1);
-            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 343);
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 2;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(236, 49);
-            this.tableLayoutPanel3.TabIndex = 1;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label1.Location = new System.Drawing.Point(3, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(159, 24);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Gattung";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label2.Location = new System.Drawing.Point(168, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(65, 24);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "Nummer";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // textBox_Gattung
-            // 
-            this.textBox_Gattung.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox_Gattung.Location = new System.Drawing.Point(3, 27);
-            this.textBox_Gattung.Name = "textBox_Gattung";
-            this.textBox_Gattung.Size = new System.Drawing.Size(159, 20);
-            this.textBox_Gattung.TabIndex = 2;
-            this.textBox_Gattung.TextChanged += new System.EventHandler(this.textBox_Gattung_TextChanged);
-            // 
-            // textBox_ZNummer
-            // 
-            this.textBox_ZNummer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox_ZNummer.Location = new System.Drawing.Point(168, 27);
-            this.textBox_ZNummer.Name = "textBox_ZNummer";
-            this.textBox_ZNummer.Size = new System.Drawing.Size(65, 20);
-            this.textBox_ZNummer.TabIndex = 3;
-            this.textBox_ZNummer.TextChanged += new System.EventHandler(this.textBox_ZNummer_TextChanged);
             // 
             // ZugFahrtBox
             // 
             this.ZugFahrtBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ZugFahrtBox.FormattingEnabled = true;
-            this.ZugFahrtBox.Location = new System.Drawing.Point(3, 73);
+            this.ZugFahrtBox.Location = new System.Drawing.Point(3, 109);
             this.ZugFahrtBox.Name = "ZugFahrtBox";
-            this.ZugFahrtBox.Size = new System.Drawing.Size(236, 264);
+            this.ZugFahrtBox.Size = new System.Drawing.Size(236, 403);
             this.ZugFahrtBox.TabIndex = 0;
             this.ZugFahrtBox.SelectedIndexChanged += new System.EventHandler(this.ZugFahrtBox_SelectedValueChanged);
-            // 
-            // label_Fstr
-            // 
-            this.label_Fstr.AutoSize = true;
-            this.label_Fstr.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label_Fstr.Location = new System.Drawing.Point(3, 460);
-            this.label_Fstr.Name = "label_Fstr";
-            this.label_Fstr.Size = new System.Drawing.Size(236, 20);
-            this.label_Fstr.TabIndex = 4;
-            this.label_Fstr.Text = "Fahrweg konnte nicht gefunden werden";
-            this.label_Fstr.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // button3
             // 
@@ -362,12 +212,11 @@
             this.button3.TabIndex = 3;
             this.button3.Text = "Neuer Zug";
             this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.button3.Click += new System.EventHandler(this.Neuer_Zug_button_Click);
             // 
             // button4
             // 
-            this.button4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button4.Location = new System.Drawing.Point(3, 38);
+            this.button4.Location = new System.Drawing.Point(3, 73);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(236, 29);
             this.button4.TabIndex = 5;
@@ -375,16 +224,15 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
-            // button5
+            // ZF_bearbeiten
             // 
-            this.button5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button5.Location = new System.Drawing.Point(3, 483);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(236, 29);
-            this.button5.TabIndex = 6;
-            this.button5.Text = "Zugfahrt bearbeiten";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
+            this.ZF_bearbeiten.Location = new System.Drawing.Point(3, 38);
+            this.ZF_bearbeiten.Name = "ZF_bearbeiten";
+            this.ZF_bearbeiten.Size = new System.Drawing.Size(236, 29);
+            this.ZF_bearbeiten.TabIndex = 6;
+            this.ZF_bearbeiten.Text = "Zugfahrt bearbeiten";
+            this.ZF_bearbeiten.UseVisualStyleBackColor = true;
+            this.ZF_bearbeiten.Click += new System.EventHandler(this.button5_Click);
             // 
             // menuStrip1
             // 
@@ -397,6 +245,21 @@
             this.menuStrip1.Size = new System.Drawing.Size(926, 24);
             this.menuStrip1.TabIndex = 5;
             this.menuStrip1.Text = "menuStrip1";
+            // 
+            // dateiToolStripMenuItem
+            // 
+            this.dateiToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.speichernUnterToolStripMenuItem});
+            this.dateiToolStripMenuItem.Name = "dateiToolStripMenuItem";
+            this.dateiToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
+            this.dateiToolStripMenuItem.Text = "Datei";
+            // 
+            // speichernUnterToolStripMenuItem
+            // 
+            this.speichernUnterToolStripMenuItem.Name = "speichernUnterToolStripMenuItem";
+            this.speichernUnterToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.speichernUnterToolStripMenuItem.Text = "Speichern unter...";
+            this.speichernUnterToolStripMenuItem.Click += new System.EventHandler(this.ModulButton_Click);
             // 
             // karteToolStripMenuItem
             // 
@@ -420,7 +283,7 @@
             this.verbindungenToolStripMenuItem,
             this.punkteToolStripMenuItem});
             this.moduToolStripMenuItem.Name = "moduToolStripMenuItem";
-            this.moduToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.moduToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.moduToolStripMenuItem.Text = "Module";
             this.moduToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
@@ -468,7 +331,7 @@
             this.mToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.signalnamenToolStripMenuItem});
             this.mToolStripMenuItem.Name = "mToolStripMenuItem";
-            this.mToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.mToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.mToolStripMenuItem.Text = "Streckenplan";
             this.mToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
@@ -484,7 +347,7 @@
             // 
             this.fahrstraenToolStripMenuItem.CheckOnClick = true;
             this.fahrstraenToolStripMenuItem.Name = "fahrstraenToolStripMenuItem";
-            this.fahrstraenToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.fahrstraenToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.fahrstraenToolStripMenuItem.Text = "Fahrstraßen";
             this.fahrstraenToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
@@ -494,7 +357,7 @@
             this.routeToolStripMenuItem.CheckOnClick = true;
             this.routeToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.routeToolStripMenuItem.Name = "routeToolStripMenuItem";
-            this.routeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.routeToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
             this.routeToolStripMenuItem.Text = "Route";
             this.routeToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
@@ -521,21 +384,6 @@
             this.toolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
             this.toolStripMenuItem1.Text = "Framezeit...";
             // 
-            // dateiToolStripMenuItem
-            // 
-            this.dateiToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.speichernUnterToolStripMenuItem});
-            this.dateiToolStripMenuItem.Name = "dateiToolStripMenuItem";
-            this.dateiToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
-            this.dateiToolStripMenuItem.Text = "Datei";
-            // 
-            // speichernUnterToolStripMenuItem
-            // 
-            this.speichernUnterToolStripMenuItem.Name = "speichernUnterToolStripMenuItem";
-            this.speichernUnterToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
-            this.speichernUnterToolStripMenuItem.Text = "Speichern unter...";
-            this.speichernUnterToolStripMenuItem.Click += new System.EventHandler(this.ModulButton_Click);
-            // 
             // modSelForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -558,11 +406,6 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
-            this.tableLayoutPanel2.PerformLayout();
-            this.tableLayoutPanel4.ResumeLayout(false);
-            this.tableLayoutPanel4.PerformLayout();
-            this.tableLayoutPanel3.ResumeLayout(false);
-            this.tableLayoutPanel3.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -593,24 +436,13 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.ListBox ZugFahrtBox;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox textBox_Gattung;
-        private System.Windows.Forms.TextBox textBox_ZNummer;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Label label_StartSig;
-        private System.Windows.Forms.Label label_ZielSig;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Label label_Fstr;
         private System.Windows.Forms.ToolStripMenuItem signalnamenToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem routeToolStripMenuItem;
         private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button5;
         private System.Windows.Forms.ToolStripMenuItem dateiToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem speichernUnterToolStripMenuItem;
+        private System.Windows.Forms.Button ZF_bearbeiten;
     }
 }
 

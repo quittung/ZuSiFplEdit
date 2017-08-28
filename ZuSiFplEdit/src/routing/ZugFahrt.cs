@@ -43,7 +43,7 @@ namespace ZuSiFplEdit
                 public aStarNode PreviousNode;
                 public streckenModul.fahrStr PreviousVertex;
 
-                public float vMax = 77f;
+                public float vMax = 160f / 3.6f;
 
                 public aStarNode(streckenModul.referenzElement Node, aStarNode PreviousNode, streckenModul.fahrStr PreviousVertex, streckenModul.referenzElement target)
                 {
@@ -339,7 +339,7 @@ namespace ZuSiFplEdit
             WayPoints = new List<WayPoint>();
             route = new List<streckenModul.fahrStr>();
             includeSignal = new List<bool>();
-            vMax = 77;
+            vMax = 160f / 3.6f;
         }
 
         public override string ToString()

@@ -31,7 +31,7 @@ namespace ZuSiFplEdit
         {
             tbZugGattung.Text = Zug.Gattung;
             tbZugNummer.Text = Zug.Zugnummer.ToString();
-            tbVmax.Text = (Zug.vMax * 3.6f).ToString("f");
+            tbVmax.Text = (Zug.vMax * 3.6f).ToString("f0");
             
             listBox1.Items.Clear();
             listBox2.Items.Clear();

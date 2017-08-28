@@ -533,6 +533,9 @@ namespace ZuSiFplEdit
         {
             if (ZugFahrtBox.SelectedItem == null)
                 return;
+
+            ZugKonfigForm = new ZugForm();
+            ZugKonfigForm.Owner = this;
             ZugKonfigForm.setZug((ZugFahrt)ZugFahrtBox.SelectedItem);
             ZugKonfigForm.Show();
         }

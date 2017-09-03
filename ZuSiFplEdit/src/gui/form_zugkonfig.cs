@@ -22,6 +22,8 @@ namespace ZuSiFplEdit
         public ZugForm()
         {
             InitializeComponent();
+
+            LB_waypoint.AllowDrop = true;
         }
 
         /// <summary>
@@ -33,16 +35,16 @@ namespace ZuSiFplEdit
             tbZugNummer.Text = Zug.Zugnummer.ToString();
             tbVmax.Text = (Zug.vMax * 3.6f).ToString("f0");
             
-            listBox1.Items.Clear();
-            listBox2.Items.Clear();
+            LB_waypoint.Items.Clear();
+            LB_signal.Items.Clear();
 
             foreach (var WP in Zug.WayPoints)
             {
-                listBox1.Items.Add(WP);
+                LB_waypoint.Items.Add(WP);
             }
             foreach (var RP in Zug.route)
             {
-                listBox2.Items.Add(RP);
+                LB_signal.Items.Add(RP);
             }
         }
 
@@ -75,17 +77,17 @@ namespace ZuSiFplEdit
         {
             string platzHalter = "Signal auf der Karte wählen...";
 
-            if (listBox1.SelectedItem == null)
+            if (LB_waypoint.SelectedItem == null)
             {
-                listBox1.Items.Add(platzHalter);
+                LB_waypoint.Items.Add(platzHalter);
             }
             else
             {
-                listBox1.Items.Insert(listBox1.SelectedIndex + 1, platzHalter);
+                LB_waypoint.Items.Insert(LB_waypoint.SelectedIndex + 1, platzHalter);
             }
-            listBox1.SelectedItem = platzHalter;
+            LB_waypoint.SelectedItem = platzHalter;
 
-            if (listBox1.SelectedIndex == 0)
+            if (LB_waypoint.SelectedIndex == 0)
             {
                 signalSelectionEvent.Invoke("start");
             }
@@ -100,7 +102,7 @@ namespace ZuSiFplEdit
         /// </summary>
         private void punktBearbeiten_Click(object sender, EventArgs e)
         {
-            if (listBox1.SelectedIndex == 0)
+            if (LB_waypoint.SelectedIndex == 0)
             {
                 signalSelectionEvent.Invoke("start");
             }
@@ -115,9 +117,9 @@ namespace ZuSiFplEdit
         /// </summary>
         private void punktLöschen_Click(object sender, EventArgs e)
         {
-            if (listBox1.SelectedItem == null)
+            if (LB_waypoint.SelectedItem == null)
                 return;
-            Zug.WayPoints.RemoveAt(listBox1.SelectedIndex);
+            Zug.WayPoints.RemoveAt(LB_waypoint.SelectedIndex);
             if (Zug.WayPoints.Count > 1)
             {
                 Zug.routeBerechnen();
@@ -205,6 +207,39 @@ namespace ZuSiFplEdit
             {
                 tbVmax.BackColor = Color.LightPink;
             }
+        }
+
+        private void LB_waypoint_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (LB_waypoint.SelectedItem == null) return;
+            LB_waypoint.DoDragDrop(LB_waypoint.SelectedItem, DragDropEffects.Move);
+        }
+
+        private void LB_waypoint_DragDrop(object sender, DragEventArgs e)
+        {
+            Point point = LB_waypoint.PointToClient(new Point(e.X, e.Y));
+            int index = LB_waypoint.IndexFromPoint(point);
+            if (index < 0) index = LB_waypoint.Items.Count - 1;
+            object data = e.Data.GetData(typeof(ZugFahrt.WayPoint));
+            LB_waypoint.Items.Remove(data);
+            LB_waypoint.Items.Insert(index, data);
+
+            Zug.WayPoints.Clear();
+            foreach(var WP in LB_waypoint.Items)
+            {
+                Zug.WayPoints.Add((ZugFahrt.WayPoint)WP);
+            }
+
+            if (Zug.WayPoints.Count > 1)
+            {
+                Zug.routeBerechnen();
+            }
+            Laden();
+        }
+
+        private void LB_waypoint_DragOver(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Move;
         }
     }
 }

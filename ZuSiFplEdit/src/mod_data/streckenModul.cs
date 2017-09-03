@@ -466,8 +466,8 @@ namespace ZuSiFplEdit
             {
                 vMax = vMaxBestimmen(vMax);
 
-                if (FahrstrName.Contains("Warburg"))
-                    Console.WriteLine(FahrstrName + "  " + vMax + " " + RglGgl);
+                //if (FahrstrName.Contains("Warburg"))
+                //    Console.WriteLine(FahrstrName + "  " + vMax + " " + RglGgl);
 
                 //if (vMax > 45)
                 //    MessageBox.Show(this.ToString() + " - " + vMax);

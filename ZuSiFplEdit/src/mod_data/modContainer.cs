@@ -12,11 +12,9 @@ namespace ZuSiFplEdit
     /// <summary>
     /// Sammelt, vernetzt und verwaltet Streckenmodule
     /// </summary>
-    class modContainer
+    public class modContainer
     {
-        
-
-        public List<streckenModul> mSammlung = new List<streckenModul>();
+        public List<st3Modul> mSammlung = new List<st3Modul>();
         public string DirBase = "";
         public string DirRoute = "";
 
@@ -31,7 +29,7 @@ namespace ZuSiFplEdit
 
             var ladeAnzeige = new form_lade();
             ladeAnzeige.Show();
-            ladeAnzeige.Beschreibung.Text = "Suche Datenverzeichnis...";
+            //ladeAnzeige.Beschreibung.Text = "Suche Datenverzeichnis...";
             ladeAnzeige.Update();
 
             FindeDatenVerzeichnis();
@@ -42,7 +40,7 @@ namespace ZuSiFplEdit
 
             List<string> modulPaths = erzeugeST3Liste();
 
-            ladeAnzeige.progressBar2.Maximum = modulPaths.Count - 1;
+            //ladeAnzeige.progressBar2.Maximum = modulPaths.Count - 1;
 
 
 
@@ -168,7 +166,7 @@ namespace ZuSiFplEdit
         /// </summary>
         private void ModulEinlesen(string Speicherort, List<string> st3Fehler)
         {
-            streckenModul aktMod = new streckenModul(Speicherort);
+            st3Modul aktMod = new st3Modul(Speicherort);
 
             if (aktMod.isSane == true)
             {
@@ -213,16 +211,16 @@ namespace ZuSiFplEdit
         //Wandelt die als String gespeicherten Verbindungen in Pointer um.
         void moduleVerlinken(form_lade ladeAnzeige)
         {
-            ladeAnzeige.progressBar2.Maximum = 4;
+            //ladeAnzeige.progressBar2.Maximum = 4;
             ladeAnzeige.instantProgress(true, 0, "Verlinke Module...");
 
             //MessageBox.Show("Module werden jetzt verlinkt.", "Debugnachricht", MessageBoxButtons.OK);
-            foreach (streckenModul aktModul in mSammlung)
+            foreach (st3Modul aktModul in mSammlung)
             {
-                aktModul.Verbindungen = new List<streckenModul>();
+                aktModul.Verbindungen = new List<st3Modul>();
                 foreach (string connectionString in aktModul.VerbindungenStr)
                 {
-                    streckenModul connectionObj = sucheMod(connectionString);
+                    st3Modul connectionObj = sucheMod(connectionString);
                     if (!(connectionObj == null))
                     {
                         aktModul.Verbindungen.Add(connectionObj);
@@ -235,7 +233,7 @@ namespace ZuSiFplEdit
             }
 
             //Delete one-sided connections.
-            foreach (streckenModul mod in mSammlung)
+            foreach (st3Modul mod in mSammlung)
             {
                 if (mod.Verbindungen.Count < 2)
                 {
@@ -257,37 +255,10 @@ namespace ZuSiFplEdit
             }
 
 
-            //ladeAnzeige.instantProgress(ladeAnzeige.progressBar2, 0, "Verlinke Streckenelemente...");
-            ////Verlinke Streckenelemente
-            //foreach (var mod in mSammlung)
-            //{
-            //    foreach (var strE in mod.StreckenElemente)
-            //    {
-            //        strE.AnschlussNorm = new List<streckenModul.streckenElement>();
-            //        if (strE.AnschlussNormInt.Count > 0)
-            //        {
-            //            foreach (var normElement in strE.AnschlussNormInt)
-            //            {
-            //                strE.AnschlussNorm.Add(mod.sucheStrElement(normElement));
-            //            }
-            //        }
-
-            //        strE.AnschlussGegen = new List<streckenModul.streckenElement>();
-            //        if (strE.AnschlussGegenInt.Count > 0)
-            //        {
-            //            foreach (var gegenElement in strE.AnschlussGegenInt)
-            //            {
-            //                strE.AnschlussGegen.Add(mod.sucheStrElement(gegenElement));
-            //            }
-            //        }
-            //    }
-            //}
-
-
             ladeAnzeige.instantProgress(true, 1, "Verlinke Fahrstraßen mit Signalen...");
             //string problemstellen = "";
             //verlinke fahrstraßen mit referenzen.
-            var unvollständigeFahrstraßen = new List<streckenModul.fahrStr>();
+            var unvollständigeFahrstraßen = new List<st3Modul.fahrStr>();
             foreach (var mod in mSammlung)
             {
                 foreach (var fstr in mod.FahrStr)
@@ -347,7 +318,7 @@ namespace ZuSiFplEdit
                     fstr.Start.fsAnzahl++;
                     //
 
-                    fstr.folgestraßen = new List<streckenModul.fahrStr>();
+                    fstr.folgestraßen = new List<st3Modul.fahrStr>();
 
                     if (!(fstr.Ziel == null))
                     {
@@ -365,40 +336,40 @@ namespace ZuSiFplEdit
 
             ladeAnzeige.instantProgress(true, 3, "Sammle Start- und Zielsignale...");
             //Sammle abgehende Fahrstraßen zu Signalen in Modul.
-            foreach (var mod in mSammlung)
-            {
-                foreach (var fstr in mod.FahrStr) //Start- und Zielsignale in den entsprechenden Modulen ein.
-                {
-                    fstr.Start.istStart = true;
-                    if (!(mod.StartSignale.Contains(fstr.Start)))
-                        mod.StartSignale.Add(fstr.Start);
-                    if (!(mod.StartUndZielSignale.Contains(fstr.Start)))
-                        mod.StartUndZielSignale.Add(fstr.Start);
+            //foreach (var mod in mSammlung)
+            //{
+            //    foreach (var fstr in mod.FahrStr) //Start- und Zielsignale in den entsprechenden Modulen ein.
+            //    {
+            //        fstr.Start.istStart = true;
+            //        if (!(mod.StartSignale.Contains(fstr.Start)))
+            //            mod.StartSignale.Add(fstr.Start);
+            //        if (!(mod.StartUndZielSignale.Contains(fstr.Start)))
+            //            mod.StartUndZielSignale.Add(fstr.Start);
 
-                    fstr.Ziel.istZiel = true;
-                    if (!(fstr.ZielMod.ZielSignale.Contains(fstr.Ziel)))
-                        fstr.ZielMod.ZielSignale.Add(fstr.Ziel);
-                    if (!(fstr.ZielMod.StartUndZielSignale.Contains(fstr.Ziel)))
-                        fstr.ZielMod.StartUndZielSignale.Add(fstr.Ziel);
-                }
-            }
+            //        fstr.Ziel.istZiel = true;
+            //        if (!(fstr.ZielMod.ZielSignale.Contains(fstr.Ziel)))
+            //            fstr.ZielMod.ZielSignale.Add(fstr.Ziel);
+            //        if (!(fstr.ZielMod.StartUndZielSignale.Contains(fstr.Ziel)))
+            //            fstr.ZielMod.StartUndZielSignale.Add(fstr.Ziel);
+            //    }
+            //}
 
             ladeAnzeige.instantProgress(true, 4, "Finde Wendeziele...");
 
             foreach (var mod in mSammlung)
             {
-                List<streckenModul.fahrStr> neueFahrstraßen = new List<streckenModul.fahrStr>();
+                List<st3Modul.fahrStr> neueFahrstraßen = new List<st3Modul.fahrStr>();
                 foreach (var fstr in mod.FahrStr)
                 {
 
                     ladeAnzeige.instantProgress(true, 4, "Finde Wendeziele (" + mod.modName + " - " + fstr.Ziel.Info + ")...");
-                    fstr.wendesignale = findeWendeziele(fstr.Ziel);
+                    fstr.wendesignale = findeWendeziele(fstr);
                     fstr.Ziel.wendeSignale = fstr.wendesignale; //HACK: Manche Signale erhalten keine Wendesignale.
                     
                     //Füge WendeHilfsFahrStraßen hinzu
                     foreach (var wendeSignal in fstr.wendesignale)
                     {
-                        var wendeHilfsStraße = erstelleWendehilfsfahrstraße(fstr.Ziel, wendeSignal);
+                        var wendeHilfsStraße = new st3Modul.fahrStr(fstr.Ziel, wendeSignal, this);
 
                         fstr.folgestraßen.Add(wendeHilfsStraße);
                         fstr.Ziel.abgehendeFahrstraßen.Add(wendeHilfsStraße);
@@ -409,23 +380,11 @@ namespace ZuSiFplEdit
             }
         }
 
-        private static streckenModul.fahrStr erstelleWendehilfsfahrstraße(streckenModul.referenzElement StartSignal, streckenModul.referenzElement ZielSignal)
-        {
-            var distanz = (float)StartSignal.SignalCoord.distanceTo(ZielSignal.SignalCoord) * 1000f;
-            var hilfsfstr = new streckenModul.fahrStr("Wendehilfsfahrstraße", "0", 4, "TypWende", distanz, StartSignal.ReferenzNr, StartSignal.Modul.modName, ZielSignal.ReferenzNr, ZielSignal.Modul.modName); //TODO: RglGgl
-            hilfsfstr.StartMod = StartSignal.Modul;
-            hilfsfstr.ZielMod = ZielSignal.Modul;
-            hilfsfstr.Start = StartSignal;
-            hilfsfstr.Ziel = ZielSignal;
-            hilfsfstr.folgestraßen = ZielSignal.abgehendeFahrstraßen;
-            return hilfsfstr;
-        }
-
         /// <summary>
         /// Gibt Modul-Objekt für einen Modulnamen zurück
         /// </summary>
         /// <param name="modName">Name des Moduls</param>
-        public streckenModul sucheMod(string modName) 
+        public st3Modul sucheMod(string modName) 
         {
             modName = modName.Substring(0, modName.Length - 5); //HACK: Jahreszahl wird ignoriert
             foreach (var mod in mSammlung)
@@ -450,27 +409,31 @@ namespace ZuSiFplEdit
         }
 
 
-        List<streckenModul.referenzElement> findeWendeziele(streckenModul.referenzElement wendeStart)
+        List<st3Modul.referenzElement> findeWendeziele(st3Modul.fahrStr fahrstraße)
         {
+            if (fahrstraße.wendeSignaleBestimmt) return(fahrstraße.wendesignale);
+
+            st3Modul.referenzElement wendeStart = fahrstraße.Ziel;
+
             verbindeStreckenelement(wendeStart.StrElement);
 
             //Wähle richtige Richtung zum Suchen
-            List<streckenModul.streckenElement> nächsteElemente;
+            List<st3Modul.streckenElement> folgeSchienen;
             if (wendeStart.StrNorm)
             {
-                nächsteElemente = wendeStart.StrElement.AnschlussGegen;
+                folgeSchienen = wendeStart.StrElement.AnschlussGegen;
             }
             else
             {
-                nächsteElemente = wendeStart.StrElement.AnschlussNorm;
+                folgeSchienen = wendeStart.StrElement.AnschlussNorm;
             }
 
             //Ziele suchen
-            List<streckenModul.referenzElement> Zielsignale = new List<streckenModul.referenzElement>();
+            List<st3Modul.referenzElement> Zielsignale = new List<st3Modul.referenzElement>();
 
-            if (nächsteElemente.Count > 0)
+            if (folgeSchienen.Count > 0)
             {
-                foreach (var element in nächsteElemente)
+                foreach (var element in folgeSchienen)
                 {
                     var ZielsignaleTeil = WendesignalTraverse(element, wendeStart.StrElement);
                     if (ZielsignaleTeil != null)
@@ -478,22 +441,14 @@ namespace ZuSiFplEdit
                         Zielsignale.AddRange(ZielsignaleTeil);
                     }
                 }
-            }
 
-            //if (Zielsignale.Count == 0)
-            //{
-            //    string report = "Habe " + Zielsignale.Count + " Wendeziele für " + wendeStart.Info + " gefunden: \n";
-            //    foreach (var Zielsignal in Zielsignale)
-            //    {
-            //        report += Zielsignal.ToString() + "\n";
-            //    }
-            //    MessageBox.Show(report); 
-            //}
+                fahrstraße.wendeSignaleBestimmt = true;
+            }
 
             return Zielsignale;
         }
 
-        List<streckenModul.referenzElement> WendesignalTraverse(streckenModul.streckenElement aktuellesStreckenElement, streckenModul.streckenElement letztesStreckenelement)
+        List<st3Modul.referenzElement> WendesignalTraverse(st3Modul.streckenElement aktuellesStreckenElement, st3Modul.streckenElement letztesStreckenelement)
         {
             verbindeStreckenelement(aktuellesStreckenElement);
 
@@ -502,7 +457,7 @@ namespace ZuSiFplEdit
             var nächsteElemente = findeNächsteStreckenelemente(aktuellesStreckenElement, letztesStreckenelement, out bewegungsrichtungIstNorm);
 
 
-            var Zielsignale = new List<streckenModul.referenzElement>();
+            var Zielsignale = new List<st3Modul.referenzElement>();
 
             //Ist Zielsignal in diesem Element vorhanden?
             if (aktuellesStreckenElement.signalReferenz != null)
@@ -526,12 +481,12 @@ namespace ZuSiFplEdit
             return Zielsignale;
         }
 
-        void verbindeStreckenelement(streckenModul.streckenElement verbindungsElement)
+        public void verbindeStreckenelement(st3Modul.streckenElement verbindungsElement)
         {
             verbindeStreckenelement(verbindungsElement, null);
         }
 
-        void verbindeStreckenelement(streckenModul.streckenElement verbindungsElement, streckenModul.streckenElement herkunftsElement)
+        void verbindeStreckenelement(st3Modul.streckenElement verbindungsElement, st3Modul.streckenElement herkunftsElement)
         {
             //TODO: Herkunftselement einbeziehen
             //TODO: Neue Verbindungen zurückverbinden
@@ -539,7 +494,7 @@ namespace ZuSiFplEdit
             //TODO: Codverdoppelung zurückbauen
             if (!verbindungsElement.verlinkt)
             {
-                verbindungsElement.AnschlussNorm = new List<streckenModul.streckenElement>();
+                verbindungsElement.AnschlussNorm = new List<st3Modul.streckenElement>();
                 if (verbindungsElement.AnschlussNormInt.Count > 0)
                 {
                     foreach (var normElement in verbindungsElement.AnschlussNormInt)
@@ -548,7 +503,7 @@ namespace ZuSiFplEdit
                     }
                 }
 
-                verbindungsElement.AnschlussGegen = new List<streckenModul.streckenElement>();
+                verbindungsElement.AnschlussGegen = new List<st3Modul.streckenElement>();
                 if (verbindungsElement.AnschlussGegenInt.Count > 0)
                 {
                     foreach (var gegenElement in verbindungsElement.AnschlussGegenInt)
@@ -561,7 +516,7 @@ namespace ZuSiFplEdit
             }
         }
 
-        List<streckenModul.streckenElement> findeNächsteStreckenelemente(streckenModul.streckenElement aktuellesStreckenElement, streckenModul.streckenElement letztesStreckenelement, out bool bewegungsrichtungIstNorm)
+        List<st3Modul.streckenElement> findeNächsteStreckenelemente(st3Modul.streckenElement aktuellesStreckenElement, st3Modul.streckenElement letztesStreckenelement, out bool bewegungsrichtungIstNorm)
         {
             verbindeStreckenelement(aktuellesStreckenElement);
 
@@ -585,7 +540,7 @@ namespace ZuSiFplEdit
             }
 
             bewegungsrichtungIstNorm = false;
-            return new List<streckenModul.streckenElement>(); ;
+            return new List<st3Modul.streckenElement>(); ;
         }
     }
 }

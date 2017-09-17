@@ -60,9 +60,9 @@ namespace ZuSiFplEdit
         /// <summary>
         /// Fügt einen neuen Wegpunkt ein? 
         /// </summary>
-        public void setSignal(streckenModul.referenzElement Signal)
+        public void setSignal(streckenModul.Signal signal)
         {
-            Zug.WayPoints.Add(new ZugFahrt.WayPoint(Signal));
+            Zug.WayPoints.Add(new ZugFahrt.WayPoint(signal));
             if (Zug.WayPoints.Count > 1)
             {
                 Zug.routeBerechnen();

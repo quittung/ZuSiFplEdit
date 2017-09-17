@@ -536,7 +536,7 @@ namespace ZuSiFplEdit
         {
             var tmpZugfahrt = new ZugFahrt();
 
-            tmpZugfahrt.Gattung = "RB \r\n";
+            tmpZugfahrt.Gattung = "RB";
             
             int ZugNummer = 0;
             bool ZugNummerBesetzt = true;

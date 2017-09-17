@@ -11,6 +11,17 @@ namespace ZuSiFplEdit
 {
     class mapDraw
     {
+        public class PunktPix
+        {
+            public int X, Y;
+
+            public PunktPix(int X, int Y)
+            {
+                this.X = X;
+                this.Y = Y;
+            }
+        }
+
         class textField
         {
             public int X;
@@ -38,6 +49,7 @@ namespace ZuSiFplEdit
 
         double center_NS;
         double center_WE;
+        PunktUTM center;
         double pixPerGrad;
 
         double border_north;
@@ -60,6 +72,11 @@ namespace ZuSiFplEdit
         bool drawFahrstrassen = false;
 
         bool drawRoute = true;
+
+        /// <summary>
+        /// Zusätzlicher String, der in der Karte angezeigt wird.
+        /// </summary>
+        public string message = "";
 
 
 
@@ -87,6 +104,12 @@ namespace ZuSiFplEdit
             updateBorders();
         }
 
+        /// <summary>
+        /// Rechnet UTM-Koordinate in Pixelkoordinate um
+        /// </summary>
+        /// <param name="coord">Koordinate in UTM-Format</param>
+        /// <param name="isNS">Koordinate ist auf NS-Achse</param>
+        /// <returns></returns>
         public int coordToPix(double coord, bool isNS)
         {
             if (isNS)
@@ -98,6 +121,12 @@ namespace ZuSiFplEdit
             }
         }
 
+        /// <summary>
+        /// Rechnet Pixelkoordinate in UTM-Koordinate um
+        /// </summary>
+        /// <param name="pix"></param>
+        /// <param name="isNS"></param>
+        /// <returns></returns>
         public double pixToCoord(int pix, bool isNS)
         {
             if (isNS)
@@ -110,22 +139,42 @@ namespace ZuSiFplEdit
             }
         }
 
+        public PunktPix UtmToPix(PunktUTM UTM)
+        {
+            int X = coordToPix(UTM.WE, false);
+            int Y = coordToPix(UTM.NS, true);
+
+            return (new PunktPix(X, Y));
+        }
+
+        public PunktUTM PixToUtm(PunktPix pix)
+        {
+            double WE = pixToCoord(pix.X, false);
+            double NS = pixToCoord(pix.Y, true);
+
+            return (new PunktUTM(WE, NS));
+        }
+
+
+
         void setInitPos()
         {
-            border_north = modList[0].UTM_NS;
-            border_south = modList[0].UTM_NS;
-            border_east = modList[0].UTM_WE;
-            border_west = modList[0].UTM_WE;
+            border_north = modList[0].ursprung.NS;
+            border_south = modList[0].ursprung.NS;
+            border_east = modList[0].ursprung.WE;
+            border_west = modList[0].ursprung.WE;
             foreach (streckenModul mod in modList)
             {
-                if (mod.UTM_NS > border_north) border_north = mod.UTM_NS;
-                if (mod.UTM_NS < border_south) border_south = mod.UTM_NS;
-                if (mod.UTM_WE > border_east) border_east = mod.UTM_WE;
-                if (mod.UTM_WE < border_west) border_west = mod.UTM_WE;
+                if (mod.ursprung.NS > border_north) border_north = mod.ursprung.NS;
+                if (mod.ursprung.NS < border_south) border_south = mod.ursprung.NS;
+                if (mod.ursprung.WE > border_east) border_east = mod.ursprung.WE;
+                if (mod.ursprung.WE < border_west) border_west = mod.ursprung.WE;
             }
 
             center_NS = (border_north + border_south) / 2f;
             center_WE = (border_west + border_east) / 2f;
+            center = new PunktUTM(center_WE, center_NS);
+
 
             if (map_width_p > map_height_p) pixPerGrad = map_height_p / (border_north - border_south);
             else pixPerGrad = map_width_p / (border_east - border_west);
@@ -145,6 +194,8 @@ namespace ZuSiFplEdit
         {
             center_NS += (double)pix_NS / pixPerGrad;
             center_WE -= (double)pix_WE / pixPerGrad;
+            center.NS = center_NS;
+            center.WE = center_WE;
 
             updateBorders();
         }
@@ -162,29 +213,53 @@ namespace ZuSiFplEdit
             modVisible.Clear();
             foreach (streckenModul mod in modList)
             {
-                if (isVisible(mod))
+                if (shouldBeDrawn(mod))
                 {
-                    mod.PIX_X = coordToPix(mod.UTM_WE, false);
-                    mod.PIX_Y = coordToPix(mod.UTM_NS, true);
-
                     modVisible.Add(mod);
                 }
             }
         }
          
+        /// <summary>
+        /// Ermittelt, ob ein Modul gezeichnet werden soll
+        /// </summary>
+        /// <param name="mod"></param>
+        /// <returns></returns>
+        bool shouldBeDrawn(streckenModul mod)
+        {
+            if (isVisible(mod))
+                return true;
+
+            foreach (var verbindung in mod.nachbarn)
+            {
+                if (isVisible(verbindung))
+                    return true;
+            }
+
+            if (mod.ursprung.distanceTo(center) < 10)
+            {
+                return true;
+            }
+                
+
+            return false;
+        }
+
+        /// <summary>
+        /// Ermittelt, ob der Modulursprung im Zeichenfeld liegt
+        /// </summary>
+        /// <param name="mod"></param>
+        /// <returns></returns>
         bool isVisible (streckenModul mod)
         {
-            double ax = border_east - border_west;
-            double ay = border_north - border_south;
-            double halfDiag = Math.Sqrt(ax * ax + ay * ay) * 0.5;
-            double dx = mod.UTM_WE - center_WE;
-            double dy = mod.UTM_NS - center_NS;
-            double dist = Math.Sqrt(dx * dx + dy * dy);
-            return (dist < (mod.drawDist + halfDiag));
+            return !((mod.ursprung.NS > border_north) || (mod.ursprung.NS < border_south) || (mod.ursprung.WE > border_east) || (mod.ursprung.WE < border_west));
         }
 
 
-
+        /// <summary>
+        /// Zeichnet die Karte mit den aktuellen Parametern
+        /// </summary>
+        /// <returns>Fertige Karte als Bitmap</returns>
         public Bitmap draw()
         {
             var frameTime = new System.Diagnostics.Stopwatch();
@@ -199,37 +274,39 @@ namespace ZuSiFplEdit
 
             if (drawModule)
             {
-                if (drawModule_Verbindungen)
+                foreach (streckenModul mod in modVisible)
                 {
-                    foreach (streckenModul mod in modVisible)
+                    if ((drawModule_Verbindungen) && (mod.nachbarn.Count != 0))
                     {
-                        foreach (streckenModul connection in mod.Verbindungen)
+                        var pixPos = UtmToPix(mod.ursprung);
+                        foreach (streckenModul connection in mod.nachbarn)
                         {
-                            framebuffer.DrawLine(pen_unselected, mod.PIX_X, mod.PIX_Y, coordToPix(connection.UTM_WE, false), coordToPix(connection.UTM_NS, true));
-                        }
+                            framebuffer.DrawLine(pen_unselected, pixPos.X, pixPos.Y, coordToPix(connection.ursprung.WE, false), coordToPix(connection.ursprung.NS, true));
+                        } 
                     }
                 }
                 if (drawModule_Punkte)
                 {
                     foreach (streckenModul mod in modVisible)
                     {
+                        var pixPos = UtmToPix(mod.ursprung);
                         int circleSize = 8; //Größe der Modulkreise
-                        if ((pixPerGrad > 2) || mod.NetzGrenze || mod.selected)
+                        if ((pixPerGrad > 2) || mod.knotenpunkt || mod.selected)
                         {
                             if (mod.selected)
                             {
-                                framebuffer.FillEllipse(Brushes.Red, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
-                                framebuffer.DrawEllipse(pen_unselected, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                                framebuffer.FillEllipse(Brushes.Red, pixPos.X - circleSize / 2, pixPos.Y - circleSize / 2, circleSize, circleSize);
+                                framebuffer.DrawEllipse(pen_unselected, pixPos.X - circleSize / 2, pixPos.Y - circleSize / 2, circleSize, circleSize);
                             }
-                            else if (mod.NetzGrenze)
+                            else if (mod.knotenpunkt)
                             {
-                                framebuffer.FillEllipse(Brushes.DarkGray, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
-                                framebuffer.DrawEllipse(pen_unselected, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                                framebuffer.FillEllipse(Brushes.DarkGray, pixPos.X - circleSize / 2, pixPos.Y - circleSize / 2, circleSize, circleSize);
+                                framebuffer.DrawEllipse(pen_unselected, pixPos.X - circleSize / 2, pixPos.Y - circleSize / 2, circleSize, circleSize);
                             }
                             else //Normale Module
                             {
-                                framebuffer.FillEllipse(Brushes.LightGray, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
-                                framebuffer.DrawEllipse(pen_unselected, mod.PIX_X - circleSize / 2, mod.PIX_Y - circleSize / 2, circleSize, circleSize);
+                                framebuffer.FillEllipse(Brushes.LightGray, pixPos.X - circleSize / 2, pixPos.Y - circleSize / 2, circleSize, circleSize);
+                                framebuffer.DrawEllipse(pen_unselected, pixPos.X - circleSize / 2, pixPos.Y - circleSize / 2, circleSize, circleSize);
                             }
                         }
                     }
@@ -238,19 +315,20 @@ namespace ZuSiFplEdit
                 {
                     foreach (streckenModul mod in modVisible)
                     {
-                        textManager.Add(new textField(mod.PIX_X, mod.PIX_Y, mod.modName));
+                        var pixPos = UtmToPix(mod.ursprung);
+                        textManager.Add(new textField(pixPos.X, pixPos.Y, mod.name));
                     }
                 }
                 if (drawModule_Grenzen && pixPerGrad > 11)
                 {
                     foreach (streckenModul mod in modVisible)
                     {
-                        for (int i = 0; i < mod.Huellkurve.Count; i++)
+                        for (int i = 0; i < mod.hüllkurve.Count; i++)
                         {
-                            var x1 = mod.Huellkurve[i].abs_X;
-                            var y1 = mod.Huellkurve[i].abs_Y;
-                            var x2 = mod.Huellkurve[(i + 1) % mod.Huellkurve.Count].abs_X;
-                            var y2 = mod.Huellkurve[(i + 1) % mod.Huellkurve.Count].abs_Y;
+                            var x1 = mod.hüllkurve[i].WE;
+                            var y1 = mod.hüllkurve[i].NS;
+                            var x2 = mod.hüllkurve[(i + 1) % mod.hüllkurve.Count].WE;
+                            var y2 = mod.hüllkurve[(i + 1) % mod.hüllkurve.Count].NS;
 
                             framebuffer.DrawLine(pen_selected, coordToPix(x1, false), coordToPix(y1, true), coordToPix(x2, false), coordToPix(y2, true));
                         }
@@ -264,24 +342,24 @@ namespace ZuSiFplEdit
 
                 foreach (streckenModul mod in modVisible)
                 {
-                    foreach (var strE in mod.StreckenElemente)
+                    foreach (var strE in mod.elemente)
                     {
-                        if (strE.Funktion != 2)
+                        Pen pen = Pens.Black;
+                        if (strE.funktion == 2)
                         {
-                            framebuffer.DrawLine(Pens.Black, coordToPix(strE.b_X, false), coordToPix(strE.b_Y, true), coordToPix(strE.g_X, false), coordToPix(strE.g_Y, true));
+                            pen = Pens.LightGray;
                         }
-                        else
-                        {
-                            framebuffer.DrawLine(Pens.LightGray, coordToPix(strE.b_X, false), coordToPix(strE.b_Y, true), coordToPix(strE.g_X, false), coordToPix(strE.g_Y, true));
-                        }
-                        
+
+                        var pixB = UtmToPix(strE.endpunkte[0]);
+                        var pixG = UtmToPix(strE.endpunkte[1]);
+                        framebuffer.DrawLine(pen, pixB.X, pixB.Y, pixG.X, pixG.Y);
                     }
 
                     if (pixPerGrad > 75)
                     {
                         if (drawSignal_Start && drawSignal_Ziel)
                         {
-                            foreach (var startZielSig in mod.StartUndZielSignale)
+                            foreach (var startZielSig in mod.signale)
                             {
                                 drawSignal(textManager, startZielSig);
                             }
@@ -290,7 +368,7 @@ namespace ZuSiFplEdit
                         {
                             if (drawSignal_Start)
                             {
-                                foreach (var startSig in mod.StartSignale)
+                                foreach (var startSig in mod.signaleStart)
                                 {
                                     drawSignal(textManager, startSig);
                                 }
@@ -298,7 +376,7 @@ namespace ZuSiFplEdit
 
                             if (drawSignal_Ziel)
                             {
-                                foreach (var zielSig in mod.ZielSignale)
+                                foreach (var zielSig in mod.signaleZiel)
                                 {
                                     drawSignal(textManager, zielSig);
                                 }
@@ -311,30 +389,31 @@ namespace ZuSiFplEdit
             {
                 foreach (streckenModul mod in modVisible)
                 {
-                    foreach (var fstr in mod.FahrStr)
+                    foreach (var fstr in mod.fahrstraßen)
                     {
-                        if (fstr.Ziel != null)
+                        if (fstr.zielSignal != null)
                         {
-                            int start_x = coordToPix(fstr.Start.SignalCoord.abs_X, false);
-                            int start_y = coordToPix(fstr.Start.SignalCoord.abs_Y, true);
-                            int ziel_x = coordToPix(fstr.Ziel.SignalCoord.abs_X, false);
-                            int ziel_y = coordToPix(fstr.Ziel.SignalCoord.abs_Y, true);
+                            var start = UtmToPix(fstr.startSignal.streckenelement.endpunkte[fstr.startSignal.richtung]);
+                            var ziel = UtmToPix(fstr.zielSignal.streckenelement.endpunkte[fstr.zielSignal.richtung]);
 
                             //framebuffer.DrawString("Fstr:" + fstr.FahrstrName, new Font("Verdana", 8), Brushes.Black, start_x + 3, start_y + 3);
 
 
-                            if (fstr.RglGgl == 0)
-                                framebuffer.DrawLine(Pens.Green, start_x, start_y, ziel_x, ziel_y);
-                            if (fstr.RglGgl == 1)
-                                framebuffer.DrawLine(Pens.Blue, start_x, start_y, ziel_x, ziel_y);
-                            if (fstr.RglGgl == 2)
-                                framebuffer.DrawLine(Pens.YellowGreen, start_x, start_y, ziel_x, ziel_y);
-                            if (fstr.RglGgl == 3)
-                                framebuffer.DrawLine(Pens.Red, start_x, start_y, ziel_x, ziel_y);
+                            var pen = Pens.Violet;
 
-                            //if (fstr.FahrstrTyp == "TypWende")
-                            //    framebuffer.DrawLine(Pens.Red, start_x, start_y, ziel_x, ziel_y); 
+                            if (fstr.RglGgl == 0)
+                                pen = Pens.Green; 
+                            if (fstr.RglGgl == 1)
+                                pen = Pens.Blue;
+                            if (fstr.RglGgl == 2)
+                                pen = Pens.YellowGreen;
+                            if (fstr.RglGgl == 3)
+                                pen = Pens.Red; 
+
+                            framebuffer.DrawLine(pen, start.X, start.Y, ziel.X, ziel.Y); 
                         }
+                        else
+                            MessageBox.Show("Fahrstraße ohne Ziel: " + fstr.name);
                     }
                 }
             }
@@ -345,13 +424,11 @@ namespace ZuSiFplEdit
                 {
                     foreach (var step in aktZugFahrt.route)
                     {
-                        int start_x = coordToPix(step.Start.SignalCoord.abs_X, false);
-                        int start_y = coordToPix(step.Start.SignalCoord.abs_Y, true);
-                        int ziel_x = coordToPix(step.Ziel.SignalCoord.abs_X, false);
-                        int ziel_y = coordToPix(step.Ziel.SignalCoord.abs_Y, true);
+                        var start = UtmToPix(step.startSignal.position);
+                        var ziel = UtmToPix(step.zielSignal.position);
 
-                        framebuffer.DrawLine(Pens.Red, start_x, start_y, ziel_x, ziel_y);
-                    } 
+                        framebuffer.DrawLine(Pens.Red, start.X, start.Y, ziel.X, ziel.Y);
+                    }
                 }
             }
 
@@ -371,45 +448,41 @@ namespace ZuSiFplEdit
 
 
             frameTime.Stop();
-            framebuffer.DrawString("N" + center_NS.ToString("F2") + " - E" + center_WE.ToString("F2") + " - " + pixPerGrad.ToString("F1") + "pix/km - " + frameTime.ElapsedMilliseconds + " ms/frame", new Font("Verdana", 10), new SolidBrush(Color.Red), 20, map_height_p - 20);
+            framebuffer.DrawString("N" + center_NS.ToString("F2") + " - E" + center_WE.ToString("F2") + " - " + pixPerGrad.ToString("F1") + "pix/km - " + frameTime.ElapsedMilliseconds + " ms/frame " + message, new Font("Verdana", 10), new SolidBrush(Color.Red), 20, map_height_p - 20);
 
             return (frame);
         }
 
-        private void drawSignal(List<textField> textManager, streckenModul.referenzElement Signal)
+        private void drawSignal(List<textField> textManager, streckenModul.Signal signal)
         {
-            if (drawSignal_Namen)
-                textManager.Add(new textField(coordToPix(Signal.SignalCoord.abs_X, false), coordToPix(Signal.SignalCoord.abs_Y, true), Signal.ToString()));
-            int circleSize = 4;
+
+            int signalRichtung = signal.richtung;
+            int antiSignalRichtung = 1 - signalRichtung;
+
+            double p1Xcoord = signal.streckenelement.endpunkte[signalRichtung].WE;
+            double p1Ycoord = signal.streckenelement.endpunkte[signalRichtung].NS;
 
             //Signaldreieck berechnen
             //Spitze
-            int p1X = coordToPix(Signal.SignalCoord.abs_X, false);
+            int p1X = coordToPix(p1Xcoord, false);
             if (p1X > map_width_p || p1X < 0)
                 return;
-            int p1Y = coordToPix(Signal.SignalCoord.abs_Y, true);
+            int p1Y = coordToPix(p1Ycoord, true);
             if (p1Y > map_width_p || p1Y < 0)
                 return;
+
+            //Namen zeichnen
+            if (drawSignal_Namen)
+                textManager.Add(new textField(p1X, p1Y, signal.ToString()));
+
             //Vorbereitung für andere Punkte:
+
             //Vektor zeigt zum anderen Ende
-            double VX = 0;
-            double VY = 0;
-            double p1Xcoord;
-            double p1Ycoord;
-            if (Signal.StrNorm)
-            {
-                p1Xcoord = Signal.StrElement.b_X;
-                p1Ycoord = Signal.StrElement.b_Y;
-                VX = Signal.StrElement.g_X - Signal.StrElement.b_X;
-                VY = Signal.StrElement.g_Y - Signal.StrElement.b_Y;
-            }
-            else
-            {
-                p1Xcoord = Signal.StrElement.g_X;
-                p1Ycoord = Signal.StrElement.g_Y;
-                VX = Signal.StrElement.b_X - Signal.StrElement.g_X;
-                VY = Signal.StrElement.b_Y - Signal.StrElement.g_Y;
-            }
+            
+
+            double VX = signal.streckenelement.endpunkte[antiSignalRichtung].WE - p1Xcoord;
+            double VY = signal.streckenelement.endpunkte[antiSignalRichtung].NS - p1Ycoord;
+            
             //Normieren des Vektors
             double vlen = (Math.Sqrt(VX * VX + VY * VY)) * pixPerGrad;
             double VXnorm = VX / vlen;
@@ -435,18 +508,17 @@ namespace ZuSiFplEdit
 
             //Farbe aussuchen
             Brush SigCol = Brushes.Black;
-            if (Signal.istStart && Signal.istZiel)
+            if (signal.istStart && signal.istZiel)
                 SigCol = Brushes.Orange;
             else
             {
-                if (Signal.istStart)
+                if (signal.istStart)
                     SigCol = Brushes.Green;
-                if (Signal.istZiel)
+                if (signal.istZiel)
                     SigCol = Brushes.Red;
             }
 
-            framebuffer.FillPolygon(SigCol, points);
-            //framebuffer.FillEllipse(SigCol, coordToPix(Signal.SignalCoord.abs_X, false) - circleSize / 2, coordToPix(Signal.SignalCoord.abs_Y, true) - circleSize / 2, circleSize, circleSize);
+            framebuffer.FillPolygon(SigCol, points);//framebuffer.FillEllipse(SigCol, coordToPix(Signal.SignalCoord.abs_X, false) - circleSize / 2, coordToPix(Signal.SignalCoord.abs_Y, true) - circleSize / 2, circleSize, circleSize);
         }
 
         List<textField> textReiniger(List<textField> textManager)
@@ -480,6 +552,51 @@ namespace ZuSiFplEdit
             return textManaged;
         }
 
+        /// <summary>
+        /// Sucht das nächste Signal aus einer bestimmten Gruppe zu einem Punkt 
+        /// </summary>
+        /// <param name="punktPix">Punkt im Pixel-Koordinatensystem der Karte</param>
+        /// <param name="signalAuswahl">0 = alle, 1 = start, 2 = ziel, 3 = zwischen</param>
+        /// <returns></returns>
+        public streckenModul.Signal findeNächstesSignal(PunktPix punktPix, int signalAuswahl)
+        {
+            var punktUTM = PixToUtm(punktPix);
+            double kleinsteDistanz = modList[0].signale[0].streckenelement.endpunkte[modList[0].signale[0].richtung].distanceTo(punktUTM);
+            var nächstesSignal = modList[0].signale[0];
+
+            foreach (var modul in modList)
+            {
+                List<streckenModul.Signal> signalListe;
+                switch (signalAuswahl)
+                {
+                    case 1:
+                        signalListe = modul.signaleStart;
+                        break;
+                    case 2:
+                        signalListe = modul.signaleZiel;
+                        break;
+                    case 3:
+                        signalListe = modul.signaleZwischen;
+                        break;
+                    default:
+                        signalListe = modul.signale;
+                        break;
+                }
+
+                foreach (var signal in signalListe)
+                {
+                    var distanz = signal.streckenelement.endpunkte[signal.richtung].distanceTo(punktUTM);
+                    if (distanz < kleinsteDistanz)
+                    {
+                        kleinsteDistanz = distanz;
+                        nächstesSignal = signal;
+                    }
+                }
+            }
+            return nächstesSignal;
+        }
+
+        [Obsolete]
         public streckenModul getNearestStation(int X, int Y)
         {
             double dist = -1;
@@ -488,7 +605,7 @@ namespace ZuSiFplEdit
                 return null;
             foreach (streckenModul mod in modVisible)
             {
-                double modDist = getStationDistance(mod, X, Y);
+                double modDist = getModulDistance(mod, X, Y);
                 if (((dist > modDist) || (dist == -1)) && !(modDist < 0))
                 {
                     dist = modDist;
@@ -498,83 +615,87 @@ namespace ZuSiFplEdit
             return (nearestMod);
         }
 
-        public int getStationDistance(streckenModul mod, int X, int Y)
+        [Obsolete]
+        public int getModulDistance(streckenModul mod, int X, int Y)
         {
-            int deltaX = mod.PIX_X - X;
-            int deltaY = mod.PIX_Y - Y;
+            var pixPos = UtmToPix(mod.ursprung);
+
+            int deltaX = pixPos.X - X;
+            int deltaY = pixPos.Y - Y;
 
             int dist = (int)Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
             return dist;
         }
 
-        public streckenModul.referenzElement getNearestSignalStartZiel(int X, int Y, bool start) //TODO: Genauigkeit verbessern, Mehr Auswahl bei nahen Signalen
-        {
-            double closestDist = -1;
-            List<streckenModul.referenzElement> Ergebnis = new List<streckenModul.referenzElement>();
+        //public streckenModul.Signal getNearestSignalStartZiel(int X, int Y, bool start) //TODO: Genauigkeit verbessern, Mehr Auswahl bei nahen Signalen
+        //{
+        //    double closestDist = -1;
+        //    List<streckenModul.Signal> Ergebnis = new List<streckenModul.Signal>();
 
-            foreach (streckenModul mod in modVisible)
-            {
-                List<streckenModul.referenzElement> Signalliste;
-                if (start)
-                {
-                    Signalliste = mod.StartSignale;
-                }
-                else
-                {
-                    Signalliste = mod.ZielSignale;
-                }
-                foreach (var Signal in Signalliste)
-                {
-                    double sigDist = getSigDistance(Signal, X, Y);
-                    if ((closestDist > sigDist) || (closestDist == -1) && !(sigDist < 0))
-                    {
-                        Ergebnis.Clear();
-                        Ergebnis.Add(Signal);
-                        closestDist = sigDist;
-                    }
-                    else if (closestDist == sigDist)
-                    {
-                        Ergebnis.Add(Signal);
-                    }
-                }
-            }
+        //    foreach (streckenModul mod in modVisible)
+        //    {
+        //        List<streckenModulLegacy.referenzElement> Signalliste;
+        //        if (start)
+        //        {
+        //            Signalliste = mod.StartSignale;
+        //        }
+        //        else
+        //        {
+        //            Signalliste = mod.ZielSignale;
+        //        }
+        //        foreach (var Signal in Signalliste)
+        //        {
+        //            double sigDist = getSigDistance(Signal, X, Y);
+        //            if ((closestDist > sigDist) || (closestDist == -1) && !(sigDist < 0))
+        //            {
+        //                Ergebnis.Clear();
+        //                Ergebnis.Add(Signal);
+        //                closestDist = sigDist;
+        //            }
+        //            else if (closestDist == sigDist)
+        //            {
+        //                Ergebnis.Add(Signal);
+        //            }
+        //        }
+        //    }
 
-            if (Ergebnis.Count > 1)
-            {
-                var selectForm = new FormSignalSelect();
-                
-                foreach (var erg in Ergebnis)
-                {
-                    selectForm.listBox1.Items.Add(erg);
-                }
-                selectForm.ShowDialog();
-                return ((streckenModul.referenzElement)selectForm.listBox1.SelectedItem);
-            }
+        //    if (Ergebnis.Count > 1)
+        //    {
+        //        var selectForm = new FormSignalSelect();
 
-            return (Ergebnis[0]);
-        }
-            
+        //        foreach (var erg in Ergebnis)
+        //        {
+        //            selectForm.listBox1.Items.Add(erg);
+        //        }
+        //        selectForm.ShowDialog();
+        //        return ((streckenModul.Signal)selectForm.listBox1.SelectedItem);
+        //    }
 
-        public streckenModul.referenzElement getNearestSignal(int X, int Y)
-        {
-            double dist = -1;
-            streckenModul.referenzElement nearestMod = null;
-            foreach (streckenModul mod in modVisible)
-            {
-                foreach (var Signal in mod.StartSignale)
-                {
-                    double modDist = getSigDistance(Signal, X, Y);
-                    if (((dist > modDist) || (dist == -1)) && (modDist >= 0))
-                    {
-                        dist = modDist;
-                        nearestMod = Signal;
-                    } 
-                }
-            }
-            return (nearestMod);
-        }
+        //    return (Ergebnis[0]);
+        //}
 
-        public double getSigDistance(streckenModul.referenzElement Signal, int X, int Y)
+
+        //public streckenModul.Signal getNearestSignal(int X, int Y)
+        //{
+        //    double dist = -1;
+        //    streckenModulLegacy.referenzElement nearestMod = null;
+        //    foreach (streckenModul mod in modVisible)
+        //    {
+        //        foreach (var Signal in mod.StartSignale)
+        //        {
+        //            double modDist = getSigDistance(Signal, X, Y);
+        //            if (((dist > modDist) || (dist == -1)) && (modDist >= 0))
+        //            {
+        //                dist = modDist;
+        //                nearestMod = Signal;
+        //            }
+        //        }
+        //    }
+        //    return (nearestMod);
+        //}
+
+        [Obsolete]
+        public double getSigDistance(st3Modul.referenzElement Signal, int X, int Y)
         {
             double deltaX = 999;
             double deltaY = 999;
@@ -594,6 +715,7 @@ namespace ZuSiFplEdit
             return dist;
         }
 
+        [Obsolete]
         public void setLayers(string layer, bool drawLayer)
         {
             if (layer == "module")

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 
 
@@ -12,8 +13,9 @@ namespace ZuSiFplEdit
 
     public partial class modSelForm : Form
     {
-        
 
+        DataConstructor dataConstructor;
+        Datensatz datenFertig;
         modContainer Module;
         mapDraw kartenZeichner;
 
@@ -34,11 +36,13 @@ namespace ZuSiFplEdit
 
         int debugX = 0;
         int debugY = 0;
-        streckenModul horribleHackVariableThatHoldsRightClickModule;
-        streckenModul.referenzElement tmpSignal;
-        streckenModul.referenzElement startSignal;
-        streckenModul.referenzElement zielSignal;
-        List<streckenModul.fahrStr> fstrRoute;
+        st3Modul horribleHackVariableThatHoldsRightClickModule;
+        st3Modul.referenzElement tmpSignal;
+        st3Modul.referenzElement startSignal;
+        st3Modul.referenzElement zielSignal;
+        List<st3Modul.fahrStr> fstrRoute;
+
+        string DirBase;
 
         public modSelForm()
         {
@@ -55,9 +59,88 @@ namespace ZuSiFplEdit
             this.Text += "  -  DEBUG";
 #endif
 
-            appInit();
+            var ladeAnzeige = new form_lade();
+            ladeAnzeige.Show();
+            ladeAnzeige.Text = "Suche Datenverzeichnis...";
+            ladeAnzeige.Update();
+
+            datenFertig = new Datensatz();
+
+            FindeDatenVerzeichnis();
+
+            string DirRoute = DirBase + "Routes\\Deutschland\\";
+            dataConstructor = new DataConstructor(DirRoute, datenFertig);
+
+            ThreadPool.QueueUserWorkItem(dataConstructor.datenEinlesen);
+
+            while (!datenFertig.moduleBereit)
+            {
+                ladeAnzeige.instantProgress(dataConstructor.fortschrittNumerisch, dataConstructor.fortschrittMaximal, dataConstructor.fortschrittMeldung);
+                Thread.Sleep(100);
+                Application.DoEvents();
+            }
+
+            ladeAnzeige.Hide();
+            ladeAnzeige = null;
+
+            //Modulekarte vorbereiten
+            debugX = mMap.Width;
+            debugY = mMap.Height;
+            kartenZeichner = new mapDraw(mMap.Width, mMap.Height, datenFertig.module, ZugFahrtBox);
+
+            //Module ausgeben
+            foreach (streckenModul modul in datenFertig.module)
+            {
+                modListBox.Items.Add(modul.name);
+            }
         }
 
+        /// <summary>
+        /// Started den DatenKonstruktor im Hintergrund und wartet auf das vollständige Einlesen der Module.
+        /// </summary>
+        private void appInit2()
+        {
+            
+        }
+
+
+        /// <summary>
+        /// Liest das Datenverzeichnis aus der Registry ein
+        /// </summary>
+        private void FindeDatenVerzeichnis()
+        {
+            //TODO: Suche nach typischen Verzeichnissen für Datenverzeichnis im aktuellen Verzeichnis. Wenn gefunden, nutze diese.
+            var lokaleOrdner = Directory.GetDirectories(Directory.GetCurrentDirectory());
+            foreach (var Ordner in lokaleOrdner)
+            {
+                if (Ordner == "Routes")
+                {
+                    DirBase = Directory.GetCurrentDirectory();
+                    return;
+                }
+            }
+
+            try
+            {
+                //Registry-Key auf win64
+                DirBase = Microsoft.Win32.Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Zusi3", "DatenVerzeichnis", "").ToString();
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    //Registry-Key auf win32
+                    DirBase = Microsoft.Win32.Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Zusi3", "DatenVerzeichnis", "").ToString();
+                }
+                catch (Exception)
+                {   
+                    MessageBox.Show("Datenverzeichnis konnte nicht in der Registry gefunden werden. Starte die Applikation alternativ direkt im Zusi-Datenordner.", "Fataler Fehler", MessageBoxButtons.OK);
+                    Environment.Exit(1);
+                }
+            }
+
+            if (DirBase[DirBase.Length - 1] != '\\') DirBase += '\\';
+        }
 
         private void signalSelect(string signalSelectType)
         {
@@ -75,6 +158,11 @@ namespace ZuSiFplEdit
             this.Invalidate();
         }
 
+        /// <summary>
+        /// Verarbeitet das Bewegen des Mausrades
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void mMap_MouseWheel(object sender, MouseEventArgs e)
         {
             if (e.Delta > 0)
@@ -82,6 +170,7 @@ namespace ZuSiFplEdit
             if (e.Delta < 0)
                 kartenZeichner.updateScale(0.8);
 
+            kartenZeichner.message = dataConstructor.fortschrittMeldung;
             mMap.Image = kartenZeichner.draw();
         }
 
@@ -89,7 +178,7 @@ namespace ZuSiFplEdit
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
-            saveFileDialog1.InitialDirectory = Module.DirBase + "Timetables\\";
+            saveFileDialog1.InitialDirectory = DirBase + "Timetables\\";
             saveFileDialog1.Filter = "Fahrplandateien (*.fpn)|*.fpn|All files (*.*)|*.*";
             saveFileDialog1.FilterIndex = 1;
             saveFileDialog1.RestoreDirectory = true;
@@ -102,33 +191,17 @@ namespace ZuSiFplEdit
                     ZugFahrt Zug = (ZugFahrt)Zufa;
                     foreach (var fstr in Zug.route)
                     {
-                        fstr.StartMod.selected = true;
-                        fstr.ZielMod.selected = true;
+                        fstr.startSignal.modul.selected = true;
+                        fstr.zielSignal.modul.selected = true;
                     }
                     zList.Add(Zug);
                 }
                 this.Invalidate();
                 Application.DoEvents();
-                new fileops(Module.mSammlung, zList, saveFileDialog1.FileName, Module.DirBase);
+                new fileops(datenFertig.module, zList, saveFileDialog1.FileName, DirBase);
             }
         }    
-
-        private void appInit()
-        {
-            //Module einlesen
-            Module = new modContainer();
-            ladezeitToolStripMenuItem.Text = "Ladezeit: " + Module.loadTime + " ms";
-            //Module ausgeben
-            foreach (streckenModul modul in Module.mSammlung)
-            {
-                modListBox.Items.Add(modul.modName);
-            }
-
-            //Modulekarte vorbereiten
-            debugX = mMap.Width;
-            debugY = mMap.Height;
-            kartenZeichner = new mapDraw(mMap.Width, mMap.Height, Module.mSammlung, ZugFahrtBox);
-        }
+        
 
         private void mMap_MouseDown(object sender, MouseEventArgs e)
         {
@@ -159,27 +232,22 @@ namespace ZuSiFplEdit
 
                 if ((selectRouteStart || selectRouteEnd) && !mouseMoved)
                 {
-                    var act = (ZugFahrt)ZugFahrtBox.SelectedItem;
                     if (selectRouteStart)
                     {
-                        ZugKonfigForm.setSignal(kartenZeichner.getNearestSignalStartZiel(e.X, e.Y, true));
+                        ZugKonfigForm.setSignal(kartenZeichner.findeNächstesSignal(new mapDraw.PunktPix(e.X, e.Y), 1));
                         kartenZeichner.setLayers("signal_ziel", true);
                         this.Invalidate();
                         selectRouteStart = false;
                     }
                     else
                     {
-                        ZugKonfigForm.setSignal(kartenZeichner.getNearestSignalStartZiel(e.X, e.Y, false));
+                        ZugKonfigForm.setSignal(kartenZeichner.findeNächstesSignal(new mapDraw.PunktPix(e.X, e.Y), 2));
                         kartenZeichner.setLayers("signal_start", true); 
                         this.Invalidate();
                         selectRouteEnd = false;
                     }
 
-                    if (act.ZstartSignal != null && act.ZzielSignal != null)
-                    {
-                        act.route = fstrRouteSearchStart(act.ZstartSignal, act.ZzielSignal);
-                    }
-                    
+                    kartenZeichner.message = dataConstructor.fortschrittMeldung;
                     mMap.Image = kartenZeichner.draw();
                     return;
                 }
@@ -189,17 +257,19 @@ namespace ZuSiFplEdit
                 if ((Math.Abs(deltaX) > movementThreshold) || (Math.Abs(deltaY) > movementThreshold))
                 {
                     kartenZeichner.move(deltaY, deltaX);
+                    kartenZeichner.message = dataConstructor.fortschrittMeldung;
                     mMap.Image = kartenZeichner.draw();
                 } else if (!mouseMoved) 
                 {
                     if (moduToolStripMenuItem.Checked && punkteToolStripMenuItem.Checked)
                     {
                         var nächsteStation = kartenZeichner.getNearestStation(e.X, e.Y);
-                        if (kartenZeichner.getStationDistance(nächsteStation, e.X, e.Y) < 10)
+                        if (kartenZeichner.getModulDistance(nächsteStation, e.X, e.Y) < 10)
                         {
                             nächsteStation.selected = !nächsteStation.selected;
+                            kartenZeichner.message = dataConstructor.fortschrittMeldung;
                             mMap.Image = kartenZeichner.draw();
-                            modListBox.SetSelected(Module.mSammlung.IndexOf(nächsteStation), nächsteStation.selected);
+                            //modListBox.SetSelected(Module.mSammlung.IndexOf(nächsteStation), nächsteStation.selected);
                         }
                     }
                 }
@@ -207,26 +277,23 @@ namespace ZuSiFplEdit
                 mouseMoved = false;
             }
 
-            if (e.Button == MouseButtons.Right) //HACK: Horrible Right Click Menu
+            //Debug-Menü
+            if (e.Button == MouseButtons.Right) 
             {
-                var nächsteStation = kartenZeichner.getNearestStation(e.X, e.Y);
-                horribleHackVariableThatHoldsRightClickModule = nächsteStation;
-                tmpSignal = kartenZeichner.getNearestSignal(e.X, e.Y);
-                if (nächsteStation == null || tmpSignal == null)
+                var punktPix = new mapDraw.PunktPix(e.X, e.Y);
+                var punktUTM = kartenZeichner.PixToUtm(punktPix);
+
+                var tmpSignal = kartenZeichner.findeNächstesSignal(new mapDraw.PunktPix(e.X, e.Y), 0);
+                if (tmpSignal == null)
                     return;
-
-                string Signame = tmpSignal.Info;
-
-                //MessageBox.Show(horribleHackVariableThatHoldsRightClickSignal.Info, "Nächstes Signal:", MessageBoxButtons.OK);
                 
-                
+                MenuItem[] menuItems = new MenuItem[]{
+                    new MenuItem("Pixel: X" + punktPix.X + " - Y" + punktPix.Y),
+                    new MenuItem("Koordinaten: X" + punktUTM.WE.ToString("F1") + " - Y" + punktUTM.NS.ToString("F1")),
+                    
+                    new MenuItem("Nächstes Signal: " + tmpSignal.name)
+                };
 
-                    MenuItem[] menuItems = new MenuItem[]{new MenuItem("Pixel: X" + e.X + " - Y" + e.Y),
-                new MenuItem("Koordinaten: X" + kartenZeichner.pixToCoord(e.X, false).ToString("F1") + " - Y" + kartenZeichner.pixToCoord(e.Y, true).ToString("F1")),
-                new MenuItem("Nächste Station: " + nächsteStation.modName + "; Distanz: " + kartenZeichner.getStationDistance(nächsteStation, e.X, e.Y).ToString()),
-                new MenuItem("Nächstes Signal: " + tmpSignal.Info + "-" + Signame + "; Distanz: " + (1000 * kartenZeichner.getSigDistance(tmpSignal, e.X, e.Y)).ToString("F2")),
-                new MenuItem(nächsteStation.modName + " im Explorer anzeigen", new EventHandler(showMod))};
-            
                 ContextMenu buttonMenu = new ContextMenu(menuItems);
                 buttonMenu.Show(mMap, new Point(e.X, e.Y));
             }
@@ -254,7 +321,7 @@ namespace ZuSiFplEdit
 
         private void route()
         {
-            var fertige_route = routeSearch(horribleHackVariableThatHoldsRightClickModule, Module.sucheMod("Meschede_1980"), new List<streckenModul>());
+            var fertige_route = routeSearch(horribleHackVariableThatHoldsRightClickModule, Module.sucheMod("Meschede_1980"), new List<st3Modul>());
 
             if (fertige_route == null)
             {
@@ -291,9 +358,9 @@ namespace ZuSiFplEdit
             }
         }
 
-        List<streckenModul.fahrStr> fstrRouteSearchStart(streckenModul.referenzElement StartSignal, streckenModul.referenzElement ZielSignal)
+        List<st3Modul.fahrStr> fstrRouteSearchStart(st3Modul.referenzElement StartSignal, st3Modul.referenzElement ZielSignal)
         {
-            var Besucht = new List<streckenModul.fahrStr>();
+            var Besucht = new List<st3Modul.fahrStr>();
             foreach (var start_fstr in StartSignal.abgehendeFahrstraßen)
             {
                 var rList = fstrRouteSearch(start_fstr, ZielSignal, Besucht);
@@ -303,14 +370,14 @@ namespace ZuSiFplEdit
             return null;
         }
 
-        List<streckenModul.fahrStr> fstrRouteSearch(streckenModul.fahrStr Aktuell, streckenModul.referenzElement ZielSignal, List<streckenModul.fahrStr> Besucht)
+        List<st3Modul.fahrStr> fstrRouteSearch(st3Modul.fahrStr Aktuell, st3Modul.referenzElement ZielSignal, List<st3Modul.fahrStr> Besucht)
         {
             Besucht.Add(Aktuell);
             if (Aktuell.Ziel.StrElement == ZielSignal.StrElement)
             {
-                var Lizte = new List<streckenModul.fahrStr>();
-                Lizte.Add(Aktuell);
-                return (Lizte);
+                var Liste = new List<st3Modul.fahrStr>();
+                Liste.Add(Aktuell);
+                return (Liste);
             }
             else
             {
@@ -331,12 +398,12 @@ namespace ZuSiFplEdit
             return null;
         }
 
-        List<streckenModul> routeSearch(streckenModul Aktuell, streckenModul Ziel, List<streckenModul> Besucht)
+        List<st3Modul> routeSearch(st3Modul Aktuell, st3Modul Ziel, List<st3Modul> Besucht)
         {
             Besucht.Add(Aktuell);
             if (Aktuell == Ziel)
             {
-                var Lizte = new List<streckenModul>();
+                var Lizte = new List<st3Modul>();
                 Lizte.Add(Aktuell);
                 return (Lizte);
             }
@@ -371,12 +438,14 @@ namespace ZuSiFplEdit
                     Module.mSammlung[i].selected = false;
                 }
             }
+            kartenZeichner.message = dataConstructor.fortschrittMeldung;
             mMap.Image = kartenZeichner.draw();
         }
 
         private void modSelForm_Paint(object sender, PaintEventArgs e)
         {
             Application.DoEvents();
+            kartenZeichner.message = dataConstructor.fortschrittMeldung;
             mMap.Image = kartenZeichner.draw();
         }
 
@@ -425,7 +494,7 @@ namespace ZuSiFplEdit
                 kartenZeichner.setLayers("route", routeToolStripMenuItem.Checked);
             }
 
-
+            kartenZeichner.message = dataConstructor.fortschrittMeldung;
             mMap.Image = kartenZeichner.draw();
         }
 

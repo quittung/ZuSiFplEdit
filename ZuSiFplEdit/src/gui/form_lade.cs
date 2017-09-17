@@ -16,25 +16,34 @@ namespace ZuSiFplEdit
             InitializeComponent();
         }
 
+        [Obsolete]
         public void instantProgress(bool secondaryBar, int value, string txt)
         {
-            ProgressBar pb;
-            if (secondaryBar)
-                pb = progressBar2;
-            else
-                pb = progressBar1;
+            instantProgress(value, txt);
+        }
 
-            pb.Maximum++;
-            pb.Value = value + 1;
-            pb.Value = value;
-            pb.Maximum--;
+        public void instantProgress(int value, string txt)
+        {
+            instantProgress(value, progressBar1.Maximum, txt);
+        }
+
+        public void instantProgress(int value, int valMax, string txt)
+        {
+            if ((value != progressBar1.Value) || (valMax != progressBar1.Maximum))
+            {
+                progressBar1.Maximum = valMax + 1;
+                progressBar1.Value = value + 1;
+                progressBar1.Value = value;
+                progressBar1.Maximum--;
+            }
+            
 
             if (txt != "")
             {
-                Beschreibung.Text = txt;
+                Text = txt;
             }
 
-            Update();           
+            Update();
         }
     }
 }

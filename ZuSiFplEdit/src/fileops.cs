@@ -99,15 +99,15 @@ namespace ZuSiFplEdit
                 {
                     //Vorbereitung zur Berechnung vom Referenzpunkt
                     mod_Count++;
-                    UTM_NS_avg += mod.UTM_NS;
-                    UTM_WE_avg += mod.UTM_WE;
+                    UTM_NS_avg += (int)mod.ursprung.NS;
+                    UTM_WE_avg += (int)mod.ursprung.WE;
 
-                    UTM_Z1 = mod.UTM_Z1;
-                    UTM_Z2 = mod.UTM_Z2;
+                    UTM_Z1 = mod.ursprung.Z1;
+                    UTM_Z2 = mod.ursprung.Z2;
 
                     //Schreibe XML für aktuelles Modul
                     fpn_file.WriteLine("<StrModul>");
-                    fpn_file.WriteLine("<Datei Dateiname=\"" + mod.modPath + "\"/>");
+                    fpn_file.WriteLine("<Datei Dateiname=\"" + mod.pfad + "\"/>");
                     fpn_file.WriteLine("<p/>");
                     fpn_file.WriteLine("<phi/>");
                     fpn_file.WriteLine("</StrModul>");
@@ -149,7 +149,7 @@ namespace ZuSiFplEdit
             trn_file.WriteLine("<Info DateiTyp=\"Zug\" Version=\"A.1\" MinVersion=\"A.1\">");
             trn_file.WriteLine("<AutorEintrag/>");
             trn_file.WriteLine("</Info>");
-            trn_file.WriteLine("<Zug Gattung=\"" + zug.Gattung + "\" Nummer=\"" + zug.Zugnummer + "\" Prio=\"5000\" Bremsstellung=\"4\" Rekursionstiefe=\"5\" FahrstrName=\"" + zug.route[0].FahrstrName.Replace(">", "&gt;") + "\" Zugtyp=\"1\" Buchfahrplandll=\"_InstSetup\\lib\\timetable\\Buchfahrplan_DB_2006.dll\">");
+            trn_file.WriteLine("<Zug Gattung=\"" + zug.Gattung + "\" Nummer=\"" + zug.Zugnummer + "\" Prio=\"5000\" Bremsstellung=\"4\" Rekursionstiefe=\"5\" FahrstrName=\"" + zug.route[0].name.Replace(">", "&gt;") + "\" Zugtyp=\"1\" Buchfahrplandll=\"_InstSetup\\lib\\timetable\\Buchfahrplan_DB_2006.dll\">");
             trn_file.WriteLine("<Datei Dateiname=\"" + fpnRelPath + "\" NurInfo=\"1\"/>");
 
             for (int i = 0; i < zug.route.Count; i++)
@@ -157,15 +157,7 @@ namespace ZuSiFplEdit
                 if (zug.includeSignal[i])
                 {
                     //Richtiges Signal aussuchen
-                    streckenModul.Signal nextSignal = null;
-                    if (zug.route[i].Ziel.StrElement.SignalNorm != null)
-                    {
-                        nextSignal = zug.route[i].Ziel.StrElement.SignalNorm;
-                    }
-                    else
-                    {
-                        nextSignal = zug.route[i].Ziel.StrElement.SignalGegen;
-                    }
+                    var nextSignal = zug.route[i].zielSignal;
 
 
                     trn_file.Write("<FahrplanEintrag");
@@ -173,12 +165,12 @@ namespace ZuSiFplEdit
                         trn_file.Write(" Ank=\"" + zug.route_ankunft[i].ToString("yy-MM-dd HH:mm:ss") + "\"");
                     if ((zug.route_abfahrt[i] != null) && (zug.route_abfahrt[i] != new DateTime()))
                         trn_file.Write(" Abf=\"" + zug.route_abfahrt[i].ToString("yy-MM-dd HH:mm:ss") + "\"");
-                    trn_file.Write(" Betrst=\"" + nextSignal.Betriebstelle + "\"");
-                    if ((i < (zug.route.Count - 1)) && (zug.route[i + 1].FahrstrTyp == "TypWende")) //Wendeerkennung
+                    trn_file.Write(" Betrst=\"" + nextSignal.betriebsstelle + "\"");
+                    if ((i < (zug.route.Count - 1)) && (zug.route[i + 1].typ == "TypWende")) //Wendeerkennung
                         trn_file.Write(" FzgVerbandAktion=\"2\" FzgVerbandWendeSignalabstand=\"250\"");
                     trn_file.WriteLine(">");
 
-                    trn_file.WriteLine("<FahrplanSignalEintrag FahrplanSignal=\"" + nextSignal.Name + "\"/>");
+                    trn_file.WriteLine("<FahrplanSignalEintrag FahrplanSignal=\"" + nextSignal.name + "\"/>");
                     trn_file.WriteLine("</FahrplanEintrag>"); 
                 }
             }

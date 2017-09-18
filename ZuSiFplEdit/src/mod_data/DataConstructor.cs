@@ -375,6 +375,8 @@ namespace ZuSiFplEdit
 
                 foreach (var endFahrstraße in endModul.fahrstraßen)
                 {
+                    endFahrstraße.startSignal.abgehendeFahrstraßen.Add(endFahrstraße);
+
                     //Durchlaufe alle möglichen Folgestraßen
                     foreach (var folgeModul in folgeModule)
                     {
@@ -384,7 +386,6 @@ namespace ZuSiFplEdit
                             if (endFahrstraße.zielSignal == folgeFahrstraße.startSignal)
                             {
                                 endFahrstraße.folgeStraßen.Add(folgeFahrstraße);
-                                endFahrstraße.zielSignal.abgehendeFahrstraßen.Add(folgeFahrstraße);
                             }
                         }
                     }

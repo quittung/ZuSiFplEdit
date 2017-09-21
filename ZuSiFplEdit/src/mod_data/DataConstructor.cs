@@ -341,7 +341,7 @@ namespace ZuSiFplEdit
 
                     //Wendeziele in Fahrstraßen umwandeln
                     foreach (var wendeZiel in wendeZiele)
-                    {
+                   { 
                         double länge = fahrstraße.zielSignal.streckenelement.endpunkte[0].distanceTo(wendeZiel.streckenelement.endpunkte[0]);
                         string name = "WF: " + fahrstraße.zielSignal.name + " -> " + wendeZiel.name;
                         var wendeFahrstraße = new streckenModul.Fahrstraße(fahrstraße.zielSignal, wendeZiel, name, "TypWende", 4, länge, 5, 25 / 3.6);
@@ -353,7 +353,8 @@ namespace ZuSiFplEdit
                 //Wendefahrstraßen zu Modulliste hinzufügen
                 foreach (var wendeFahrstraße in wendeFahrstraßen)
                 {
-                    modulFertig.fahrstraßen.Add(wendeFahrstraße);
+                    if (!istWendefahrstraßeVorhanden(wendeFahrstraße.name, modulFertig))
+                        modulFertig.fahrstraßen.Add(wendeFahrstraße);
                 }
             }
         }
@@ -477,6 +478,23 @@ namespace ZuSiFplEdit
                 if (modul.modName == name) return modul;
 
             return null;
+        }
+
+        /// <summary>
+        /// Gibt zurück, ob eine gleichnamige Fahrstraße bereits im Modul existiert
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="modul"></param>
+        /// <returns></returns>
+        bool istWendefahrstraßeVorhanden(string name, streckenModul modul)
+        {
+            foreach (var fahrstraße in modul.fahrstraßen)
+            {
+                if (fahrstraße.name == name)
+                    return true;
+            }
+
+            return false;
         }
     }
 }

@@ -57,9 +57,15 @@ namespace ZuSiFplEdit
             writeFPN();
             foreach (var zug in Zugfahrten)
             {
-                if (zug.route != null)
+                if (zug.route != null && zug.route.Count > 1)
                     writeTRN(zug);
+                else
+                {
+                    MessageBox.Show("Zug " + zug.Gattung + zug.Zugnummer + " hat keine Route.");
+                    break;
+                }
             }
+            
         }
 
         /// <summary>

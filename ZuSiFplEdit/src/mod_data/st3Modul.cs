@@ -308,23 +308,26 @@ namespace ZuSiFplEdit
 
             public override string ToString()
             {
+                string prefix = "";
+                if (Signal != null)
+                    prefix = Signal.Signaltyp.ToString() + " - ";
 
                 switch (RefTyp)
                 {
                     case 0:
-                        return ("AGP " + Info);
+                        return (prefix + "AGP " + Info);
                     case 1:
-                        return ("MDG " + Info);
+                        return (prefix + "MDG " + Info);
                     case 2:
-                        return ("REG " + Info);
+                        return (prefix + "REG " + Info);
                     case 3:
-                        return ("WEI " + Info);
+                        return (prefix + "WEI " + Info);
                     case 4:
-                        return ("SIG " + Info);
+                        return (prefix + "SIG " + Info);
                     case 5:
-                        return ("ALP " + Info);
+                        return (prefix + "ALP " + Info);
                     default:
-                        return ("N/A " + Info);
+                        return (prefix + "N/A " + Info);
                 }
             }
         }

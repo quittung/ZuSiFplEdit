@@ -137,7 +137,11 @@ namespace ZuSiFplEdit
                 if (geschwindigkeit > vMax)
                     geschwindigkeit = vMax;
 
-                return länge / geschwindigkeit;
+                double fahrdauer = länge / geschwindigkeit;
+                if (typ == "TypWende")
+                    fahrdauer += 60;
+
+                return fahrdauer;
             }
 
             public override string ToString()

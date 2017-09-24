@@ -16,25 +16,6 @@ namespace ZuSiFplEdit
         /// </summary>
         public class WayPoint
         {
-
-            /// <summary>
-            /// Signal des Wegpunkts
-            /// </summary>
-            public streckenModul.Signal signal;
-            /// <summary>
-            /// Enthält die Strecke zum nächsten zuletzt übergebenen Zielsignal, wenn möglich
-            /// </summary>
-            public List<streckenModul.Fahrstraße> teilRoute;
-
-            /// <summary>
-            /// Konstruktor für Wegpunkt von Signal
-            /// </summary>
-            public WayPoint(streckenModul.Signal signal)
-            {
-                this.signal = signal;
-            }
-
-
             public class aStarNode
             {
                 public streckenModul.Signal Node;
@@ -44,13 +25,14 @@ namespace ZuSiFplEdit
                 public aStarNode PreviousNode;
                 public streckenModul.Fahrstraße PreviousVertex;
 
-                public float vMax = 160f / 3.6f;
+                public float vMax;
 
-                public aStarNode(streckenModul.Signal Node, aStarNode PreviousNode, streckenModul.Fahrstraße PreviousVertex, streckenModul.Signal target)
+                public aStarNode(streckenModul.Signal Node, aStarNode PreviousNode, streckenModul.Fahrstraße PreviousVertex, streckenModul.Signal target, float vMax)
                 {
                     this.Node = Node;
                     this.PreviousNode = PreviousNode;
                     this.PreviousVertex = PreviousVertex;
+                    this.vMax = vMax;
 
                     if (PreviousNode == null)
                         DistanceFromStart = 0;
@@ -77,7 +59,7 @@ namespace ZuSiFplEdit
 
                 // Default comparer
                 public int CompareTo(aStarNode compareNode)
-                {                     
+                {
                     return OverallDistance.CompareTo(compareNode.OverallDistance);
                 }
 
@@ -87,18 +69,39 @@ namespace ZuSiFplEdit
                 }
             }
 
+            /// <summary>
+            /// Signal des Wegpunkts
+            /// </summary>
+            public streckenModul.Signal signal;
+            /// <summary>
+            /// Enthält die Strecke zum nächsten zuletzt übergebenen Zielsignal, wenn möglich
+            /// </summary>
+            public List<streckenModul.Fahrstraße> teilRoute;
+
+            public ZugFahrt zug;
+            
+            /// <summary>
+            /// Konstruktor für Wegpunkt von Signal
+            /// </summary>
+            public WayPoint(streckenModul.Signal signal, ZugFahrt zug)
+            {
+                this.signal = signal;
+                this.zug = zug;
+            }
+            
+            
 
             /// <summary>
             /// Setzt Strecke zum übergebenen Zielsignal
             /// </summary>
-            public void streckeBerechnen(streckenModul.Signal Startsignal, streckenModul.Signal Zielsignal)
+            public void streckeBerechnen(streckenModul.Signal Startsignal, streckenModul.Signal Zielsignal, List<RoutenPunkt> route)
             {
                 //teilRoute = fstrRouteSearchStart(Zielsignal);
 
                 var OpenNodes = new List<aStarNode>();
                 var ClosedNodes = new List<aStarNode>();
 
-                var CurrentNode = new aStarNode(Startsignal, null, null, Zielsignal);
+                var CurrentNode = new aStarNode(Startsignal, null, null, Zielsignal, zug.vMax);
                 
 
                 while (true)
@@ -111,7 +114,7 @@ namespace ZuSiFplEdit
                         {
                             var DuplicateNode = findDuplicateAStarByNode(AdjacentVertex.zielSignal, OpenNodes);
                             if (DuplicateNode == null)
-                                OpenNodes.Add(new aStarNode(AdjacentVertex.zielSignal, CurrentNode, AdjacentVertex, Zielsignal)); 
+                                OpenNodes.Add(new aStarNode(AdjacentVertex.zielSignal, CurrentNode, AdjacentVertex, Zielsignal, zug.vMax)); 
                             else
                             {
                                 DuplicateNode.updateNode(CurrentNode, AdjacentVertex);
@@ -138,11 +141,15 @@ namespace ZuSiFplEdit
                 Console.WriteLine("");
                 Console.WriteLine("Geschätzte Fahrzeit: " + new DateTime().AddSeconds(CurrentNode.OverallDistance).ToString("HH:mm:ss"));
 
+
+                int legStartIndex = route.Count;
                 while (true)
                 {
                     if (CurrentNode.PreviousNode == null)
                         break;
                     teilRoute.Insert(0, CurrentNode.PreviousVertex);
+
+                    route.Insert(legStartIndex, routenPunktErzeugen(CurrentNode.PreviousVertex));
 
                     //CurrentNode.PreviousVertex.Durchschnittsgeschwindigkeit = CurrentNode.PreviousVertex.vMaxBestimmen(1000);
                     //Console.WriteLine(CurrentNode.PreviousVertex.FahrstrName + " " + CurrentNode.PreviousVertex.RglGgl + " " + CurrentNode.PreviousVertex.Durchschnittsgeschwindigkeit);
@@ -166,127 +173,67 @@ namespace ZuSiFplEdit
                 return null;
             }
 
-            /// <summary>
-            /// Gibt Strecke zu Zielsignal zurück
-            /// </summary>
-            //[Obsolete]
-            //List<st3Modul.fahrStr> fstrRouteSearchStart(st3Modul.referenzElement ZielSignal)
-            //{
-            //    var Besucht = new List<st3Modul.fahrStr>();
-            //    for (int i = -1; i < 10; i++)
-            //    {
-            //        Besucht = new List<st3Modul.fahrStr>();
-            //        foreach (var start_fstr in signal.abgehendeFahrstraßen)
-            //        {
-            //            var rList = fstrRouteSearch(start_fstr, ZielSignal, Besucht, 0, i);
-            //            if (rList != null) return rList; 
-            //        }
-            //    }
-
-            //    return null;
-            //}
-
-            /// <summary>
-            /// Rekursiver Teil der Streckensuche
-            /// </summary>
-            // [Obsolete]
-            //List<st3Modul.fahrStr> fstrRouteSearch(st3Modul.fahrStr Aktuell, st3Modul.referenzElement ZielSignal, List<st3Modul.fahrStr> Besucht, int rekursionstiefe, int wendetiefe)
-            //{
-            //    Besucht.Add(Aktuell);
-            //    //Sofort aufhören, wenn Zielsignal gefunden.
-            //    if (Aktuell.Ziel.StrElement == ZielSignal.StrElement)
-            //    {
-            //        var Lizte = new List<st3Modul.fahrStr>();
-            //        Lizte.Add(Aktuell);
-            //        return (Lizte);
-            //    }
-
-
-            //    if (rekursionstiefe == wendetiefe)
-            //    {
-            //        if ((Aktuell.Start.wendeSignale != null) && (Aktuell.Start.wendeSignale.Count > 0))
-            //        {
-            //            foreach (var wSignal in Aktuell.Start.wendeSignale)
-            //            {
-            //                if (wSignal == ZielSignal)
-            //                {
-            //                    st3Modul.fahrStr hilfsfstr = erstelleWendehilfsfahrstraße(Aktuell.Ziel, ZielSignal);
-            //                    var Lizte = new List<st3Modul.fahrStr>();
-            //                    Lizte.Add(hilfsfstr);
-            //                    return (Lizte);
-            //                }
-            //            }
-            //        }
-                    
-            //        if (Aktuell.wendesignale.Count > 0)
-            //        {
-                        
-            //            foreach (var wSignal in Aktuell.wendesignale)
-            //            {
-            //                if (wSignal == ZielSignal)
-            //                {
-            //                    st3Modul.fahrStr hilfsfstr = erstelleWendehilfsfahrstraße(Aktuell.Ziel, ZielSignal);
-            //                    var Lizte = new List<st3Modul.fahrStr>();
-            //                    Lizte.Add(Aktuell);
-            //                    Lizte.Add(hilfsfstr);
-            //                    return (Lizte);
-            //                }
-            //                foreach (var wSFstr in wSignal.abgehendeFahrstraßen)
-            //                {
-            //                    var rList = fstrRouteSearch(wSFstr, ZielSignal, Besucht, rekursionstiefe + 1, wendetiefe);
-            //                    if (!(rList == null))
-            //                    {
-            //                        //TODO: Implement commented stuff.
-            //                        //streckenModul.fahrStr hilfsfstr = erstelleWendehilfsfahrstraße(Aktuell, ZielSignal);
-            //                        rList.Insert(0, Aktuell);
-            //                        //rList.Add(hilfsfstr);
-            //                        return rList;
-            //                    }
-            //                }
-            //            }
-            //        }
-            //        else
-            //        {
-            //            return null;
-            //        }
-            //    }
-
-
-            //    //Weiter vorwärts suchen.
-            //    foreach (var folge in Aktuell.folgestraßen)
-            //    {
-            //        if ((!(Besucht.Contains(folge))) && (folge.Ziel != null))
-            //        {
-            //            var rList = fstrRouteSearch(folge, ZielSignal, Besucht, rekursionstiefe + 1, wendetiefe);
-            //            if (!(rList == null))
-            //            {
-            //                //MessageBox.Show("Weg gefunden nach " + rekursionstiefe + " Rekursionen.");
-            //                rList.Insert(0, Aktuell);
-            //                return rList;
-            //            }
-            //            Besucht.Add(Aktuell);
-            //        }
-            //    }
-                
-
-            //    //MessageBox.Show("Gebe auf nach " + rekursionstiefe + " Rekursionen.");
-            //    return null;
-            //}
-
-            private st3Modul.fahrStr erstelleWendehilfsfahrstraße(st3Modul.referenzElement StartSignal, st3Modul.referenzElement ZielSignal)
+            public RoutenPunkt routenPunktErzeugen(streckenModul.Fahrstraße fahrstraße)
             {
-                var distanz = (float) StartSignal.SignalCoord.distanceTo(ZielSignal.SignalCoord);
-                var hilfsfstr = new st3Modul.fahrStr("Wendehilfsfahrstraße", "0", 2, "TypWende", distanz, StartSignal.ReferenzNr, StartSignal.Modul.modName, ZielSignal.ReferenzNr, ZielSignal.Modul.modName); //TODO: RglGgl
-                hilfsfstr.StartMod = StartSignal.Modul;
-                hilfsfstr.ZielMod = ZielSignal.Modul;
-                hilfsfstr.Start = StartSignal;
-                hilfsfstr.Ziel = ZielSignal;
-                return hilfsfstr;
+                var signal = fahrstraße.zielSignal;
+
+                bool relevant = (fahrstraße.startSignal.abgehendeFahrstraßen.Count > 1);
+
+                bool wende = fahrstraße.typ == "TypWende";
+
+                double fahrdauer = fahrstraße.berechneFahrdauer(zug.vMax);
+
+                var routenPunkt = new RoutenPunkt(signal, fahrstraße, relevant, wende, fahrdauer);
+
+                return routenPunkt;
             }
 
             public override string ToString()
             {
                 return (signal.info);
+            }
+        }
+
+        public class RoutenPunkt
+        {
+            public streckenModul.Signal signal;
+            public streckenModul.Fahrstraße fahrstraße;
+            
+            /// <summary>
+            /// Routenpunkt muss in Fahrplan eingetragen werden
+            /// </summary>
+            public bool relevant;
+            public double fahrdauer;
+
+            public DateTime ankunft;
+            public DateTime abfahrt;
+            public bool wende;
+            public WayPoint wegPunkt;
+
+
+            public RoutenPunkt(streckenModul.Signal signal, streckenModul.Fahrstraße anfahrt, bool relevant, bool wende, double fahrdauer)
+            {
+                this.signal = signal;
+                this.fahrstraße = anfahrt;
+
+                this.relevant = relevant;
+                this.wende = wende;
+                this.fahrdauer = fahrdauer;
+            }
+
+            public override string ToString()
+            {
+                string beschreibung = "- ";
+                if (relevant)
+                    beschreibung = "> ";
+                if (wegPunkt != null)
+                    beschreibung = "= ";
+                if (wende)
+                    beschreibung = "< ";
+
+                beschreibung += signal.betriebsstelle + " " + signal.name;
+
+                return (beschreibung);
             }
         }
 
@@ -313,18 +260,23 @@ namespace ZuSiFplEdit
         /// </summary>
         public List<WayPoint> WayPoints;
 
+        Datensatz datensatz;
+
         public float vMax;
 
         /// <summary>
+        /// Länge der gesamten Route
         /// </summary>
         public double route_länge;
         /// <summary>
+        /// Erwartete Fahrtdauer auf der gesamten Route
         /// </summary>
         public long route_dauer;
-        /// <summary>
-        /// Enthält die Route der Zugfahrt als Liste von Fahrstraßen, wenn berechnet. 
-        /// </summary>
-        public List<streckenModul.Fahrstraße> route;
+
+        public List<RoutenPunkt> route;
+
+        
+
         /// <summary>
         /// </summary>
         public DateTime[] route_ankunft;
@@ -337,10 +289,12 @@ namespace ZuSiFplEdit
         /// <summary>
         /// Konstruktor der Klasse ZugFahrt
         /// </summary>
-        public ZugFahrt()
+        public ZugFahrt(Datensatz datensatz)
         {
+            this.datensatz = datensatz;
+
             WayPoints = new List<WayPoint>();
-            route = new List<streckenModul.Fahrstraße>();
+            route = new List<RoutenPunkt>();
             includeSignal = new List<bool>();
             vMax = 160f / 3.6f;
         }
@@ -355,8 +309,8 @@ namespace ZuSiFplEdit
         /// </summary>
         public void routeBerechnen()
         {
-            route.Clear();
             includeSignal.Clear();
+            route.Clear();
 
 
             if (WayPoints.Count < 2)
@@ -365,12 +319,17 @@ namespace ZuSiFplEdit
                 return;
             }
 
+            if (!datensatz.fahrstraßenBereit)
+            {
+                MessageBox.Show("Datensatz wurde noch nicht vollständig verarbeitet. Bitte in ein paar Sekunden erneut versuchen.");
+                return;
+            }
+
             for (int i = 0; i < WayPoints.Count - 1; i++)
             {
-                WayPoints[i].streckeBerechnen(WayPoints[i].signal, WayPoints[i + 1].signal);
-                if (WayPoints[i].teilRoute != null)
+                WayPoints[i].streckeBerechnen(WayPoints[i].signal, WayPoints[i + 1].signal, route);
+                if (WayPoints[i].teilRoute != null) //TODO: Abbruch anders erkennen
                 {
-                    route.AddRange(WayPoints[i].teilRoute);
                     for (int b = 1; b < WayPoints[i].teilRoute.Count; b++)
                     {
                         includeSignal.Add(false);
@@ -386,7 +345,7 @@ namespace ZuSiFplEdit
                     }
                     else
                     {
-                        MessageBox.Show("Die Route konnte nur bis \"" + route[route.Count - 1].zielSignal.name + "\" bestimmt werden.");
+                        MessageBox.Show("Die Route konnte nur bis \"" + route[route.Count - 1].fahrstraße.zielSignal.name + "\" bestimmt werden.");
                         break;
                     }
                 }
@@ -397,23 +356,21 @@ namespace ZuSiFplEdit
 
         public void route_metadaten_berechen()
         {
-            
-
-            route_ankunft = new DateTime[route.Count];
-            route_abfahrt = new DateTime[route.Count];
+            if (route == null || route.Count == 0)
+                return;
             
             route_dauer = 0;
             route_länge = 0;
 
-            //route_ankunft[0] = Convert.ToDateTime("2017-02-27 12:00:00");
-            route_abfahrt[0] = Convert.ToDateTime("2017-02-27 12:00:00");
+            route[0].ankunft = Convert.ToDateTime("2017-02-27 12:00:00");
+            //route_abfahrt[0] = Convert.ToDateTime("2017-02-27 12:00:00");
 
             for (int i = 1; i < route.Count; i++)
             {
                 //Strecke suchen
-                double strecke_cur = route[i].länge;
+                double strecke_cur = route[i].fahrstraße.länge;
                 //Zeit berechnen
-                long zeit_cur = (long)route[i].berechneFahrdauer(vMax);
+                long zeit_cur = (long)route[i].fahrstraße.berechneFahrdauer(vMax);
                 //Strecke aufaddieren
                 route_länge += strecke_cur;
                 //Zeit aufaddieren
@@ -423,42 +380,27 @@ namespace ZuSiFplEdit
                 //Zeiten eintragen
                 if (i != 0)
                 {
-                    if ((i != route.Count - 1) && (route[i + 1].folgeStraßen.Count > 1))
-                        includeSignal[i] = true;
-
                     DateTime letzteZeit;
-                    if ((route_abfahrt[i - 1] == null) || (route_abfahrt[i - 1] == new DateTime()))
+                    if ((route[i - 1].abfahrt == null) || (route[i - 1].abfahrt == new DateTime()))
                     {
-                        letzteZeit = route_ankunft[i - 1];
+                        letzteZeit = route[i - 1].ankunft;
                     }
                     else
                     {
-                        letzteZeit = route_abfahrt[i - 1];
+                        letzteZeit = route[i - 1].abfahrt;
                     }
 
-                    if (((i < (route.Count - 1)) && (route[i + 1].typ == "TypWende")) || (i == route.Count - 1)) //Wendeerkennung
+                    if (route[i].wende)
                     {
-                        includeSignal[i] = true;
-                        route_ankunft[i] = letzteZeit.AddSeconds(zeit_cur);
-                        route_abfahrt[i] = route_ankunft[i].AddSeconds(30);
+                        route[i].ankunft = letzteZeit.AddSeconds(zeit_cur);
+                        route[i].abfahrt = route[i].ankunft.AddSeconds(30);
                     }
                     else
                     {
-                        route_abfahrt[i] = letzteZeit.AddSeconds(zeit_cur);
+                        route[i].abfahrt = letzteZeit.AddSeconds(zeit_cur);
                     }
-                        
-
-                    //route_abfahrt[i] = letzteZeit.AddSeconds(zeit_cur);
-
-                    //if (((i < (route.Count - 1)) && (route[i].Ziel != route[i + 1].Start)) || (route[i].FahrstrName == "Wendehilfsfahrstraße")) //Wendeerkennung
-                    //{
-                    //    route_ankunft[i] = route_abfahrt[i];
-                    //    route_abfahrt[i] = route_ankunft[i].AddSeconds(30);
-                    //}
                 }
             }
-
-            route_abfahrt[route.Count - 1] = route_ankunft[route.Count - 1].AddSeconds(30);
         }
 
     }

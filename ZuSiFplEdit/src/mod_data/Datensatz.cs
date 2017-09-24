@@ -8,7 +8,7 @@ namespace ZuSiFplEdit
     /// <summary>
     /// Beinhaltet die vollständig formatierten Streckenmodule und zugehörige lookup-Funktionen
     /// </summary>
-    class Datensatz
+    public class Datensatz
     {
         /// <summary>
         /// Metadaten aller Module sind zur Darstellung bereit

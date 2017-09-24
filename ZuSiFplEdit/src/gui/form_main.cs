@@ -189,10 +189,10 @@ namespace ZuSiFplEdit
                 foreach (var Zufa in ZugFahrtBox.Items)
                 {
                     ZugFahrt Zug = (ZugFahrt)Zufa;
-                    foreach (var fstr in Zug.route)
+                    foreach (var routenPunkt in Zug.route) //TODO: Auch alle Module dazwischen markieren
                     {
-                        fstr.startSignal.modul.selected = true;
-                        fstr.zielSignal.modul.selected = true;
+                        routenPunkt.fahrstraße.startSignal.modul.selected = true;
+                        routenPunkt.fahrstraße.zielSignal.modul.selected = true;
                     }
                     zList.Add(Zug);
                 }
@@ -534,7 +534,7 @@ namespace ZuSiFplEdit
 
         private void Neuer_Zug_button_Click(object sender, EventArgs e)
         {
-            var tmpZugfahrt = new ZugFahrt();
+            var tmpZugfahrt = new ZugFahrt(datenFertig);
 
             tmpZugfahrt.Gattung = "RB";
             

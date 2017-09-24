@@ -424,8 +424,8 @@ namespace ZuSiFplEdit
                 {
                     foreach (var step in aktZugFahrt.route)
                     {
-                        var start = UtmToPix(step.startSignal.position);
-                        var ziel = UtmToPix(step.zielSignal.position);
+                        var start = UtmToPix(step.fahrstraße.startSignal.position);
+                        var ziel = UtmToPix(step.fahrstraße.zielSignal.position);
 
                         framebuffer.DrawLine(Pens.Red, start.X, start.Y, ziel.X, ziel.Y);
                     }

@@ -236,7 +236,7 @@ namespace ZuSiFplEdit
                         signalRefMax = signalReferenz;
 
                     var signalRoh = modulRoh.ReferenzElementeNachNr[signalReferenz];
-                    var name = signalRoh.ToString();
+                    var name = signalRoh.Info;
                     var betriebsstelle = "";
                     if (signalRoh.Signal != null)
                     {
@@ -342,9 +342,9 @@ namespace ZuSiFplEdit
                     //Wendeziele in Fahrstraßen umwandeln
                     foreach (var wendeZiel in wendeZiele)
                    { 
-                        double länge = fahrstraße.zielSignal.streckenelement.endpunkte[0].distanceTo(wendeZiel.streckenelement.endpunkte[0]);
+                        double länge = fahrstraße.zielSignal.streckenelement.endpunkte[0].distanceTo(wendeZiel.streckenelement.endpunkte[0]) * 1000;
                         string name = "WF: " + fahrstraße.zielSignal.name + " -> " + wendeZiel.name;
-                        var wendeFahrstraße = new streckenModul.Fahrstraße(fahrstraße.zielSignal, wendeZiel, name, "TypWende", 4, länge, 5, 25 / 3.6);
+                        var wendeFahrstraße = new streckenModul.Fahrstraße(fahrstraße.zielSignal, wendeZiel, name, "TypWende", 4, länge, 2 , 25 / 3.6);
 
                         wendeFahrstraßen.Add(wendeFahrstraße);
                     }
@@ -367,32 +367,32 @@ namespace ZuSiFplEdit
             fortschrittMeldung = "Verlinke Fahrstraßen...";
 
             //Durchlaufe alle Fahrstraßen
-            foreach (var endModul in datenFertig.module)
+            foreach (var ausgangsModul in datenFertig.module)
             {
                 //Sammle alle Streckenmodule, in denen eine Fahrstraße enden könnte
-                var folgeModule = new List<streckenModul>();
-                folgeModule.Add(endModul);
-                folgeModule.AddRange(endModul.nachbarn);
+                var weiterführendeModule = new List<streckenModul>();
+                weiterführendeModule.Add(ausgangsModul);
+                weiterführendeModule.AddRange(ausgangsModul.nachbarn);
 
-                foreach (var endFahrstraße in endModul.fahrstraßen)
+                foreach (var ausgangsFahrstraße in ausgangsModul.fahrstraßen)
                 {
-                    endFahrstraße.startSignal.abgehendeFahrstraßen.Add(endFahrstraße);
+                    ausgangsFahrstraße.startSignal.abgehendeFahrstraßen.Add(ausgangsFahrstraße);
 
                     //Durchlaufe alle möglichen Folgestraßen
-                    foreach (var folgeModul in folgeModule)
+                    foreach (var weiterführendesModul in weiterführendeModule)
                     {
-                        foreach (var folgeFahrstraße in folgeModul.fahrstraßen)
+                        foreach (var weiterführendeFahrstraße in weiterführendesModul.fahrstraßen)
                         {
                             //Verlinke passende Fahrstraßen
-                            if (endFahrstraße.zielSignal == folgeFahrstraße.startSignal)
+                            if (ausgangsFahrstraße.zielSignal == weiterführendeFahrstraße.startSignal)
                             {
-                                endFahrstraße.folgeStraßen.Add(folgeFahrstraße);
+                                ausgangsFahrstraße.folgeStraßen.Add(weiterführendeFahrstraße);
                             }
                         }
                     }
                 }
 
-                endModul.fahrstraßenBereit = true;
+                ausgangsModul.fahrstraßenBereit = true;
             }
         }
 
@@ -414,7 +414,7 @@ namespace ZuSiFplEdit
             var wendeZiele = new List<streckenModul.Signal>();
 
             //Enthält das aktuelle Element ein Wendeziel?
-            if (aktuellesElement.signale[suchRichtung] != null)
+            if ((aktuellesElement.signale[suchRichtung] != null) && (aktuellesElement.signale[suchRichtung].istStart) && (aktuellesElement.signale[suchRichtung].istZiel)) //TODO: Erkennung von AGPs verbessern
             {
                 wendeZiele = new List<streckenModul.Signal>();
                 wendeZiele.Add(aktuellesElement.signale[suchRichtung]);

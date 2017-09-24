@@ -62,7 +62,7 @@ namespace ZuSiFplEdit
         /// </summary>
         public void setSignal(streckenModul.Signal signal)
         {
-            Zug.WayPoints.Add(new ZugFahrt.WayPoint(signal));
+            Zug.WayPoints.Add(new ZugFahrt.WayPoint(signal, Zug));
             if (Zug.WayPoints.Count > 1)
             {
                 Zug.routeBerechnen();
@@ -240,6 +240,19 @@ namespace ZuSiFplEdit
         private void LB_waypoint_DragOver(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.Move;
+        }
+
+        private void LB_signal_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(Zug.route != null && Zug.route.Count > 0)
+            {
+                ZugFahrt.RoutenPunkt routenPunkt = (ZugFahrt.RoutenPunkt)LB_signal.SelectedItem;
+                label_signal.Text = routenPunkt.ToString();
+                label_fahrstraße.Text = routenPunkt.fahrstraße.name;
+
+                label_dauer.Text = routenPunkt.fahrdauer.ToString("f0") + "s für " + (routenPunkt.fahrstraße.länge / 1000).ToString("f1") + "km";
+                label_vMin.Text = (routenPunkt.fahrstraße.vMax * 3.6).ToString("f0") + "km/h";
+            }
         }
     }
 }

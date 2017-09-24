@@ -238,14 +238,18 @@ namespace ZuSiFplEdit
                     var signalRoh = modulRoh.ReferenzElementeNachNr[signalReferenz];
                     var name = signalRoh.Info;
                     var betriebsstelle = "";
+                    int typ = 0;
                     if (signalRoh.Signal != null)
                     {
                         betriebsstelle = signalRoh.Signal.Betriebstelle;
                         name = signalRoh.Signal.Name;
+                        typ = signalRoh.Signal.Signaltyp;
                     }
-                        
 
-                    var signalFertig = new streckenModul.Signal(signalReferenz, signalRoh.ToString(), name, betriebsstelle, modulFertig, modulFertig.elementeLookup[signalRoh.StrElementNr], 1 - Convert.ToInt32(signalRoh.StrNorm));
+                    if (typ == 13) //Unsichtbare Signale aussortieren
+                        continue;
+
+                    var signalFertig = new streckenModul.Signal(signalReferenz, signalRoh.ToString(), name, betriebsstelle, typ, modulFertig, modulFertig.elementeLookup[signalRoh.StrElementNr], 1 - Convert.ToInt32(signalRoh.StrNorm));
                     
                     modulFertig.signale.Add(signalFertig);
                 }
@@ -260,6 +264,8 @@ namespace ZuSiFplEdit
                 foreach (var signalReferenz in modulRoh.StartSignale)
                 {
                     var signal = modulFertig.signaleLookup[signalReferenz];
+                    if (signal == null)
+                        continue;
                     signal.istStart = true;
                     modulFertig.signaleStart.Add(signal);
                 }
@@ -267,6 +273,8 @@ namespace ZuSiFplEdit
                 foreach (var signalReferenz in modulRoh.ZielSignale)
                 {
                     var signal = modulFertig.signaleLookup[signalReferenz];
+                    if (signal == null)
+                        continue;
                     signal.istZiel = true;
                     modulFertig.signaleZiel.Add(signal);
                 }
@@ -298,11 +306,15 @@ namespace ZuSiFplEdit
                     if (startModul == null)
                         continue;
                     var startSignal = startModul.signaleLookup[fahrstraßeRoh.StartRef];
+                    if (startSignal == null)
+                        continue;
 
                     var zielModul = datenFertig.sucheModul(fahrstraßeRoh.ZielMod_Str);
                     if (zielModul == null)
                         continue;
                     var zielSignal = zielModul.signaleLookup[fahrstraßeRoh.ZielRef];
+                    if (zielSignal == null)
+                        continue;
 
                     double vMax = startSignal.streckenelement.vMax;
 

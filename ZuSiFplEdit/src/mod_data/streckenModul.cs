@@ -52,6 +52,7 @@ namespace ZuSiFplEdit
             public string info;
             public string name;
             public string betriebsstelle;
+            public int typ;
 
             /// <summary>
             /// Zugehöriges Streckenelement
@@ -76,12 +77,13 @@ namespace ZuSiFplEdit
             /// </summary>
             public bool istZiel = false;
 
-            public Signal(int nummer, string info, string name, string betriebsstelle, streckenModul modul, Element streckenelement, int richtung) //TODO: Informationsumfang für Navigation ausweiten? Vl. besser in Fahrstraßen...
+            public Signal(int nummer, string info, string name, string betriebsstelle, int typ, streckenModul modul, Element streckenelement, int richtung) //TODO: Informationsumfang für Navigation ausweiten? Vl. besser in Fahrstraßen...
             {
                 this.nummer = nummer;
                 this.info = info;
                 this.name = name;
                 this.betriebsstelle = betriebsstelle;
+                this.typ = typ;
 
                 this.modul = modul;
                 this.streckenelement = streckenelement;

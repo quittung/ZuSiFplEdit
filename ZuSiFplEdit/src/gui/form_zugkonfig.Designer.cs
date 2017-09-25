@@ -48,14 +48,16 @@
             this.button3 = new System.Windows.Forms.Button();
             this.LB_signal = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label_signal = new System.Windows.Forms.Label();
-            this.label_fahrstraße = new System.Windows.Forms.Label();
-            this.label_überschrift = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label_vMin = new System.Windows.Forms.Label();
-            this.label_dauer = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
+            this.label_dauer = new System.Windows.Forms.Label();
+            this.label_vMin = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label_überschrift = new System.Windows.Forms.Label();
+            this.label_fahrstraße = new System.Windows.Forms.Label();
+            this.label_signal = new System.Windows.Forms.Label();
+            this.label_vMax_überschrift = new System.Windows.Forms.Label();
+            this.label_vMax = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tpSetting.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -189,7 +191,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.63523F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.36477F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 216F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 217F));
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.LB_signal, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel1, 2, 0);
@@ -271,12 +273,14 @@
             this.LB_signal.FormattingEnabled = true;
             this.LB_signal.Location = new System.Drawing.Point(207, 3);
             this.LB_signal.Name = "LB_signal";
-            this.LB_signal.Size = new System.Drawing.Size(210, 394);
+            this.LB_signal.Size = new System.Drawing.Size(209, 394);
             this.LB_signal.TabIndex = 1;
             this.LB_signal.SelectedIndexChanged += new System.EventHandler(this.LB_signal_SelectedIndexChanged);
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.label_vMax_überschrift);
+            this.panel1.Controls.Add(this.label_vMax);
             this.panel1.Controls.Add(this.label8);
             this.panel1.Controls.Add(this.label_dauer);
             this.panel1.Controls.Add(this.label_vMin);
@@ -286,64 +290,19 @@
             this.panel1.Controls.Add(this.label_fahrstraße);
             this.panel1.Controls.Add(this.label_signal);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(423, 3);
+            this.panel1.Location = new System.Drawing.Point(422, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(211, 394);
+            this.panel1.Size = new System.Drawing.Size(212, 394);
             this.panel1.TabIndex = 3;
             // 
-            // label_signal
+            // label8
             // 
-            this.label_signal.AutoSize = true;
-            this.label_signal.Location = new System.Drawing.Point(14, 16);
-            this.label_signal.Name = "label_signal";
-            this.label_signal.Size = new System.Drawing.Size(62, 13);
-            this.label_signal.TabIndex = 0;
-            this.label_signal.Text = "Signalname";
-            // 
-            // label_fahrstraße
-            // 
-            this.label_fahrstraße.AutoSize = true;
-            this.label_fahrstraße.Location = new System.Drawing.Point(14, 51);
-            this.label_fahrstraße.Name = "label_fahrstraße";
-            this.label_fahrstraße.Size = new System.Drawing.Size(89, 13);
-            this.label_fahrstraße.TabIndex = 1;
-            this.label_fahrstraße.Text = "Fahrstraßenname";
-            // 
-            // label_überschrift
-            // 
-            this.label_überschrift.AutoSize = true;
-            this.label_überschrift.Location = new System.Drawing.Point(4, 3);
-            this.label_überschrift.Name = "label_überschrift";
-            this.label_überschrift.Size = new System.Drawing.Size(87, 13);
-            this.label_überschrift.TabIndex = 2;
-            this.label_überschrift.Text = "Signal-Parameter";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(4, 38);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(60, 13);
-            this.label4.TabIndex = 3;
-            this.label4.Text = "Fahrstraße:";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(4, 73);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(58, 13);
-            this.label5.TabIndex = 4;
-            this.label5.Text = "Fahrdauer:";
-            // 
-            // label_vMin
-            // 
-            this.label_vMin.AutoSize = true;
-            this.label_vMin.Location = new System.Drawing.Point(91, 89);
-            this.label_vMin.Name = "label_vMin";
-            this.label_vMin.Size = new System.Drawing.Size(30, 13);
-            this.label_vMin.TabIndex = 5;
-            this.label_vMin.Text = "vMin";
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(87, 73);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(38, 13);
+            this.label8.TabIndex = 7;
+            this.label8.Text = "vStart:";
             // 
             // label_dauer
             // 
@@ -354,14 +313,77 @@
             this.label_dauer.TabIndex = 6;
             this.label_dauer.Text = "Fahrdauer";
             // 
-            // label8
+            // label_vMin
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(91, 73);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(33, 13);
-            this.label8.TabIndex = 7;
-            this.label8.Text = "vMin:";
+            this.label_vMin.AutoSize = true;
+            this.label_vMin.Location = new System.Drawing.Point(87, 86);
+            this.label_vMin.Name = "label_vMin";
+            this.label_vMin.Size = new System.Drawing.Size(35, 13);
+            this.label_vMin.TabIndex = 5;
+            this.label_vMin.Text = "vStart";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(4, 73);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(58, 13);
+            this.label5.TabIndex = 4;
+            this.label5.Text = "Fahrdauer:";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(4, 38);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(60, 13);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "Fahrstraße:";
+            // 
+            // label_überschrift
+            // 
+            this.label_überschrift.AutoSize = true;
+            this.label_überschrift.Location = new System.Drawing.Point(4, 3);
+            this.label_überschrift.Name = "label_überschrift";
+            this.label_überschrift.Size = new System.Drawing.Size(87, 13);
+            this.label_überschrift.TabIndex = 2;
+            this.label_überschrift.Text = "Signal-Parameter";
+            // 
+            // label_fahrstraße
+            // 
+            this.label_fahrstraße.AutoSize = true;
+            this.label_fahrstraße.Location = new System.Drawing.Point(14, 51);
+            this.label_fahrstraße.Name = "label_fahrstraße";
+            this.label_fahrstraße.Size = new System.Drawing.Size(89, 13);
+            this.label_fahrstraße.TabIndex = 1;
+            this.label_fahrstraße.Text = "Fahrstraßenname";
+            // 
+            // label_signal
+            // 
+            this.label_signal.AutoSize = true;
+            this.label_signal.Location = new System.Drawing.Point(14, 16);
+            this.label_signal.Name = "label_signal";
+            this.label_signal.Size = new System.Drawing.Size(62, 13);
+            this.label_signal.TabIndex = 0;
+            this.label_signal.Text = "Signalname";
+            // 
+            // label_vMax_überschrift
+            // 
+            this.label_vMax_überschrift.AutoSize = true;
+            this.label_vMax_überschrift.Location = new System.Drawing.Point(156, 73);
+            this.label_vMax_überschrift.Name = "label_vMax_überschrift";
+            this.label_vMax_überschrift.Size = new System.Drawing.Size(33, 13);
+            this.label_vMax_überschrift.TabIndex = 9;
+            this.label_vMax_überschrift.Text = "vZiel:";
+            // 
+            // label_vMax
+            // 
+            this.label_vMax.AutoSize = true;
+            this.label_vMax.Location = new System.Drawing.Point(156, 86);
+            this.label_vMax.Name = "label_vMax";
+            this.label_vMax.Size = new System.Drawing.Size(30, 13);
+            this.label_vMax.TabIndex = 8;
+            this.label_vMax.Text = "vZiel";
             // 
             // ZugForm
             // 
@@ -414,5 +436,7 @@
         private System.Windows.Forms.Label label_dauer;
         private System.Windows.Forms.Label label_vMin;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label_vMax_überschrift;
+        private System.Windows.Forms.Label label_vMax;
     }
 }

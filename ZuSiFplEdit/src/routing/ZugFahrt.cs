@@ -358,12 +358,14 @@ namespace ZuSiFplEdit
         {
             if (route == null || route.Count == 0)
                 return;
-            
+
+            route[0].relevant = true;
+            route[route.Count - 1].relevant = true;
+               
             route_dauer = 0;
             route_länge = 0;
 
             route[0].ankunft = Convert.ToDateTime("2017-02-27 12:00:00");
-            //route_abfahrt[0] = Convert.ToDateTime("2017-02-27 12:00:00");
 
             for (int i = 1; i < route.Count; i++)
             {
@@ -390,7 +392,7 @@ namespace ZuSiFplEdit
                         letzteZeit = route[i - 1].abfahrt;
                     }
 
-                    if (route[i].wende)
+                    if ((i < (route.Count - 1)) && (route[i + 1].wende))
                     {
                         route[i].ankunft = letzteZeit.AddSeconds(zeit_cur);
                         route[i].abfahrt = route[i].ankunft.AddSeconds(30);

@@ -115,10 +115,12 @@ namespace ZuSiFplEdit
             public int RglGgl; //TODO: Information anders darstellen
 
             public double länge;
+            public double vStart;
+            public double vZiel;
+            public double längeWeichenBereich;
             public double wichtung;
-            public double vMax;
             
-            public Fahrstraße(Signal startSignal, Signal zielSignal, string name, string typ, int RglGgl, double länge, double wichtung, double vMax)
+            public Fahrstraße(Signal startSignal, Signal zielSignal, string name, string typ, int RglGgl, double länge, double längeWeichenBereich, double vMin, double vMax, double wichtung)
             {
                 folgeStraßen = new List<Fahrstraße>();
 
@@ -130,16 +132,25 @@ namespace ZuSiFplEdit
                 this.RglGgl = RglGgl;
 
                 this.länge = länge;
+                this.längeWeichenBereich = längeWeichenBereich;
+                this.vStart = vMin;
+                this.vZiel = vMax;
                 this.wichtung = wichtung;
-                this.vMax = vMax;
             }
 
             public double berechneFahrdauer(double geschwindigkeit)
             {
-                if (geschwindigkeit > vMax)
-                    geschwindigkeit = vMax;
+                double zugVmin = vStart;
+                if (zugVmin > geschwindigkeit)
+                    zugVmin = geschwindigkeit;
+                double zugVmax = vZiel;
+                if (zugVmax > geschwindigkeit)
+                    zugVmax = geschwindigkeit;
 
-                double fahrdauer = länge / geschwindigkeit;
+                double fahrdauerImWeichenbereich = längeWeichenBereich / vStart;
+                double fahrdauerNachWeichenbereich = (länge - längeWeichenBereich) / vZiel;
+
+                double fahrdauer = fahrdauerImWeichenbereich + fahrdauerNachWeichenbereich;
                 if (typ == "TypWende")
                     fahrdauer += 60;
 

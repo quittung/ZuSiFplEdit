@@ -242,6 +242,11 @@ namespace ZuSiFplEdit
             e.Effect = DragDropEffects.Move;
         }
 
+        /// <summary>
+        /// Updated Signalparameter, wenn neues Signal ausgewählt wurde
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void LB_signal_SelectedIndexChanged(object sender, EventArgs e)
         {
             if(Zug.route != null && Zug.route.Count > 0)
@@ -251,7 +256,8 @@ namespace ZuSiFplEdit
                 label_fahrstraße.Text = routenPunkt.fahrstraße.name;
 
                 label_dauer.Text = routenPunkt.fahrdauer.ToString("f0") + "s für " + (routenPunkt.fahrstraße.länge / 1000).ToString("f1") + "km";
-                label_vMin.Text = (routenPunkt.fahrstraße.vMax * 3.6).ToString("f0") + "km/h";
+                label_vMin.Text = (routenPunkt.fahrstraße.vStart * 3.6).ToString("f0") + "km/h";
+                label_vMax.Text = (routenPunkt.fahrstraße.vZiel * 3.6).ToString("f0") + "km/h";
             }
         }
     }

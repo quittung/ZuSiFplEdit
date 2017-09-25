@@ -334,48 +334,62 @@ namespace ZuSiFplEdit
 
         public class fahrStr
         {
-            public class fstrPunkt
+            public class fstrSignal
+            {
+                public int RefInt;
+                public string RefModString;
+                public referenzElement Ref;
+                public int SignalZeile;
+
+
+                public fstrSignal(XmlReader partialXmlReader)
+                {
+
+                    while (partialXmlReader.Read())
+                    {
+                        if (partialXmlReader.NodeType != XmlNodeType.EndElement && partialXmlReader.Name == "FahrstrSignal")
+                        {
+                            RefInt = Convert.ToInt32(partialXmlReader.GetAttribute("Ref"));
+                            SignalZeile = Convert.ToInt32(partialXmlReader.GetAttribute("FahrstrSignalZeile")); 
+                        }
+                        
+                        if (partialXmlReader.Name == "Datei")
+                            RefModString = modContainer.speicherortZuName(partialXmlReader.GetAttribute("Dateiname"), '\\');
+                    }
+                }
+            }
+
+            public class fstrWeiche
             {
                 public int RefInt;
                 public string RefModString;
                 public referenzElement Ref;
 
-                public bool Weiche = false;
-                public int SignalZeile;
-
-                public double position;
-                public double lengthToNextPoint;
-                public double vMax;
+                public int weichenlage;
 
 
-                public fstrPunkt(XmlReader partialXmlReader, string punktTyp)
+                public fstrWeiche(XmlReader partialXmlReader)
                 {
-                    if (punktTyp == "FahrstrWeiche")
-                        Weiche = true;
-
                     while (partialXmlReader.Read())
                     {
-                        if (partialXmlReader.NodeType != XmlNodeType.EndElement && partialXmlReader.Name == punktTyp)
+                        if (partialXmlReader.NodeType != XmlNodeType.EndElement && partialXmlReader.Name == "FahrstrWeiche")
                         {
                             RefInt = Convert.ToInt32(partialXmlReader.GetAttribute("Ref"));
-                            SignalZeile = Convert.ToInt32(partialXmlReader.GetAttribute("FahrstrSignalZeile")); 
+                            weichenlage = Convert.ToInt32(partialXmlReader.GetAttribute("FahrstrWeichenlage")); 
                         }
-
-
+                        
                         if (partialXmlReader.Name == "Datei")
                             RefModString = modContainer.speicherortZuName(partialXmlReader.GetAttribute("Dateiname"), '\\');
                     }
                 }
 
-                public void complete(referenzElement Ref)
-                {
-                    this.Ref = Ref;
 
-                    //position = Ref.StrElement.InfoNorm.km;
-                    //vMax = Ref.StrElement.InfoNorm.vMax;
+                public override string ToString()
+                {
+                    return "W" + RefInt + "|" + weichenlage;
                 }
             }
-            
+
             public string FahrstrName;
             public string FahrstrStrecke;
             public int RglGgl;
@@ -399,7 +413,8 @@ namespace ZuSiFplEdit
 
             public bool wendeSignaleBestimmt = false;
 
-            public List<fstrPunkt> wegpunkte;
+            public List<fstrSignal> signale;
+            public List<fstrWeiche> weichen;
 
             public float Durchschnittsgeschwindigkeit;
 
@@ -447,14 +462,15 @@ namespace ZuSiFplEdit
                 while (!(partialXmlReader.Name == "Datei")) partialXmlReader.Read();
                 ZielMod_Str = modContainer.speicherortZuName(partialXmlReader.GetAttribute("Dateiname"), '\\');
 
-                wegpunkte = new List<fstrPunkt>();
+                signale = new List<fstrSignal>();
+                weichen = new List<fstrWeiche>();
                 while (partialXmlReader.Read())
                 {
                     if (partialXmlReader.Name == "FahrstrWeiche")
-                        wegpunkte.Add(new fstrPunkt(partialXmlReader.ReadSubtree(), "FahrstrWeiche"));
+                        weichen.Add(new fstrWeiche(partialXmlReader.ReadSubtree()));
 
                     if (partialXmlReader.Name == "FahrstrSignal")
-                        wegpunkte.Add(new fstrPunkt(partialXmlReader.ReadSubtree(), "FahrstrSignal"));
+                        signale.Add(new fstrSignal(partialXmlReader.ReadSubtree()));
                 }
             }
 
@@ -534,12 +550,12 @@ namespace ZuSiFplEdit
             {
                 float vMaxSig = -1f;
 
-                if (wegpunkte != null)
+                if (signale != null)
                 {
-                    foreach (var WegPunkt in wegpunkte)
+                    foreach (var fstrSignal in signale)
                     {
-                        if ((!WegPunkt.Weiche) && (WegPunkt.SignalZeile != 0))
-                            vMaxSig = WegPunkt.Ref.Signal.vSig[WegPunkt.SignalZeile - 1];
+                        if ((fstrSignal.SignalZeile != 0))
+                            vMaxSig = fstrSignal.Ref.Signal.vSig[fstrSignal.SignalZeile - 1];
                     }
                 }
 
@@ -849,7 +865,12 @@ namespace ZuSiFplEdit
 
                     refEl.StrElement.signalReferenz = refEl;
 
-                    if (refEl.StrElement.SignalNorm == null ^ refEl.StrElement.SignalGegen == null)
+                    if (refEl.StrElement.SignalNorm == null && refEl.StrElement.SignalGegen == null) //Wenn kein Signal existiert
+                    {
+                        continue;
+                    }
+
+                    if (refEl.StrElement.SignalNorm == null ^ refEl.StrElement.SignalGegen == null) //Wenn nur eins der Signale existiert
                     {
                         if (refEl.StrElement.SignalGegen == null)
                         {
@@ -862,8 +883,21 @@ namespace ZuSiFplEdit
                             refEl.StrNorm = false;
                         }
                     }
-                    else if (refEl.StrElement.SignalNorm != null && refEl.StrElement.SignalGegen != null)
-                    { //Break on (!(refEl.StrElement.SignalNorm.Name.Contains("BÜ"))) && (!(refEl.StrElement.SignalNorm.Betriebstelle.Contains("BÜ"))) && (refEl.StrElement.SignalNorm.Name != refEl.StrElement.SignalGegen.Name)
+                    else if (refEl.StrElement.SignalNorm.Signaltyp == 0 ^ refEl.StrElement.SignalGegen.Signaltyp == 0) //Wenn eins der Signale kein anerkanntes Signal ist
+                    {
+                        if (refEl.StrElement.SignalGegen.Signaltyp == 0)
+                        {
+                            refEl.Signal = refEl.StrElement.SignalNorm;
+                            refEl.StrNorm = true;
+                        }
+                        else
+                        {
+                            refEl.Signal = refEl.StrElement.SignalGegen;
+                            refEl.StrNorm = false;
+                        }
+                    }
+                    else if (refEl.StrElement.SignalNorm != null && refEl.StrElement.SignalGegen != null) //Wenn beide Signale existieren
+                    {
                         if (refEl.StrElement.SignalNorm.Name != "" && refEl.Info.Contains(refEl.StrElement.SignalNorm.Name))
                         {
                             refEl.Signal = refEl.StrElement.SignalNorm;

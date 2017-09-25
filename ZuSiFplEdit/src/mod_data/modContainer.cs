@@ -277,11 +277,9 @@ namespace ZuSiFplEdit
                     }
                     fstr.ZielMod = sucheMod(fstr.ZielMod_Str);
 
-                    foreach (var wegpunkt in fstr.wegpunkte)
+                    foreach (var wegpunkt in fstr.signale)
                     {
                         var refMod = sucheMod(wegpunkt.RefModString);
-                        if (refMod != null)
-                            wegpunkt.complete(refMod.sucheReferenz(wegpunkt.RefInt));
                     }
 
                     if (fstr.ZielMod == null)

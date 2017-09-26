@@ -236,7 +236,7 @@ namespace ZuSiFplEdit
                     return true;
             }
 
-            if (mod.ursprung.distanceTo(center) < 10)
+            if (mod.ursprung.distanceTo(center) < 15)
             {
                 return true;
             }

@@ -192,7 +192,16 @@ namespace ZuSiFplEdit
                     foreach (var routenPunkt in Zug.route) //TODO: Auch alle Module dazwischen markieren
                     {
                         routenPunkt.fahrstraße.startSignal.modul.selected = true;
+                        foreach (var nachbar in routenPunkt.fahrstraße.startSignal.modul.nachbarn)
+                        {
+                            nachbar.selected = true;
+                        }
+
                         routenPunkt.fahrstraße.zielSignal.modul.selected = true;
+                        foreach (var nachbar in routenPunkt.fahrstraße.zielSignal.modul.nachbarn)
+                        {
+                            nachbar.selected = true;
+                        }
                     }
                     zList.Add(Zug);
                 }

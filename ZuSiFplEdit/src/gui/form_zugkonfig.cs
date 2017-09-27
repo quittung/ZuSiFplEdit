@@ -256,7 +256,10 @@ namespace ZuSiFplEdit
                 label_fahrstraße.Text = routenPunkt.fahrstraße.name;
 
                 label_dauer.Text = routenPunkt.fahrdauer.ToString("f0") + "s für " + (routenPunkt.fahrstraße.länge / 1000).ToString("f1") + "km";
-                label_vMin.Text = (routenPunkt.fahrstraße.vStart * 3.6).ToString("f0") + "km/h";
+                label_vMin.Text = (routenPunkt.fahrstraße.vStart * 3.6).ToString("f0") + "km/h für " + (routenPunkt.fahrstraße.längeWeichenBereich / 1000).ToString("f1") + "km";
+                if (routenPunkt.fahrstraße.längeWeichenBereich == routenPunkt.fahrstraße.länge / 2)
+                    label_vMin.Text += "*";
+                    
                 label_vMax.Text = (routenPunkt.fahrstraße.vZiel * 3.6).ToString("f0") + "km/h";
             }
         }

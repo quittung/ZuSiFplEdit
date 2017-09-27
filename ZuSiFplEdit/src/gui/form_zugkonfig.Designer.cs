@@ -48,6 +48,8 @@
             this.button3 = new System.Windows.Forms.Button();
             this.LB_signal = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label_vMax_überschrift = new System.Windows.Forms.Label();
+            this.label_vMax = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label_dauer = new System.Windows.Forms.Label();
             this.label_vMin = new System.Windows.Forms.Label();
@@ -56,8 +58,6 @@
             this.label_überschrift = new System.Windows.Forms.Label();
             this.label_fahrstraße = new System.Windows.Forms.Label();
             this.label_signal = new System.Windows.Forms.Label();
-            this.label_vMax_überschrift = new System.Windows.Forms.Label();
-            this.label_vMax = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tpSetting.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -191,7 +191,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.63523F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.36477F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 217F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 218F));
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.LB_signal, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel1, 2, 0);
@@ -219,7 +219,7 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(198, 394);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(197, 394);
             this.tableLayoutPanel2.TabIndex = 2;
             // 
             // LB_waypoint
@@ -228,7 +228,7 @@
             this.LB_waypoint.FormattingEnabled = true;
             this.LB_waypoint.Location = new System.Drawing.Point(3, 108);
             this.LB_waypoint.Name = "LB_waypoint";
-            this.LB_waypoint.Size = new System.Drawing.Size(192, 283);
+            this.LB_waypoint.Size = new System.Drawing.Size(191, 283);
             this.LB_waypoint.TabIndex = 0;
             this.LB_waypoint.DragDrop += new System.Windows.Forms.DragEventHandler(this.LB_waypoint_DragDrop);
             this.LB_waypoint.DragOver += new System.Windows.Forms.DragEventHandler(this.LB_waypoint_DragOver);
@@ -239,7 +239,7 @@
             this.button1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button1.Location = new System.Drawing.Point(3, 3);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(192, 29);
+            this.button1.Size = new System.Drawing.Size(191, 29);
             this.button1.TabIndex = 0;
             this.button1.Text = "Wegpunkt einfügen";
             this.button1.UseVisualStyleBackColor = true;
@@ -250,7 +250,7 @@
             this.button2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button2.Location = new System.Drawing.Point(3, 38);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(192, 29);
+            this.button2.Size = new System.Drawing.Size(191, 29);
             this.button2.TabIndex = 1;
             this.button2.Text = "Wegpunkt ändern";
             this.button2.UseVisualStyleBackColor = true;
@@ -261,7 +261,7 @@
             this.button3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button3.Location = new System.Drawing.Point(3, 73);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(192, 29);
+            this.button3.Size = new System.Drawing.Size(191, 29);
             this.button3.TabIndex = 2;
             this.button3.Text = "Wegpunkt löschen";
             this.button3.UseVisualStyleBackColor = true;
@@ -271,7 +271,7 @@
             // 
             this.LB_signal.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LB_signal.FormattingEnabled = true;
-            this.LB_signal.Location = new System.Drawing.Point(207, 3);
+            this.LB_signal.Location = new System.Drawing.Point(206, 3);
             this.LB_signal.Name = "LB_signal";
             this.LB_signal.Size = new System.Drawing.Size(209, 394);
             this.LB_signal.TabIndex = 1;
@@ -290,15 +290,33 @@
             this.panel1.Controls.Add(this.label_fahrstraße);
             this.panel1.Controls.Add(this.label_signal);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(422, 3);
+            this.panel1.Location = new System.Drawing.Point(421, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(212, 394);
+            this.panel1.Size = new System.Drawing.Size(213, 394);
             this.panel1.TabIndex = 3;
+            // 
+            // label_vMax_überschrift
+            // 
+            this.label_vMax_überschrift.AutoSize = true;
+            this.label_vMax_überschrift.Location = new System.Drawing.Point(99, 108);
+            this.label_vMax_überschrift.Name = "label_vMax_überschrift";
+            this.label_vMax_überschrift.Size = new System.Drawing.Size(33, 13);
+            this.label_vMax_überschrift.TabIndex = 9;
+            this.label_vMax_überschrift.Text = "vZiel:";
+            // 
+            // label_vMax
+            // 
+            this.label_vMax.AutoSize = true;
+            this.label_vMax.Location = new System.Drawing.Point(99, 121);
+            this.label_vMax.Name = "label_vMax";
+            this.label_vMax.Size = new System.Drawing.Size(30, 13);
+            this.label_vMax.TabIndex = 8;
+            this.label_vMax.Text = "vZiel";
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(87, 73);
+            this.label8.Location = new System.Drawing.Point(4, 108);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(38, 13);
             this.label8.TabIndex = 7;
@@ -316,7 +334,7 @@
             // label_vMin
             // 
             this.label_vMin.AutoSize = true;
-            this.label_vMin.Location = new System.Drawing.Point(87, 86);
+            this.label_vMin.Location = new System.Drawing.Point(4, 121);
             this.label_vMin.Name = "label_vMin";
             this.label_vMin.Size = new System.Drawing.Size(35, 13);
             this.label_vMin.TabIndex = 5;
@@ -366,24 +384,6 @@
             this.label_signal.Size = new System.Drawing.Size(62, 13);
             this.label_signal.TabIndex = 0;
             this.label_signal.Text = "Signalname";
-            // 
-            // label_vMax_überschrift
-            // 
-            this.label_vMax_überschrift.AutoSize = true;
-            this.label_vMax_überschrift.Location = new System.Drawing.Point(156, 73);
-            this.label_vMax_überschrift.Name = "label_vMax_überschrift";
-            this.label_vMax_überschrift.Size = new System.Drawing.Size(33, 13);
-            this.label_vMax_überschrift.TabIndex = 9;
-            this.label_vMax_überschrift.Text = "vZiel:";
-            // 
-            // label_vMax
-            // 
-            this.label_vMax.AutoSize = true;
-            this.label_vMax.Location = new System.Drawing.Point(156, 86);
-            this.label_vMax.Name = "label_vMax";
-            this.label_vMax.Size = new System.Drawing.Size(30, 13);
-            this.label_vMax.TabIndex = 8;
-            this.label_vMax.Text = "vZiel";
             // 
             // ZugForm
             // 

@@ -16,7 +16,6 @@ namespace ZuSiFplEdit
 
         DataConstructor dataConstructor;
         Datensatz datenFertig;
-        modContainer Module;
         mapDraw kartenZeichner;
 
         int mouseDownX_rel = 0;
@@ -29,8 +28,7 @@ namespace ZuSiFplEdit
 
         bool selectRouteStart = false;
         bool selectRouteEnd = false;
-
-        bool ZLBready = true;
+        
         List<ZugFahrt> ZugFahrten = new List<ZugFahrt>();
         ZugForm ZugKonfigForm;
 
@@ -239,6 +237,8 @@ namespace ZuSiFplEdit
                 int deltaX = e.X - mouseDownX_rel;
                 int deltaY = e.Y - mouseDownY_rel;
 
+
+                //Auswahl von Signalen für die Routenerstellung
                 if ((selectRouteStart || selectRouteEnd) && !mouseMoved)
                 {
                     if (selectRouteStart)
@@ -270,15 +270,16 @@ namespace ZuSiFplEdit
                     mMap.Image = kartenZeichner.draw();
                 } else if (!mouseMoved) 
                 {
+                    //Modulauswahl
                     if (moduToolStripMenuItem.Checked && punkteToolStripMenuItem.Checked)
                     {
-                        var nächsteStation = kartenZeichner.getNearestStation(e.X, e.Y);
-                        if (kartenZeichner.getModulDistance(nächsteStation, e.X, e.Y) < 10)
+                        var nächstesModul = kartenZeichner.getNearestStation(e.X, e.Y);
+                        if (kartenZeichner.getModulDistance(nächstesModul, e.X, e.Y) < 10)
                         {
-                            nächsteStation.selected = !nächsteStation.selected;
+                            nächstesModul.selected = !nächstesModul.selected;
                             kartenZeichner.message = dataConstructor.fortschrittMeldung;
                             mMap.Image = kartenZeichner.draw();
-                            //modListBox.SetSelected(Module.mSammlung.IndexOf(nächsteStation), nächsteStation.selected);
+                            modListBox.SetSelected(datenFertig.module.IndexOf(nächstesModul), nächstesModul.selected);
                         }
                     }
                 }
@@ -308,143 +309,22 @@ namespace ZuSiFplEdit
             }
         }
 
-        private void setStartSig(object sender, EventArgs e)
-        {
-            startSignal = tmpSignal;
-        }
-
-        private void setZielSig(object sender, EventArgs e)
-        {
-            zielSignal = tmpSignal;
-            if( startSignal == null)
-            {
-                MessageBox.Show("Startsignal nicht gesetzt!", "Fehler", MessageBoxButtons.OK);
-            }
-            route();
-        }
-
-        private void showMod(object sender, EventArgs e)
-        {
-            Process.Start(Module.DirBase + horribleHackVariableThatHoldsRightClickModule.modPath.Substring(0, horribleHackVariableThatHoldsRightClickModule.modPath.LastIndexOf('\\'))); //HACK: HACKHACKHACKHACKHACK Shame!
-        }
-
-        private void route()
-        {
-            var fertige_route = routeSearch(horribleHackVariableThatHoldsRightClickModule, Module.sucheMod("Meschede_1980"), new List<st3Modul>());
-
-            if (fertige_route == null)
-            {
-                MessageBox.Show("Strecke nicht gefunden.", "Strecke nach Meschede", MessageBoxButtons.OK);
-            }
-            else
-            {
-                string stregge = "";
-                foreach (var mod in fertige_route)
-                {
-                    stregge += mod.modName + "\n";
-                }
-                MessageBox.Show(stregge, "Strecke nach Meschede", MessageBoxButtons.OK);
-            }
-
-            var fertige_fstr_route = fstrRouteSearchStart(startSignal, zielSignal);
-            if (fertige_fstr_route == null)
-            {
-                MessageBox.Show("Fahrstraßen nicht gefunden.", "Strecke nach Meschede", MessageBoxButtons.OK);
-            }
-            else
-            {
-                double länge = 0;
-                string stregge = "";
-                foreach (var fstr in fertige_fstr_route)
-                {
-                    stregge += fstr.FahrstrName + "\n";
-                    länge += fstr.Laenge;
-                }
-                stregge += "Länge: " + (länge/1000).ToString("F1") + "km";
-                MessageBox.Show(stregge, "Fahrstraßen nach Meschede", MessageBoxButtons.OK);
-
-                fstrRoute = fertige_fstr_route;
-            }
-        }
-
-        List<st3Modul.fahrStr> fstrRouteSearchStart(st3Modul.referenzElement StartSignal, st3Modul.referenzElement ZielSignal)
-        {
-            var Besucht = new List<st3Modul.fahrStr>();
-            foreach (var start_fstr in StartSignal.abgehendeFahrstraßen)
-            {
-                var rList = fstrRouteSearch(start_fstr, ZielSignal, Besucht);
-                if (rList != null) return rList;
-            }
-
-            return null;
-        }
-
-        List<st3Modul.fahrStr> fstrRouteSearch(st3Modul.fahrStr Aktuell, st3Modul.referenzElement ZielSignal, List<st3Modul.fahrStr> Besucht)
-        {
-            Besucht.Add(Aktuell);
-            if (Aktuell.Ziel.StrElement == ZielSignal.StrElement)
-            {
-                var Liste = new List<st3Modul.fahrStr>();
-                Liste.Add(Aktuell);
-                return (Liste);
-            }
-            else
-            {
-                foreach (var folge in Aktuell.folgestraßen)
-                {
-                    if ((!(Besucht.Contains(folge))) && (folge.Ziel != null))
-                    {
-                        var rList = fstrRouteSearch(folge, ZielSignal, Besucht);
-                        if (!(rList == null))
-                        {
-                            rList.Insert(0, Aktuell);
-                            return rList;
-                        } Besucht.Add(Aktuell);
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        List<st3Modul> routeSearch(st3Modul Aktuell, st3Modul Ziel, List<st3Modul> Besucht)
-        {
-            Besucht.Add(Aktuell);
-            if (Aktuell == Ziel)
-            {
-                var Lizte = new List<st3Modul>();
-                Lizte.Add(Aktuell);
-                return (Lizte);
-            }
-            else
-            {
-                foreach (var con in Aktuell.Verbindungen)
-                {
-                    if (!(Besucht.Contains(con)))
-                    {
-                        var rList = routeSearch(con, Ziel, Besucht); 
-                        if (!(rList == null))
-                        {
-                            rList.Insert(0, Aktuell);
-                            return rList;
-                        }
-                    }
-                }
-            }
-
-            return null;
-        }
-
+        /// <summary>
+        /// Überträgt die Auswahl der Modul-Liste auf das interne Datenmodell und die Liste
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void modListBox_SelectedValueChanged(object sender, EventArgs e)
         {
-            for (int i = 0; i < Module.mSammlung.Count; i++)
+            for (int i = 0; i < datenFertig.module.Count; i++)
             {
                 if (modListBox.SelectedIndices.Contains(i))
                 {
-                    Module.mSammlung[i].selected = true;
-                } else
+                    datenFertig.module[i].selected = true;
+                }
+                else
                 {
-                    Module.mSammlung[i].selected = false;
+                    datenFertig.module[i].selected = false;
                 }
             }
             kartenZeichner.message = dataConstructor.fortschrittMeldung;
@@ -575,11 +455,9 @@ namespace ZuSiFplEdit
             return ZugNummerBesetzt;
         }
 
-        void zlbUpdate()
+        void zfbUpdate()
         {
-            ZLBready = false;
             ZugFahrtBox.Items[ZugFahrtBox.SelectedIndex] = ZugFahrtBox.SelectedItem;
-            ZLBready = true;
         }
 
         

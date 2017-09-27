@@ -48,6 +48,12 @@
             this.button3 = new System.Windows.Forms.Button();
             this.LB_signal = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.checkBox_Abfahrt = new System.Windows.Forms.CheckBox();
+            this.checkBox_Ankunft = new System.Windows.Forms.CheckBox();
+            this.button_WpUmwandlung = new System.Windows.Forms.Button();
+            this.dateTimePicker_Abfahrt = new System.Windows.Forms.DateTimePicker();
+            this.dateTimePicker_Ankunft = new System.Windows.Forms.DateTimePicker();
             this.label_vMax_überschrift = new System.Windows.Forms.Label();
             this.label_vMax = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -191,7 +197,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.63523F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.36477F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 218F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 221F));
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.LB_signal, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel1, 2, 0);
@@ -219,7 +225,7 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(197, 394);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(196, 394);
             this.tableLayoutPanel2.TabIndex = 2;
             // 
             // LB_waypoint
@@ -228,7 +234,7 @@
             this.LB_waypoint.FormattingEnabled = true;
             this.LB_waypoint.Location = new System.Drawing.Point(3, 108);
             this.LB_waypoint.Name = "LB_waypoint";
-            this.LB_waypoint.Size = new System.Drawing.Size(191, 283);
+            this.LB_waypoint.Size = new System.Drawing.Size(190, 283);
             this.LB_waypoint.TabIndex = 0;
             this.LB_waypoint.DragDrop += new System.Windows.Forms.DragEventHandler(this.LB_waypoint_DragDrop);
             this.LB_waypoint.DragOver += new System.Windows.Forms.DragEventHandler(this.LB_waypoint_DragOver);
@@ -239,7 +245,7 @@
             this.button1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button1.Location = new System.Drawing.Point(3, 3);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(191, 29);
+            this.button1.Size = new System.Drawing.Size(190, 29);
             this.button1.TabIndex = 0;
             this.button1.Text = "Wegpunkt einfügen";
             this.button1.UseVisualStyleBackColor = true;
@@ -250,7 +256,7 @@
             this.button2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button2.Location = new System.Drawing.Point(3, 38);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(191, 29);
+            this.button2.Size = new System.Drawing.Size(190, 29);
             this.button2.TabIndex = 1;
             this.button2.Text = "Wegpunkt ändern";
             this.button2.UseVisualStyleBackColor = true;
@@ -261,7 +267,7 @@
             this.button3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button3.Location = new System.Drawing.Point(3, 73);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(191, 29);
+            this.button3.Size = new System.Drawing.Size(190, 29);
             this.button3.TabIndex = 2;
             this.button3.Text = "Wegpunkt löschen";
             this.button3.UseVisualStyleBackColor = true;
@@ -271,14 +277,20 @@
             // 
             this.LB_signal.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LB_signal.FormattingEnabled = true;
-            this.LB_signal.Location = new System.Drawing.Point(206, 3);
+            this.LB_signal.Location = new System.Drawing.Point(205, 3);
             this.LB_signal.Name = "LB_signal";
-            this.LB_signal.Size = new System.Drawing.Size(209, 394);
+            this.LB_signal.Size = new System.Drawing.Size(207, 394);
             this.LB_signal.TabIndex = 1;
             this.LB_signal.SelectedIndexChanged += new System.EventHandler(this.LB_signal_SelectedIndexChanged);
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.textBox1);
+            this.panel1.Controls.Add(this.checkBox_Abfahrt);
+            this.panel1.Controls.Add(this.checkBox_Ankunft);
+            this.panel1.Controls.Add(this.button_WpUmwandlung);
+            this.panel1.Controls.Add(this.dateTimePicker_Abfahrt);
+            this.panel1.Controls.Add(this.dateTimePicker_Ankunft);
             this.panel1.Controls.Add(this.label_vMax_überschrift);
             this.panel1.Controls.Add(this.label_vMax);
             this.panel1.Controls.Add(this.label8);
@@ -290,10 +302,70 @@
             this.panel1.Controls.Add(this.label_fahrstraße);
             this.panel1.Controls.Add(this.label_signal);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(421, 3);
+            this.panel1.Location = new System.Drawing.Point(418, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(213, 394);
+            this.panel1.Size = new System.Drawing.Size(216, 394);
             this.panel1.TabIndex = 3;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(7, 226);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.Size = new System.Drawing.Size(192, 165);
+            this.textBox1.TabIndex = 19;
+            // 
+            // checkBox_Abfahrt
+            // 
+            this.checkBox_Abfahrt.AutoSize = true;
+            this.checkBox_Abfahrt.Enabled = false;
+            this.checkBox_Abfahrt.Location = new System.Drawing.Point(102, 148);
+            this.checkBox_Abfahrt.Name = "checkBox_Abfahrt";
+            this.checkBox_Abfahrt.Size = new System.Drawing.Size(63, 17);
+            this.checkBox_Abfahrt.TabIndex = 18;
+            this.checkBox_Abfahrt.Text = "Abfahrt:";
+            this.checkBox_Abfahrt.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_Ankunft
+            // 
+            this.checkBox_Ankunft.AutoSize = true;
+            this.checkBox_Ankunft.Enabled = false;
+            this.checkBox_Ankunft.Location = new System.Drawing.Point(7, 148);
+            this.checkBox_Ankunft.Name = "checkBox_Ankunft";
+            this.checkBox_Ankunft.Size = new System.Drawing.Size(63, 17);
+            this.checkBox_Ankunft.TabIndex = 17;
+            this.checkBox_Ankunft.Text = "Ankunft";
+            this.checkBox_Ankunft.UseVisualStyleBackColor = true;
+            // 
+            // button_WpUmwandlung
+            // 
+            this.button_WpUmwandlung.Location = new System.Drawing.Point(3, 197);
+            this.button_WpUmwandlung.Name = "button_WpUmwandlung";
+            this.button_WpUmwandlung.Size = new System.Drawing.Size(196, 23);
+            this.button_WpUmwandlung.TabIndex = 16;
+            this.button_WpUmwandlung.Text = "Zu Wegpunkt umwandeln";
+            this.button_WpUmwandlung.UseVisualStyleBackColor = true;
+            // 
+            // dateTimePicker_Abfahrt
+            // 
+            this.dateTimePicker_Abfahrt.Enabled = false;
+            this.dateTimePicker_Abfahrt.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+            this.dateTimePicker_Abfahrt.Location = new System.Drawing.Point(102, 171);
+            this.dateTimePicker_Abfahrt.Name = "dateTimePicker_Abfahrt";
+            this.dateTimePicker_Abfahrt.Size = new System.Drawing.Size(87, 20);
+            this.dateTimePicker_Abfahrt.TabIndex = 15;
+            this.dateTimePicker_Abfahrt.Visible = false;
+            // 
+            // dateTimePicker_Ankunft
+            // 
+            this.dateTimePicker_Ankunft.Enabled = false;
+            this.dateTimePicker_Ankunft.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+            this.dateTimePicker_Ankunft.Location = new System.Drawing.Point(7, 171);
+            this.dateTimePicker_Ankunft.Name = "dateTimePicker_Ankunft";
+            this.dateTimePicker_Ankunft.Size = new System.Drawing.Size(84, 20);
+            this.dateTimePicker_Ankunft.TabIndex = 14;
+            this.dateTimePicker_Ankunft.Visible = false;
             // 
             // label_vMax_überschrift
             // 
@@ -391,6 +463,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(651, 432);
             this.Controls.Add(this.tabControl1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ZugForm";
             this.Text = "Zugkonfiguration";
@@ -438,5 +511,11 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label_vMax_überschrift;
         private System.Windows.Forms.Label label_vMax;
+        private System.Windows.Forms.Button button_WpUmwandlung;
+        private System.Windows.Forms.DateTimePicker dateTimePicker_Abfahrt;
+        private System.Windows.Forms.DateTimePicker dateTimePicker_Ankunft;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.CheckBox checkBox_Abfahrt;
+        private System.Windows.Forms.CheckBox checkBox_Ankunft;
     }
 }

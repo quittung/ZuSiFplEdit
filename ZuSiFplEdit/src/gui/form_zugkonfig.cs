@@ -261,6 +261,17 @@ namespace ZuSiFplEdit
                     label_vMin.Text += "*";
                     
                 label_vMax.Text = (routenPunkt.fahrstraße.vZiel * 3.6).ToString("f0") + "km/h";
+
+                checkBox_Ankunft.Checked = routenPunkt.ankunft != new DateTime();
+                checkBox_Abfahrt.Checked = routenPunkt.abfahrt != new DateTime();
+
+                dateTimePicker_Ankunft.Visible = routenPunkt.ankunft != new DateTime();
+                dateTimePicker_Abfahrt.Visible = routenPunkt.abfahrt != new DateTime();
+
+                if(dateTimePicker_Ankunft.Visible)
+                    dateTimePicker_Ankunft.Value = routenPunkt.ankunft;
+                if (dateTimePicker_Abfahrt.Visible)
+                    dateTimePicker_Abfahrt.Value = routenPunkt.abfahrt;
             }
         }
     }

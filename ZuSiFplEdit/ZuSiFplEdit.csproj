@@ -119,7 +119,6 @@
     <Compile Include="src\mod_data\DataConstructor.cs" />
     <Compile Include="src\mod_data\streckenModul.cs" />
     <Compile Include="src\mod_data\UTM.cs" />
-    <Compile Include="src\mod_data\modContainer.cs" />
     <Compile Include="src\mod_data\st3Modul.cs" />
     <Compile Include="src\routing\ZugFahrt.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">

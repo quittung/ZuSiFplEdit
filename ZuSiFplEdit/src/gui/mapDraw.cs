@@ -337,21 +337,24 @@ namespace ZuSiFplEdit
             }
             if (drawStrecke)
             {
-                int[] gewünschteSignale = new int[] { 7, 8, 9, 10, 12 }; //5 Können zielsignale sein-
-                //int[] gewünschteSignale = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
-
                 foreach (streckenModul mod in modVisible)
                 {
                     foreach (var strE in mod.elemente)
                     {
+                        var pixB = UtmToPix(strE.endpunkte[0]);
+                        var pixG = UtmToPix(strE.endpunkte[1]);
+
                         Pen pen = Pens.Black;
                         if (strE.funktion == 2)
                         {
                             pen = Pens.LightGray;
                         }
+                        //if (strE.hervorheben)
+                        //{
+                        //    pen = Pens.Red;
+                        //    textManager.Add(new textField(pixB.X, pixB.Y, strE.ToString()));
+                        //}
 
-                        var pixB = UtmToPix(strE.endpunkte[0]);
-                        var pixG = UtmToPix(strE.endpunkte[1]);
                         framebuffer.DrawLine(pen, pixB.X, pixB.Y, pixG.X, pixG.Y);
                     }
 

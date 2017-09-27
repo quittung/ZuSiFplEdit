@@ -21,6 +21,9 @@ namespace ZuSiFplEdit
             public PunktUTM[] endpunkte;
             public List<Element>[] anschlüsse;
 
+            //public bool hervorheben;
+            //public DateTime hervorhebenBis;
+
             public Element(int nummer, int funktion, float kilometer, float vMax, PunktUTM endpunktB, PunktUTM endpunktG)
             {
                 this.nummer = nummer;

@@ -91,6 +91,18 @@ namespace ZuSiFplEdit
             }
         }
 
+        public class Anschluss
+        {
+            public int element;
+            public string modul;
+
+            public Anschluss(int element, string modul)
+            {
+                this.element = element;
+                this.modul = modul;
+            }
+        }
+
         public class streckenElement
         {
             public st3Modul Modul;
@@ -112,38 +124,12 @@ namespace ZuSiFplEdit
             public double b_X;
             public double b_Y;
 
-            public List<int> AnschlussNormInt;
-            public List<int> AnschlussGegenInt;
-            public List<streckenElement> AnschlussNorm;
-            public List<streckenElement> AnschlussGegen;
+            public List<Anschluss> AnschlussNorm;
+            public List<Anschluss> AnschlussGegen;
 
             
             public Signal SignalNorm;
             public Signal SignalGegen;
-
-            [Obsolete]
-            public streckenElement(st3Modul Modul, int Nr, float spTrass, int Anschluss, int Funktion, string Oberbau, double g_X, double g_Y, double b_X, double b_Y, Signal SignalNorm, Signal SignalGegen, List<int> AnschlussNorm, List<int> AnschlussGegen)
-            {
-                this.Modul = Modul;
-                this.verlinkt = false;
-
-                this.Nr = Nr;
-                this.spTrass = spTrass;
-                this.Anschluss = Anschluss;
-                this.Funktion = Funktion;
-                this.Oberbau = Oberbau;
-
-                this.g_X = g_X;
-                this.g_Y = g_Y;
-                this.b_X = b_X;
-                this.b_Y = b_Y;
-
-                this.SignalNorm = SignalNorm;
-                this.SignalGegen = SignalGegen;
-
-                this.AnschlussNormInt = AnschlussNorm;
-                this.AnschlussGegenInt = AnschlussGegen;
-            }
 
             public streckenElement(XmlReader partialXmlReader, st3Modul Modul)
             {
@@ -161,8 +147,8 @@ namespace ZuSiFplEdit
                 Oberbau = partialXmlReader.GetAttribute("Oberbau");
 
 
-                AnschlussNormInt = new List<int>();
-                AnschlussGegenInt = new List<int>();
+                AnschlussNorm = new List<Anschluss>();
+                AnschlussGegen = new List<Anschluss>();
 
 
                 while (partialXmlReader.Read())
@@ -195,12 +181,32 @@ namespace ZuSiFplEdit
                         }
                         else if (partialXmlReader.Name == "NachNorm")
                         {
-                            AnschlussNormInt.Add(Convert.ToInt32(partialXmlReader.GetAttribute("Nr")));
+                            AnschlussNorm.Add(new Anschluss(Convert.ToInt32(partialXmlReader.GetAttribute("Nr")), ""));
                         }
                         else if (partialXmlReader.Name == "NachGegen")
                         {
-                            AnschlussGegenInt.Add(Convert.ToInt32(partialXmlReader.GetAttribute("Nr")));
-                        } 
+                            AnschlussGegen.Add(new Anschluss(Convert.ToInt32(partialXmlReader.GetAttribute("Nr")), ""));
+                        }
+                        //else if (partialXmlReader.Name == "NachNormModul")
+                        //{
+                        //    int element = Convert.ToInt32(partialXmlReader.GetAttribute("Nr"));
+                        //    partialXmlReader.Read();
+                        //    partialXmlReader.Read();
+                        //    string modul = partialXmlReader.GetAttribute("Dateiname");
+                        //    AnschlussNorm.Add(new Anschluss(element, modul));
+                        //}
+                        //else if (partialXmlReader.Name == "NachGegenModul")
+                        //{
+                        //    int element = Convert.ToInt32(partialXmlReader.GetAttribute("Nr"));
+                        //    partialXmlReader.Read();
+                        //    partialXmlReader.Read();
+                        //    string modul = partialXmlReader.GetAttribute("Dateiname");
+                        //    if (modul.Contains("Olsberg"))
+                        //    {
+
+                        //    }
+                        //    AnschlussGegen.Add(new Anschluss(element, modul));
+                        //}
                     }
                 }
 
@@ -300,7 +306,7 @@ namespace ZuSiFplEdit
                 if (RefTyp == 1)
                 {
                     string verbindungsName = Info;
-                    verbindungsName = modContainer.speicherortZuName(verbindungsName, '\\');
+                    verbindungsName = DataConstructor.speicherortZuName(verbindungsName, '\\');
                     if (!(Modul.VerbindungenStr.Contains(verbindungsName)))
                         Modul.VerbindungenStr.Add(verbindungsName);
                 }
@@ -354,16 +360,17 @@ namespace ZuSiFplEdit
                         }
                         
                         if (partialXmlReader.Name == "Datei")
-                            RefModString = modContainer.speicherortZuName(partialXmlReader.GetAttribute("Dateiname"), '\\');
+                            RefModString = DataConstructor.speicherortZuName(partialXmlReader.GetAttribute("Dateiname"), '\\');
                     }
                 }
             }
 
             public class fstrWeiche
             {
-                public int RefInt;
+                public int referenzIndex;
                 public string RefModString;
                 public referenzElement Ref;
+                public int strEInt = -1;
 
                 public int weichenlage;
 
@@ -374,19 +381,22 @@ namespace ZuSiFplEdit
                     {
                         if (partialXmlReader.NodeType != XmlNodeType.EndElement && partialXmlReader.Name == "FahrstrWeiche")
                         {
-                            RefInt = Convert.ToInt32(partialXmlReader.GetAttribute("Ref"));
+                            referenzIndex = Convert.ToInt32(partialXmlReader.GetAttribute("Ref"));
                             weichenlage = Convert.ToInt32(partialXmlReader.GetAttribute("FahrstrWeichenlage")); 
                         }
                         
                         if (partialXmlReader.Name == "Datei")
-                            RefModString = modContainer.speicherortZuName(partialXmlReader.GetAttribute("Dateiname"), '\\');
+                            RefModString = DataConstructor.speicherortZuName(partialXmlReader.GetAttribute("Dateiname"), '\\');
                     }
                 }
 
 
                 public override string ToString()
                 {
-                    return "W" + RefInt + "|" + weichenlage;
+                    if (strEInt == -1)
+                        return "Wr" + referenzIndex + "|" + weichenlage;
+                    else
+                        return "W" + strEInt + "|" + weichenlage;
                 }
             }
 
@@ -454,13 +464,13 @@ namespace ZuSiFplEdit
                 while (!(partialXmlReader.Name == "FahrstrStart")) partialXmlReader.Read();
                 StartRef = Convert.ToInt32(partialXmlReader.GetAttribute("Ref"));
                 while (!(partialXmlReader.Name == "Datei")) partialXmlReader.Read();
-                StartMod_Str = modContainer.speicherortZuName(partialXmlReader.GetAttribute("Dateiname"), '\\');
+                StartMod_Str = DataConstructor.speicherortZuName(partialXmlReader.GetAttribute("Dateiname"), '\\');
 
 
                 while (!(partialXmlReader.Name == "FahrstrZiel")) partialXmlReader.Read();
                 ZielRef = Convert.ToInt32(partialXmlReader.GetAttribute("Ref"));
                 while (!(partialXmlReader.Name == "Datei")) partialXmlReader.Read();
-                ZielMod_Str = modContainer.speicherortZuName(partialXmlReader.GetAttribute("Dateiname"), '\\');
+                ZielMod_Str = DataConstructor.speicherortZuName(partialXmlReader.GetAttribute("Dateiname"), '\\');
 
                 signale = new List<fstrSignal>();
                 weichen = new List<fstrWeiche>();
@@ -477,7 +487,7 @@ namespace ZuSiFplEdit
             /// <summary>
             /// Erstellt Wendehilfsfahrstraße
             /// </summary>
-            public fahrStr(referenzElement wendeStart, referenzElement wendeZiel, modContainer modCon)
+            public fahrStr(referenzElement wendeStart, referenzElement wendeZiel)
             {
                 FahrstrName = "Wendehilfsfahrstraße";
                 FahrstrStrecke = "0";
@@ -593,8 +603,6 @@ namespace ZuSiFplEdit
             }
         }
 
-        public modContainer modCon;
-
         /// <summary>
         /// Relativer Pfad zum Modul in Zusi-Bibliothek
         /// </summary>
@@ -668,7 +676,7 @@ namespace ZuSiFplEdit
         {
             modPath = modulePath.Replace('/', '\\');
             modPath = modPath.Substring(modPath.IndexOf("Routes"));
-            modName = modContainer.speicherortZuName(modPath, '\\');
+            modName = DataConstructor.speicherortZuName(modPath, '\\');
 
             Huellkurve = new List<PunktUTM>();
 

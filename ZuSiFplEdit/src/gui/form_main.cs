@@ -93,14 +93,6 @@ namespace ZuSiFplEdit
             }
         }
 
-        /// <summary>
-        /// Started den DatenKonstruktor im Hintergrund und wartet auf das vollständige Einlesen der Module.
-        /// </summary>
-        private void appInit2()
-        {
-            
-        }
-
 
         /// <summary>
         /// Liest das Datenverzeichnis aus der Registry ein

@@ -1,20 +1,20 @@
 .st3
 ----------------------
 
-Signaltypen (Pure Raterei):
-1 - P-Tafel/Reines Schild
-2 - Weichenlaternen
-3 - Gleissperre
-5 - Zergsignale
-6 - Vorsignal-1000Hz (evtl. Kombi)
-7 - Kombi-Einfahr
-8 - Kombi-Einfahr
-9 - Ausfahr
+Signaltypen (Pure Raterey):
+0  -
+1  - P-Tafel/Reines Schild (In Fützen Ausfahrsignal mit P-Tafel und Lf4)
+2  - 	Weichenlaternen
+3  - 	Gleissperre
+5  - 	Zergsignale
+6  - 	Vorsignal-1000Hz (evtl. Kombi)
+7  - Einfahrsignal
+8  - Zwischensignal
+9  - Ausfahrsignal
 10 - Sbk
-12 - LZB
+12 - LZB-Sbk
 13 - Unsichtbar
-14 - 500Hz/BÜ
-? - Kombi-Einfahr
+14 - 	500Hz/BÜ
 
 Gleisfunktionen (Binär):
 0 - Normales Gleis
@@ -32,12 +32,24 @@ RefElTypen:
 4 - Signale
 5 - Auflösepunkt
 
-Farhstraßen: RglGgl
+Fahrstraßen: RglGgl
 0 - Viele gleichwetige Fahrwege, z.B. Bahnhof
 1 - Eingleisige strecke
 2 - Endet im Regelgleis
 3 - Endet im Gegengleis
 
+Streckenelemente:
+NachGegenModul und Gegenstück sind oftmals nicht aktuell 
+	(siehe Übergang Elleringshausen -> Olsberg: 197->3 angegeben, 197->267 aktuell)
+
+
 Fahrplan: 
 Durchfahrt: 					Abfahrt optional
 Halt, Wende, Endhalt: 	Ankunft zwingend, Abfahrt optional
+
+Ankunft leer -> Durchfahrt
+Ankunft leer Abfahrt gesetzt -> Durchfahrt mit Zeitangabe
+Ankunft erster Fahrplaneintrag -> Zug wird in die Simulation gesetzt
+Abfahrt letzter Fahrplaneintrag -> Zug wird aus Simulation entfernt
+Zugpriorität -> Vorlauf, in dem Fahrstraßen reserviert werden
+Signalrekursionstiefe -> Anzahl der Signale - 1, die zwischen zwei Fahrplanpunkten liegen dürfen

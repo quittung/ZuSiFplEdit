@@ -16,6 +16,7 @@ namespace ZuSiFplEdit
     public partial class ZugForm : Form
     {
         ZugFahrt Zug;
+        bool guiBereit = true;
 
         public static event SignalSelectEventHandler signalSelectionEvent;
 
@@ -249,37 +250,59 @@ namespace ZuSiFplEdit
         /// <param name="e"></param>
         private void LB_signal_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(Zug.route != null && Zug.route.Count > 0)
+            routenPunktLaden();
+        }
+
+        private void routenPunktLaden()
+        {
+            if (Zug.route == null || Zug.route.Count == 0 || LB_routenPunkte.SelectedItem == null || !guiBereit)
             {
-                ZugFahrt.RoutenPunkt routenPunkt = (ZugFahrt.RoutenPunkt)LB_routenPunkte.SelectedItem;
-                label_signal.Text = routenPunkt.ToString();
-                label_fahrstraße.Text = routenPunkt.fahrstraße.name;
+                return;
+            }
 
-                label_dauer.Text = routenPunkt.fahrdauer.ToString("f0") + "s für " + (routenPunkt.fahrstraße.länge / 1000).ToString("f1") + "km";
-                label_vMin.Text = (routenPunkt.fahrstraße.vStart * 3.6).ToString("f0") + "km/h für " + (routenPunkt.fahrstraße.längeWeichenBereich / 1000).ToString("f1") + "km";
-                if (routenPunkt.fahrstraße.längeWeichenBereich == routenPunkt.fahrstraße.länge / 2)
-                    label_vMin.Text += "*";
-                    
-                label_vMax.Text = (routenPunkt.fahrstraße.vZiel * 3.6).ToString("f0") + "km/h";
+            guiBereit = false;
 
-                bool istWegPunkt = routenPunkt.wegPunkt != null;
-                checkBox_Ankunft.Enabled = istWegPunkt;
-                checkBox_Abfahrt.Enabled = istWegPunkt;
-                dateTimePicker_Ankunft.Enabled = istWegPunkt;
-                dateTimePicker_Abfahrt.Enabled = istWegPunkt;
-                button_WpUmwandlung.Visible = !istWegPunkt;
+            ZugFahrt.RoutenPunkt routenPunkt = (ZugFahrt.RoutenPunkt)LB_routenPunkte.SelectedItem;
+            var wegPunkt = routenPunkt.wegPunkt;
 
+            label_signal.Text = routenPunkt.ToString();
+            label_fahrstraße.Text = routenPunkt.fahrstraße.name;
+
+            label_dauer.Text = routenPunkt.fahrdauer.ToString("f0") + "s für " + (routenPunkt.fahrstraße.länge / 1000).ToString("f1") + "km";
+            label_vMin.Text = (routenPunkt.fahrstraße.vStart * 3.6).ToString("f0") + "km/h für " + (routenPunkt.fahrstraße.längeWeichenBereich / 1000).ToString("f1") + "km";
+            if (routenPunkt.fahrstraße.längeWeichenBereich == routenPunkt.fahrstraße.länge / 2)
+                label_vMin.Text += "*";
+
+            label_vMax.Text = (routenPunkt.fahrstraße.vZiel * 3.6).ToString("f0") + "km/h";
+
+            bool istWegPunkt = routenPunkt.wegPunkt != null;
+            checkBox_Ankunft.Enabled = istWegPunkt;
+            checkBox_Abfahrt.Enabled = istWegPunkt;
+            dateTimePicker_Ankunft.Enabled = istWegPunkt;
+            dateTimePicker_Abfahrt.Enabled = istWegPunkt;
+            button_WpUmwandlung.Visible = !istWegPunkt;
+
+            if (istWegPunkt)
+            {
+                //button_WpUmwandlung.Text = "Zeiten einlesen";
+                checkBox_Ankunft.Checked = wegPunkt.ankunft_gesetzt;
+                checkBox_Abfahrt.Checked = wegPunkt.abfahrt_gesetzt;
+            }
+            else
+            {
                 checkBox_Ankunft.Checked = routenPunkt.ankunft != new DateTime();
                 checkBox_Abfahrt.Checked = routenPunkt.abfahrt != new DateTime();
-
-                dateTimePicker_Ankunft.Visible = routenPunkt.ankunft != new DateTime();
-                dateTimePicker_Abfahrt.Visible = routenPunkt.abfahrt != new DateTime();
-
-                if(dateTimePicker_Ankunft.Visible)
-                    dateTimePicker_Ankunft.Value = routenPunkt.ankunft;
-                if (dateTimePicker_Abfahrt.Visible)
-                    dateTimePicker_Abfahrt.Value = routenPunkt.abfahrt;
             }
+
+            dateTimePicker_Ankunft.Visible = checkBox_Ankunft.Checked;
+            dateTimePicker_Abfahrt.Visible = checkBox_Abfahrt.Checked;
+
+            if (dateTimePicker_Ankunft.Visible)
+                dateTimePicker_Ankunft.Value = routenPunkt.ankunft;
+            if (dateTimePicker_Abfahrt.Visible)
+                dateTimePicker_Abfahrt.Value = routenPunkt.abfahrt;
+
+            guiBereit = true;
         }
 
         /// <summary>
@@ -297,21 +320,102 @@ namespace ZuSiFplEdit
             wegPunkt.ankunft = routenPunkt.ankunft;
             wegPunkt.abfahrt = routenPunkt.abfahrt;
 
+            if (wegPunkt.ankunft != new DateTime())
+                wegPunkt.ankunft_gesetzt = true;
+            if (wegPunkt.abfahrt != new DateTime())
+                wegPunkt.abfahrt_gesetzt = true;
+
             Zug.WayPoints.Insert(Zug.WayPoints.IndexOf(routenPunkt.letzterWegPunkt) + 1, wegPunkt);
 
+            neuBerechnen(wegPunkt);
+        }
+
+        private void fahrplandaten_verändert(object sender, EventArgs e)
+        {
+            routenPunktSpeichern();
+        }
+
+        private void routenPunktSpeichern()
+        {
+            if (Zug.route == null || Zug.route.Count == 0 || !guiBereit)
+                return;
+
+            guiBereit = false;
+
+            ZugFahrt.RoutenPunkt routenPunkt = (ZugFahrt.RoutenPunkt)LB_routenPunkte.SelectedItem;
+            var wegPunkt = routenPunkt.wegPunkt;
+
+            if (checkBox_Ankunft.Checked)
+            {
+                if (!wegPunkt.ankunft_gesetzt)
+                {
+                    if (wegPunkt.ankunft == new DateTime())
+                        wegPunkt.ankunft = sucheZeit(wegPunkt);
+                    wegPunkt.ankunft_gesetzt = true;
+                }
+                else
+                {
+                    wegPunkt.ankunft = dateTimePicker_Ankunft.Value;
+                }
+            }
+            else
+            {
+                if (wegPunkt.ankunft_gesetzt)
+                    wegPunkt.ankunft_gesetzt = false;
+            }
+
+            if (checkBox_Abfahrt.Checked)
+            {
+                if (!wegPunkt.abfahrt_gesetzt)
+                {
+                    if (wegPunkt.abfahrt == new DateTime())
+                        wegPunkt.abfahrt = sucheZeit(wegPunkt);
+                    wegPunkt.abfahrt_gesetzt = true;
+                }
+                else
+                {
+                    wegPunkt.abfahrt = dateTimePicker_Abfahrt.Value;
+                }
+            }
+            else
+            {
+                if (wegPunkt.abfahrt_gesetzt)
+                    wegPunkt.abfahrt_gesetzt = false;
+            }
+
+            neuBerechnen(wegPunkt);
+
+            guiBereit = true;
+
+            routenPunktLaden();
+        }
+
+        private void neuBerechnen(ZugFahrt.WayPoint auswahl)
+        {
             if (Zug.WayPoints.Count > 1)
             {
                 Zug.routeBerechnen();
             }
             Laden();
 
-            routenPunkt = wegPunkt.routenPunkt;
+            var routenPunkt = auswahl.routenPunkt;
             LB_routenPunkte.SelectedItem = routenPunkt;
         }
 
-        private void fahrplandaten_verändert(object sender, EventArgs e)
+        private DateTime sucheZeit(ZugFahrt.WayPoint routenPunkt)
         {
+            var zeit = routenPunkt.abfahrt;
+            if (zeit == new DateTime())
+            {
+                zeit = routenPunkt.ankunft;
+                zeit = zeit.AddSeconds(30);
+            }
+            else
+            {
+                zeit = zeit.AddSeconds(-30);
+            }
 
+            return zeit;
         }
     }
 }

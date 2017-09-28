@@ -76,7 +76,12 @@ namespace ZuSiFplEdit
             /// <summary>
             /// Enthält die Strecke zum nächsten zuletzt übergebenen Zielsignal, wenn möglich
             /// </summary>
+            [Obsolete]
             public List<streckenModul.Fahrstraße> teilRoute;
+
+            public RoutenPunkt routenPunkt;
+            public DateTime ankunft;
+            public DateTime abfahrt;
 
             public ZugFahrt zug;
             
@@ -143,18 +148,33 @@ namespace ZuSiFplEdit
 
 
                 int legStartIndex = route.Count;
-                while (true)
+                int routenPunktZähler = 0;
+
+                while (CurrentNode.PreviousNode != null)
                 {
-                    if (CurrentNode.PreviousNode == null)
-                        break;
-                    teilRoute.Insert(0, CurrentNode.PreviousVertex);
+                    //Routenpunkt erzeugen
+                    var tmp_routenPunkt = routenPunktErzeugen(CurrentNode.PreviousVertex);
+                    route.Insert(legStartIndex, tmp_routenPunkt);
 
-                    route.Insert(legStartIndex, routenPunktErzeugen(CurrentNode.PreviousVertex));
+                    //Endpunkte mit nächstem Waypoint verlinken
+                    if(routenPunktZähler == 0)
+                    {
+                        int eigenerIndex = zug.WayPoints.IndexOf(this);
+                        var nächsterWegPunkt = zug.WayPoints[eigenerIndex + 1];
+                        tmp_routenPunkt.wegPunkt = nächsterWegPunkt;
+                        nächsterWegPunkt.routenPunkt = tmp_routenPunkt;
+                    }
 
-                    //CurrentNode.PreviousVertex.Durchschnittsgeschwindigkeit = CurrentNode.PreviousVertex.vMaxBestimmen(1000);
-                    //Console.WriteLine(CurrentNode.PreviousVertex.FahrstrName + " " + CurrentNode.PreviousVertex.RglGgl + " " + CurrentNode.PreviousVertex.Durchschnittsgeschwindigkeit);
-
+                    //Zum nächsten Knoten gehen
                     CurrentNode = CurrentNode.PreviousNode;
+                    routenPunktZähler++;
+
+                    //Ersten Startpunkt verlinken
+                    if (CurrentNode.PreviousNode == null && zug.WayPoints.IndexOf(this) == 0)
+                    {
+                        tmp_routenPunkt.wegPunkt = this;
+                        routenPunkt = tmp_routenPunkt;
+                    }
                 }
             }
 
@@ -183,7 +203,7 @@ namespace ZuSiFplEdit
 
                 double fahrdauer = fahrstraße.berechneFahrdauer(zug.vMax);
 
-                var routenPunkt = new RoutenPunkt(signal, fahrstraße, relevant, wende, fahrdauer);
+                var routenPunkt = new RoutenPunkt(signal, fahrstraße, relevant, wende, fahrdauer, this);
 
                 return routenPunkt;
             }
@@ -208,10 +228,18 @@ namespace ZuSiFplEdit
             public DateTime ankunft;
             public DateTime abfahrt;
             public bool wende;
+
+            /// <summary>
+            /// Wenn zutreffend, verlinkt den Wegpunkt, der diesem Routenpunkt exakt entspricht 
+            /// </summary>
             public WayPoint wegPunkt;
+            /// <summary>
+            /// Wegpunkt, nach dem dieser Punkt nach einer Umwandlung einsortiert wird
+            /// </summary>
+            public WayPoint letzterWegPunkt;
 
 
-            public RoutenPunkt(streckenModul.Signal signal, streckenModul.Fahrstraße anfahrt, bool relevant, bool wende, double fahrdauer)
+            public RoutenPunkt(streckenModul.Signal signal, streckenModul.Fahrstraße anfahrt, bool relevant, bool wende, double fahrdauer, WayPoint letzterWegPunkt)
             {
                 this.signal = signal;
                 this.fahrstraße = anfahrt;
@@ -219,6 +247,8 @@ namespace ZuSiFplEdit
                 this.relevant = relevant;
                 this.wende = wende;
                 this.fahrdauer = fahrdauer;
+
+                this.letzterWegPunkt = letzterWegPunkt;
             }
 
             public override string ToString()
@@ -401,6 +431,17 @@ namespace ZuSiFplEdit
                     {
                         route[i].abfahrt = letzteZeit.AddSeconds(zeit_cur);
                     }
+                }
+
+                if (route[i].wegPunkt != null)
+                {
+                    if (route[i].wegPunkt.ankunft == new DateTime())
+                        route[i].wegPunkt.ankunft = route[i].ankunft;
+                    if (route[i].wegPunkt.abfahrt == new DateTime())
+                        route[i].wegPunkt.abfahrt = route[i].abfahrt;
+
+                    route[i].ankunft = route[i].wegPunkt.ankunft;
+                    route[i].abfahrt = route[i].wegPunkt.abfahrt;
                 }
             }
         }

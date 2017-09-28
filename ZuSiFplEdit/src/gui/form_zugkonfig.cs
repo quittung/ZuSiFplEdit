@@ -36,7 +36,7 @@ namespace ZuSiFplEdit
             tbVmax.Text = (Zug.vMax * 3.6f).ToString("f0");
             
             LB_waypoint.Items.Clear();
-            LB_signal.Items.Clear();
+            LB_routenPunkte.Items.Clear();
 
             foreach (var WP in Zug.WayPoints)
             {
@@ -44,7 +44,7 @@ namespace ZuSiFplEdit
             }
             foreach (var RP in Zug.route)
             {
-                LB_signal.Items.Add(RP);
+                LB_routenPunkte.Items.Add(RP);
             }
         }
 
@@ -251,7 +251,7 @@ namespace ZuSiFplEdit
         {
             if(Zug.route != null && Zug.route.Count > 0)
             {
-                ZugFahrt.RoutenPunkt routenPunkt = (ZugFahrt.RoutenPunkt)LB_signal.SelectedItem;
+                ZugFahrt.RoutenPunkt routenPunkt = (ZugFahrt.RoutenPunkt)LB_routenPunkte.SelectedItem;
                 label_signal.Text = routenPunkt.ToString();
                 label_fahrstraße.Text = routenPunkt.fahrstraße.name;
 
@@ -261,6 +261,13 @@ namespace ZuSiFplEdit
                     label_vMin.Text += "*";
                     
                 label_vMax.Text = (routenPunkt.fahrstraße.vZiel * 3.6).ToString("f0") + "km/h";
+
+                bool istWegPunkt = routenPunkt.wegPunkt != null;
+                checkBox_Ankunft.Enabled = istWegPunkt;
+                checkBox_Abfahrt.Enabled = istWegPunkt;
+                dateTimePicker_Ankunft.Enabled = istWegPunkt;
+                dateTimePicker_Abfahrt.Enabled = istWegPunkt;
+                button_WpUmwandlung.Visible = !istWegPunkt;
 
                 checkBox_Ankunft.Checked = routenPunkt.ankunft != new DateTime();
                 checkBox_Abfahrt.Checked = routenPunkt.abfahrt != new DateTime();
@@ -273,6 +280,38 @@ namespace ZuSiFplEdit
                 if (dateTimePicker_Abfahrt.Visible)
                     dateTimePicker_Abfahrt.Value = routenPunkt.abfahrt;
             }
+        }
+
+        /// <summary>
+        /// Wandelt RoutenPunkt in bearbeitbaren Wegpunkt um
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button_WpUmwandlung_Click(object sender, EventArgs e)
+        {
+            ZugFahrt.RoutenPunkt routenPunkt = (ZugFahrt.RoutenPunkt)LB_routenPunkte.SelectedItem;
+            if (routenPunkt == null)
+                return;
+
+            var wegPunkt = new ZugFahrt.WayPoint(routenPunkt.signal, Zug);
+            wegPunkt.ankunft = routenPunkt.ankunft;
+            wegPunkt.abfahrt = routenPunkt.abfahrt;
+
+            Zug.WayPoints.Insert(Zug.WayPoints.IndexOf(routenPunkt.letzterWegPunkt) + 1, wegPunkt);
+
+            if (Zug.WayPoints.Count > 1)
+            {
+                Zug.routeBerechnen();
+            }
+            Laden();
+
+            routenPunkt = wegPunkt.routenPunkt;
+            LB_routenPunkte.SelectedItem = routenPunkt;
+        }
+
+        private void fahrplandaten_verändert(object sender, EventArgs e)
+        {
+
         }
     }
 }

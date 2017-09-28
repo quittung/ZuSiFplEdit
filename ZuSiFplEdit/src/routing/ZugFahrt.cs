@@ -82,6 +82,8 @@ namespace ZuSiFplEdit
             public RoutenPunkt routenPunkt;
             public DateTime ankunft;
             public DateTime abfahrt;
+            public bool ankunft_gesetzt;
+            public bool abfahrt_gesetzt;
 
             public ZugFahrt zug;
             
@@ -432,16 +434,28 @@ namespace ZuSiFplEdit
                         route[i].abfahrt = letzteZeit.AddSeconds(zeit_cur);
                     }
                 }
+            }
 
+            //Zeiten mit Wegpunkten synchronisieren
+            for (int i = 0; i < route.Count; i++)
+            {
                 if (route[i].wegPunkt != null)
                 {
-                    if (route[i].wegPunkt.ankunft == new DateTime())
-                        route[i].wegPunkt.ankunft = route[i].ankunft;
-                    if (route[i].wegPunkt.abfahrt == new DateTime())
-                        route[i].wegPunkt.abfahrt = route[i].abfahrt;
+                    route[i].relevant = true;
+                    var wegPunkt = route[i].wegPunkt;
+                    if (!wegPunkt.ankunft_gesetzt && route[i].ankunft != new DateTime())
+                    {
+                        wegPunkt.ankunft = route[i].ankunft;
+                        wegPunkt.ankunft_gesetzt = true;
+                    }
+                    if (!wegPunkt.abfahrt_gesetzt && route[i].abfahrt != new DateTime())
+                    {
+                        wegPunkt.abfahrt = route[i].abfahrt;
+                        wegPunkt.abfahrt_gesetzt = true;
+                    }
 
-                    route[i].ankunft = route[i].wegPunkt.ankunft;
-                    route[i].abfahrt = route[i].wegPunkt.abfahrt;
+                    route[i].ankunft = wegPunkt.ankunft;
+                    route[i].abfahrt = wegPunkt.abfahrt;
                 }
             }
         }

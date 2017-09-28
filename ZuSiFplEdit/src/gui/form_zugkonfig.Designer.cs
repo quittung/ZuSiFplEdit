@@ -197,7 +197,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.63523F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.36477F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 223F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 224F));
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.LB_routenPunkte, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel1, 2, 0);
@@ -225,7 +225,7 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(195, 394);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(194, 394);
             this.tableLayoutPanel2.TabIndex = 2;
             // 
             // LB_waypoint
@@ -234,7 +234,7 @@
             this.LB_waypoint.FormattingEnabled = true;
             this.LB_waypoint.Location = new System.Drawing.Point(3, 108);
             this.LB_waypoint.Name = "LB_waypoint";
-            this.LB_waypoint.Size = new System.Drawing.Size(189, 283);
+            this.LB_waypoint.Size = new System.Drawing.Size(188, 283);
             this.LB_waypoint.TabIndex = 0;
             this.LB_waypoint.DragDrop += new System.Windows.Forms.DragEventHandler(this.LB_waypoint_DragDrop);
             this.LB_waypoint.DragOver += new System.Windows.Forms.DragEventHandler(this.LB_waypoint_DragOver);
@@ -245,7 +245,7 @@
             this.button1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button1.Location = new System.Drawing.Point(3, 3);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(189, 29);
+            this.button1.Size = new System.Drawing.Size(188, 29);
             this.button1.TabIndex = 0;
             this.button1.Text = "Wegpunkt einfügen";
             this.button1.UseVisualStyleBackColor = true;
@@ -256,7 +256,7 @@
             this.button2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button2.Location = new System.Drawing.Point(3, 38);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(189, 29);
+            this.button2.Size = new System.Drawing.Size(188, 29);
             this.button2.TabIndex = 1;
             this.button2.Text = "Wegpunkt ändern";
             this.button2.UseVisualStyleBackColor = true;
@@ -267,7 +267,7 @@
             this.button3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button3.Location = new System.Drawing.Point(3, 73);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(189, 29);
+            this.button3.Size = new System.Drawing.Size(188, 29);
             this.button3.TabIndex = 2;
             this.button3.Text = "Wegpunkt löschen";
             this.button3.UseVisualStyleBackColor = true;
@@ -277,7 +277,7 @@
             // 
             this.LB_routenPunkte.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LB_routenPunkte.FormattingEnabled = true;
-            this.LB_routenPunkte.Location = new System.Drawing.Point(204, 3);
+            this.LB_routenPunkte.Location = new System.Drawing.Point(203, 3);
             this.LB_routenPunkte.Name = "LB_routenPunkte";
             this.LB_routenPunkte.Size = new System.Drawing.Size(206, 394);
             this.LB_routenPunkte.TabIndex = 1;
@@ -302,9 +302,9 @@
             this.panel1.Controls.Add(this.label_fahrstraße);
             this.panel1.Controls.Add(this.label_signal);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(416, 3);
+            this.panel1.Location = new System.Drawing.Point(415, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(218, 394);
+            this.panel1.Size = new System.Drawing.Size(219, 394);
             this.panel1.TabIndex = 3;
             // 
             // textBox1
@@ -326,6 +326,7 @@
             this.checkBox_Abfahrt.TabIndex = 18;
             this.checkBox_Abfahrt.Text = "Abfahrt:";
             this.checkBox_Abfahrt.UseVisualStyleBackColor = true;
+            this.checkBox_Abfahrt.CheckedChanged += new System.EventHandler(this.fahrplandaten_verändert);
             // 
             // checkBox_Ankunft
             // 
@@ -358,6 +359,7 @@
             this.dateTimePicker_Abfahrt.Size = new System.Drawing.Size(87, 20);
             this.dateTimePicker_Abfahrt.TabIndex = 15;
             this.dateTimePicker_Abfahrt.Visible = false;
+            this.dateTimePicker_Abfahrt.Leave += new System.EventHandler(this.fahrplandaten_verändert);
             // 
             // dateTimePicker_Ankunft
             // 
@@ -368,6 +370,7 @@
             this.dateTimePicker_Ankunft.Size = new System.Drawing.Size(84, 20);
             this.dateTimePicker_Ankunft.TabIndex = 14;
             this.dateTimePicker_Ankunft.Visible = false;
+            this.dateTimePicker_Ankunft.ValueChanged += new System.EventHandler(this.fahrplandaten_verändert);
             // 
             // label_vMax_überschrift
             // 

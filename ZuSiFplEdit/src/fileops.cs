@@ -177,64 +177,22 @@ namespace ZuSiFplEdit
                 }
             }
 
-            trn_file.WriteLine("<FahrzeugVarianten Bezeichnung=\"default\" ZufallsWert=\"1\">");
-            //trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
-
-            //trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Dieseltriebwagen\\RegioShuttle\\RS1.rv.fzg\"/>");
-
-            //trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektroloks\\TRAXX\\TRAXX_AC2.rv.fzg\"/>");
+            if(zug.zugVerbandXML == null)
+            {
+                trn_file.WriteLine("<FahrzeugVarianten Bezeichnung=\"default\" ZufallsWert=\"1\">");
+                trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\" DotraModus=\"1\">");
+                trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Dieseltriebwagen\\LINT\\LINT41_A-Wagen.rv.fzg\"/>");
+                trn_file.WriteLine("</FahrzeugInfo>");
+                trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\" DotraModus=\"1\">");
+                trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Dieseltriebwagen\\LINT\\LINT41_B-Wagen.rv.fzg\"/>");
+                trn_file.WriteLine("</FahrzeugInfo>");
+                trn_file.WriteLine("</FahrzeugVarianten>");
+            }
+            else
+            {
+                trn_file.WriteLine(zug.zugVerbandXML);
+            }
             
-            //trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"2\" IDNeben=\"1\" DotraModus=\"1\" SASchaltung=\"3\">");
-            //trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\401.rv.fzg\"/>");
-            //trn_file.WriteLine("</FahrzeugInfo>");
-            //trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
-            //trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\802_Bvmz.rv.fzg\"/>");
-            //trn_file.WriteLine("</FahrzeugInfo>");
-            //trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
-            //trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\802_Bvmz.rv.fzg\"/>");
-            //trn_file.WriteLine("</FahrzeugInfo>");
-            //trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
-            //trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\802_Bvmz.rv.fzg\"/>");
-            //trn_file.WriteLine("</FahrzeugInfo>");
-            //trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
-            //trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\802_Bvmz.rv.fzg\"/>");
-            //trn_file.WriteLine("</FahrzeugInfo>");
-            //trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
-            //trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\802_Bvmz.rv.fzg\"/>");
-            //trn_file.WriteLine("</FahrzeugInfo>");
-            //trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
-            //trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\802_Bvmz.rv.fzg\"/>");
-            //trn_file.WriteLine("</FahrzeugInfo>");
-            //trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
-            //trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\802_Bvmz.rv.fzg\"/>");
-            //trn_file.WriteLine("</FahrzeugInfo>");
-            //trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
-            //trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\804_WSmz.rv.fzg\"/>");
-            //trn_file.WriteLine("</FahrzeugInfo>");
-            //trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
-            //trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\803_BSmz.rv.fzg\"/>");
-            //trn_file.WriteLine("</FahrzeugInfo>");
-            //trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
-            //trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\801_Avmz.rv.fzg\"/>");
-            //trn_file.WriteLine("</FahrzeugInfo>");
-            //trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
-            //trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\801_Avmz.rv.fzg\"/>");
-            //trn_file.WriteLine("</FahrzeugInfo>");
-            //trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\">");
-            //trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\801_Avmz.rv.fzg\"/>");
-            //trn_file.WriteLine("</FahrzeugInfo>");
-            //trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"2\" IDNeben=\"1\" DotraModus=\"1\" SASchaltung=\"3\" Gedreht=\"1\">");
-            //trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Elektrotriebwagen\\ICE1_2\\401.rv.fzg\"/>");
-            //trn_file.WriteLine("</FahrzeugInfo>");
-
-            trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\" DotraModus=\"1\">");
-            trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Dieseltriebwagen\\LINT\\LINT41_A-Wagen.rv.fzg\"/>");
-            trn_file.WriteLine("</FahrzeugInfo>");
-            trn_file.WriteLine("<FahrzeugInfo IDHaupt=\"1\" IDNeben=\"1\" DotraModus=\"1\">");
-            trn_file.WriteLine("<Datei Dateiname=\"RollingStock\\Deutschland\\Epoche5\\Dieseltriebwagen\\LINT\\LINT41_B-Wagen.rv.fzg\"/>");
-            trn_file.WriteLine("</FahrzeugInfo>");
-
-            trn_file.WriteLine("</FahrzeugVarianten>");
             trn_file.WriteLine("</Zug>");
             trn_file.WriteLine("</Zusi>");
 

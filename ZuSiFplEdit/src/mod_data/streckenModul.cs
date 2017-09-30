@@ -152,6 +152,7 @@ namespace ZuSiFplEdit
 
                 double fahrdauerImWeichenbereich = längeWeichenBereich / vStart;
                 double fahrdauerNachWeichenbereich = (länge - längeWeichenBereich) / vZiel;
+                double fahrdauerBeschleunigung = zeitverlustDurchBeschleunigung(zugVmin, zugVmax, 0.5);
 
                 double fahrdauer = fahrdauerImWeichenbereich + fahrdauerNachWeichenbereich;
                 if (typ == "TypWende")
@@ -207,6 +208,24 @@ namespace ZuSiFplEdit
             fahrstraßen = new List<Fahrstraße>();
 
             nachbarn = new List<streckenModul>();
+        }
+
+        public static double zeitverlustDurchBeschleunigung(double vStart, double vZiel, double beschleunigung)
+        {
+            if (vZiel > vStart)
+            {
+                var tmp = vZiel;
+                vZiel = vStart;
+                vStart = tmp;
+            }
+
+            var vDiff = vStart - vZiel;
+            var zeitBeschleunigung = vDiff / beschleunigung;
+            var strecke = 0.5 * beschleunigung * zeitBeschleunigung * zeitBeschleunigung;
+            var zeitDurchfahrt = strecke / vStart;
+
+            double zeitverlust = zeitBeschleunigung - zeitDurchfahrt;
+            return zeitverlust;
         }
 
         public override string ToString()

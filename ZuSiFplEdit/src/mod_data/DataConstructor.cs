@@ -516,6 +516,9 @@ namespace ZuSiFplEdit
         /// <returns></returns>
         double ermittleLängeAWB(st3Modul.fahrStr fahrstraßeRoh, st3Modul modulRoh, streckenModul.Signal startSignal, double längeFahrstraße)
         {
+            if (startSignal.typ == 5 || startSignal.typ == 7 || startSignal.typ == 8 || startSignal.istZiel == false)
+                return längeFahrstraße;
+
             double längeWeichenBereich = 0;
             int suchrichtung = 0;
             if (startSignal.streckenelement.signale[1] == startSignal)

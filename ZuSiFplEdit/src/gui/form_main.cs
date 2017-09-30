@@ -34,11 +34,6 @@ namespace ZuSiFplEdit
 
         int debugX = 0;
         int debugY = 0;
-        st3Modul horribleHackVariableThatHoldsRightClickModule;
-        st3Modul.referenzElement tmpSignal;
-        st3Modul.referenzElement startSignal;
-        st3Modul.referenzElement zielSignal;
-        List<st3Modul.fahrStr> fstrRoute;
 
         string DirBase;
 
@@ -61,10 +56,10 @@ namespace ZuSiFplEdit
             ladeAnzeige.Show();
             ladeAnzeige.Text = "Suche Datenverzeichnis...";
             ladeAnzeige.Update();
-
-            datenFertig = new Datensatz();
-
+            
             FindeDatenVerzeichnis();
+
+            datenFertig = new Datensatz(DirBase);
 
             string DirRoute = DirBase + "Routes\\Deutschland\\";
             dataConstructor = new DataConstructor(DirRoute, datenFertig);
@@ -164,12 +159,17 @@ namespace ZuSiFplEdit
             mMap.Image = kartenZeichner.draw();
         }
 
-        private void ModulButton_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Reagiert auf das Klicken des "Fahrplan speichern"-Knopfes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void fahrplanAusgeben(object sender, EventArgs e)
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
             saveFileDialog1.InitialDirectory = DirBase + "Timetables\\";
-            saveFileDialog1.Filter = "Fahrplandateien (*.fpn)|*.fpn|All files (*.*)|*.*";
+            saveFileDialog1.Filter = "Fahrplandateien (*.fpn)|*.fpn|Alle Dateiformate (*.*)|*.*";
             saveFileDialog1.FilterIndex = 1;
             saveFileDialog1.RestoreDirectory = true;
 

@@ -104,7 +104,7 @@
             this.ButtonExport.TabIndex = 0;
             this.ButtonExport.Text = ".fpn ausgeben";
             this.ButtonExport.UseVisualStyleBackColor = true;
-            this.ButtonExport.Click += new System.EventHandler(this.ModulButton_Click);
+            this.ButtonExport.Click += new System.EventHandler(this.fahrplanAusgeben);
             // 
             // splitContainer1
             // 
@@ -259,7 +259,7 @@
             this.speichernUnterToolStripMenuItem.Name = "speichernUnterToolStripMenuItem";
             this.speichernUnterToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.speichernUnterToolStripMenuItem.Text = "Speichern unter...";
-            this.speichernUnterToolStripMenuItem.Click += new System.EventHandler(this.ModulButton_Click);
+            this.speichernUnterToolStripMenuItem.Click += new System.EventHandler(this.fahrplanAusgeben);
             // 
             // karteToolStripMenuItem
             // 

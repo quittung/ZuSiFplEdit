@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace ZuSiFplEdit
 {
@@ -278,29 +279,40 @@ namespace ZuSiFplEdit
             bool istWegPunkt = routenPunkt.wegPunkt != null;
             checkBox_Ankunft.Enabled = istWegPunkt;
             checkBox_Abfahrt.Enabled = istWegPunkt;
-            dateTimePicker_Ankunft.Enabled = istWegPunkt;
-            dateTimePicker_Abfahrt.Enabled = istWegPunkt;
             button_WpUmwandlung.Visible = !istWegPunkt;
 
             if (istWegPunkt)
             {
-                //button_WpUmwandlung.Text = "Zeiten einlesen";
                 checkBox_Ankunft.Checked = wegPunkt.ankunft_gesetzt;
                 checkBox_Abfahrt.Checked = wegPunkt.abfahrt_gesetzt;
             }
             else
             {
-                checkBox_Ankunft.Checked = routenPunkt.ankunft != new DateTime();
-                checkBox_Abfahrt.Checked = routenPunkt.abfahrt != new DateTime();
+                checkBox_Ankunft.Checked = false;
+                checkBox_Abfahrt.Checked = false;
             }
 
-            dateTimePicker_Ankunft.Visible = checkBox_Ankunft.Checked;
-            dateTimePicker_Abfahrt.Visible = checkBox_Abfahrt.Checked;
+
+            dateTimePicker_Ankunft.Enabled = checkBox_Ankunft.Enabled && checkBox_Ankunft.Checked;
+            dateTimePicker_Abfahrt.Enabled = checkBox_Abfahrt.Enabled && checkBox_Abfahrt.Checked;
+
+            dateTimePicker_Ankunft.Visible = routenPunkt.ankunft != new DateTime();
+            dateTimePicker_Abfahrt.Visible = routenPunkt.abfahrt != new DateTime();
 
             if (dateTimePicker_Ankunft.Visible)
                 dateTimePicker_Ankunft.Value = routenPunkt.ankunft;
             if (dateTimePicker_Abfahrt.Visible)
                 dateTimePicker_Abfahrt.Value = routenPunkt.abfahrt;
+
+            
+            if (dateTimePicker_Ankunft.Visible)
+            {
+                signalText.Text = "Planhalt";
+            }
+            else
+            {
+                signalText.Text = "Durchfahrt";
+            }
 
             guiBereit = true;
         }
@@ -317,13 +329,13 @@ namespace ZuSiFplEdit
                 return;
 
             var wegPunkt = new ZugFahrt.WayPoint(routenPunkt.signal, Zug);
-            wegPunkt.ankunft = routenPunkt.ankunft;
-            wegPunkt.abfahrt = routenPunkt.abfahrt;
+            //wegPunkt.ankunft = routenPunkt.ankunft;
+            //wegPunkt.abfahrt = routenPunkt.abfahrt;
 
-            if (wegPunkt.ankunft != new DateTime())
-                wegPunkt.ankunft_gesetzt = true;
-            if (wegPunkt.abfahrt != new DateTime())
-                wegPunkt.abfahrt_gesetzt = true;
+            //if (wegPunkt.ankunft != new DateTime())
+            //    wegPunkt.ankunft_gesetzt = true;
+            //if (wegPunkt.abfahrt != new DateTime())
+            //    wegPunkt.abfahrt_gesetzt = true;
 
             Zug.WayPoints.Insert(Zug.WayPoints.IndexOf(routenPunkt.letzterWegPunkt) + 1, wegPunkt);
 
@@ -343,44 +355,57 @@ namespace ZuSiFplEdit
             guiBereit = false;
 
             ZugFahrt.RoutenPunkt routenPunkt = (ZugFahrt.RoutenPunkt)LB_routenPunkte.SelectedItem;
+            if (routenPunkt == null)
+                return;
             var wegPunkt = routenPunkt.wegPunkt;
 
             if (checkBox_Ankunft.Checked)
             {
-                if (!wegPunkt.ankunft_gesetzt)
+                if (wegPunkt.ankunft != new DateTime())
                 {
-                    if (wegPunkt.ankunft == new DateTime())
-                        wegPunkt.ankunft = sucheZeit(wegPunkt);
-                    wegPunkt.ankunft_gesetzt = true;
+                    //Ankunft wurde bereits in das Feld eingetragen und muss nur noch zurückgelesen werden.
+                    wegPunkt.ankunft = dateTimePicker_Ankunft.Value;
                 }
                 else
                 {
-                    wegPunkt.ankunft = dateTimePicker_Ankunft.Value;
+                    //Ankunft muss noch bestimmt werden; Box wurde gerade umgeschaltet
+                    wegPunkt.ankunft = routenPunkt.abfahrt.AddSeconds(streckenModul.zeitverlustDurchBeschleunigung(routenPunkt.fahrstraße.vZiel, 0, 0.5));
                 }
+                wegPunkt.ankunft_gesetzt = true;
             }
             else
             {
-                if (wegPunkt.ankunft_gesetzt)
-                    wegPunkt.ankunft_gesetzt = false;
+                wegPunkt.ankunft = new DateTime();
+                wegPunkt.ankunft_gesetzt = false;
             }
 
             if (checkBox_Abfahrt.Checked)
             {
-                if (!wegPunkt.abfahrt_gesetzt)
+                if (wegPunkt.abfahrt != new DateTime())
                 {
-                    if (wegPunkt.abfahrt == new DateTime())
-                        wegPunkt.abfahrt = sucheZeit(wegPunkt);
-                    wegPunkt.abfahrt_gesetzt = true;
+                    //Abfahrt wurde bereits in das Feld eingetragen und muss nur noch zurückgelesen werden.
+                    wegPunkt.abfahrt = dateTimePicker_Abfahrt.Value;
                 }
                 else
                 {
-                    wegPunkt.abfahrt = dateTimePicker_Abfahrt.Value;
+                    //Abfahrt muss noch bestimmt werden; Box wurde gerade umgeschaltet
+                    if (dateTimePicker_Abfahrt.Visible)
+                    {
+                        //Vorberechnete Abfahrzeit kann übernommen werden
+                        wegPunkt.abfahrt = dateTimePicker_Abfahrt.Value;
+                    }
+                    else
+                    {
+                        //Halt muss aus Ankunft berechnet werden
+                        wegPunkt.abfahrt = wegPunkt.ankunft.AddSeconds(30);
+                    }
                 }
+                wegPunkt.abfahrt_gesetzt = true;
             }
             else
             {
-                if (wegPunkt.abfahrt_gesetzt)
-                    wegPunkt.abfahrt_gesetzt = false;
+                wegPunkt.abfahrt_gesetzt = false;
+                wegPunkt.abfahrt = new DateTime();
             }
 
             neuBerechnen(wegPunkt);
@@ -402,12 +427,13 @@ namespace ZuSiFplEdit
             LB_routenPunkte.SelectedItem = routenPunkt;
         }
 
-        private DateTime sucheZeit(ZugFahrt.WayPoint routenPunkt)
+        private DateTime sucheZeit(ZugFahrt.WayPoint wegPunkt, bool ankunft)
         {
-            var zeit = routenPunkt.abfahrt;
+
+            var zeit = wegPunkt.abfahrt;
             if (zeit == new DateTime())
             {
-                zeit = routenPunkt.ankunft;
+                zeit = wegPunkt.ankunft;
                 zeit = zeit.AddSeconds(30);
             }
             else
@@ -416,6 +442,47 @@ namespace ZuSiFplEdit
             }
 
             return zeit;
+        }
+
+        /// <summary>
+        /// Liest neuen Zugverband ein
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void button_zugVerband_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog zugVerbandDialog = new OpenFileDialog();
+
+            zugVerbandDialog.InitialDirectory = Zug.datensatz.datenVerzeichnis + "RollingStock\\";
+            zugVerbandDialog.Filter = "Zugverband (*.trn.xml)|*.trn.xml|Alle Dateiformate (*.*)|*.*";
+            zugVerbandDialog.FilterIndex = 1;
+            zugVerbandDialog.RestoreDirectory = true;
+
+            if (zugVerbandDialog.ShowDialog() == DialogResult.OK)
+            {
+                string speicherort = zugVerbandDialog.FileName;
+
+                string[] speicherOrtArray = zugVerbandDialog.FileName.Split('\\');
+                string zugVerbandName = speicherOrtArray[speicherOrtArray.Length - 1];
+                zugVerbandName = zugVerbandName.Substring(0, zugVerbandName.Length - 8);
+
+
+
+                var xmlReader = XmlReader.Create(speicherort);
+
+                while (xmlReader.Read())
+                {
+                    if (xmlReader.Name == "FahrzeugVarianten")
+                    {
+                        Zug.zugVerbandXML = xmlReader.ReadOuterXml();
+
+                        Zug.zugVerbandName = zugVerbandName;
+                        button_zugVerband.Text = zugVerbandName + " - Ändern";
+
+                        break;
+                    }
+                }
+            }
         }
     }
 }

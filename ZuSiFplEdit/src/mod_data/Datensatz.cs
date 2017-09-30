@@ -18,10 +18,13 @@ namespace ZuSiFplEdit
         public bool signaleBereit = false;
         public bool fahrstraßenBereit = false;
         public List<streckenModul> module;
+        public string datenVerzeichnis;
 
-        public Datensatz()
+        public Datensatz(string datenVerzeichnis)
         {
             module = new List<streckenModul>();
+
+            this.datenVerzeichnis = datenVerzeichnis;
         }
 
         public streckenModul sucheModul(string name)

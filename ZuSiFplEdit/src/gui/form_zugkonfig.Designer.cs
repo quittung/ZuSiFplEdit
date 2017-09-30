@@ -31,14 +31,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ZugForm));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tpSetting = new System.Windows.Forms.TabPage();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.label3 = new System.Windows.Forms.Label();
-            this.tbZugGattung = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.tbZugNummer = new System.Windows.Forms.TextBox();
-            this.tbVmax = new System.Windows.Forms.TextBox();
-            this.tpFahrzeug = new System.Windows.Forms.TabPage();
             this.tpFaPla = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -48,7 +40,7 @@
             this.button3 = new System.Windows.Forms.Button();
             this.LB_routenPunkte = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.signalText = new System.Windows.Forms.TextBox();
             this.checkBox_Abfahrt = new System.Windows.Forms.CheckBox();
             this.checkBox_Ankunft = new System.Windows.Forms.CheckBox();
             this.button_WpUmwandlung = new System.Windows.Forms.Button();
@@ -64,9 +56,16 @@
             this.label_überschrift = new System.Windows.Forms.Label();
             this.label_fahrstraße = new System.Windows.Forms.Label();
             this.label_signal = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.tbZugGattung = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.tbZugNummer = new System.Windows.Forms.TextBox();
+            this.tbVmax = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.button_zugVerband = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tpSetting.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
             this.tpFaPla.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -76,7 +75,6 @@
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tpSetting);
-            this.tabControl1.Controls.Add(this.tpFahrzeug);
             this.tabControl1.Controls.Add(this.tpFaPla);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
@@ -87,7 +85,14 @@
             // 
             // tpSetting
             // 
-            this.tpSetting.Controls.Add(this.tableLayoutPanel3);
+            this.tpSetting.Controls.Add(this.label6);
+            this.tpSetting.Controls.Add(this.button_zugVerband);
+            this.tpSetting.Controls.Add(this.label3);
+            this.tpSetting.Controls.Add(this.tbZugGattung);
+            this.tpSetting.Controls.Add(this.label1);
+            this.tpSetting.Controls.Add(this.tbZugNummer);
+            this.tpSetting.Controls.Add(this.tbVmax);
+            this.tpSetting.Controls.Add(this.label2);
             this.tpSetting.Location = new System.Drawing.Point(4, 22);
             this.tpSetting.Name = "tpSetting";
             this.tpSetting.Padding = new System.Windows.Forms.Padding(3);
@@ -95,91 +100,6 @@
             this.tpSetting.TabIndex = 0;
             this.tpSetting.Text = "Grundeinstellungen";
             this.tpSetting.UseVisualStyleBackColor = true;
-            // 
-            // tableLayoutPanel3
-            // 
-            this.tableLayoutPanel3.ColumnCount = 2;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Controls.Add(this.label3, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.tbZugGattung, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.label2, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.label1, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.tbZugNummer, 1, 1);
-            this.tableLayoutPanel3.Controls.Add(this.tbVmax, 1, 2);
-            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 3;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 340F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(637, 400);
-            this.tableLayoutPanel3.TabIndex = 0;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 60);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(151, 13);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "Höchstgeschwindigkeit (km/h)";
-            // 
-            // tbZugGattung
-            // 
-            this.tbZugGattung.Location = new System.Drawing.Point(321, 3);
-            this.tbZugGattung.Name = "tbZugGattung";
-            this.tbZugGattung.Size = new System.Drawing.Size(88, 20);
-            this.tbZugGattung.TabIndex = 3;
-            this.tbZugGattung.Text = "###";
-            this.tbZugGattung.TextChanged += new System.EventHandler(this.tbZugGattung_TextChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(45, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Gattung";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 30);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(46, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Nummer";
-            // 
-            // tbZugNummer
-            // 
-            this.tbZugNummer.Location = new System.Drawing.Point(321, 33);
-            this.tbZugNummer.Name = "tbZugNummer";
-            this.tbZugNummer.Size = new System.Drawing.Size(88, 20);
-            this.tbZugNummer.TabIndex = 0;
-            this.tbZugNummer.Text = "###";
-            this.tbZugNummer.TextChanged += new System.EventHandler(this.tbZugNummer_TextChanged);
-            // 
-            // tbVmax
-            // 
-            this.tbVmax.Location = new System.Drawing.Point(321, 63);
-            this.tbVmax.Name = "tbVmax";
-            this.tbVmax.Size = new System.Drawing.Size(88, 20);
-            this.tbVmax.TabIndex = 4;
-            this.tbVmax.Text = "###";
-            this.tbVmax.TextChanged += new System.EventHandler(this.tbVmax_TextChanged);
-            // 
-            // tpFahrzeug
-            // 
-            this.tpFahrzeug.Location = new System.Drawing.Point(4, 22);
-            this.tpFahrzeug.Name = "tpFahrzeug";
-            this.tpFahrzeug.Padding = new System.Windows.Forms.Padding(3);
-            this.tpFahrzeug.Size = new System.Drawing.Size(643, 406);
-            this.tpFahrzeug.TabIndex = 1;
-            this.tpFahrzeug.Text = "Fahrzeuge";
-            this.tpFahrzeug.UseVisualStyleBackColor = true;
             // 
             // tpFaPla
             // 
@@ -197,7 +117,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.63523F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.36477F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 224F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 225F));
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.LB_routenPunkte, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel1, 2, 0);
@@ -279,13 +199,13 @@
             this.LB_routenPunkte.FormattingEnabled = true;
             this.LB_routenPunkte.Location = new System.Drawing.Point(203, 3);
             this.LB_routenPunkte.Name = "LB_routenPunkte";
-            this.LB_routenPunkte.Size = new System.Drawing.Size(206, 394);
+            this.LB_routenPunkte.Size = new System.Drawing.Size(205, 394);
             this.LB_routenPunkte.TabIndex = 1;
             this.LB_routenPunkte.SelectedIndexChanged += new System.EventHandler(this.LB_signal_SelectedIndexChanged);
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.textBox1);
+            this.panel1.Controls.Add(this.signalText);
             this.panel1.Controls.Add(this.checkBox_Abfahrt);
             this.panel1.Controls.Add(this.checkBox_Ankunft);
             this.panel1.Controls.Add(this.button_WpUmwandlung);
@@ -302,19 +222,19 @@
             this.panel1.Controls.Add(this.label_fahrstraße);
             this.panel1.Controls.Add(this.label_signal);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(415, 3);
+            this.panel1.Location = new System.Drawing.Point(414, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(219, 394);
+            this.panel1.Size = new System.Drawing.Size(220, 394);
             this.panel1.TabIndex = 3;
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(7, 226);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(192, 165);
-            this.textBox1.TabIndex = 19;
+            this.signalText.Location = new System.Drawing.Point(7, 226);
+            this.signalText.Multiline = true;
+            this.signalText.Name = "textBox1";
+            this.signalText.ReadOnly = true;
+            this.signalText.Size = new System.Drawing.Size(192, 165);
+            this.signalText.TabIndex = 19;
             // 
             // checkBox_Abfahrt
             // 
@@ -462,6 +382,76 @@
             this.label_signal.TabIndex = 0;
             this.label_signal.Text = "Signalname";
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(17, 72);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(151, 13);
+            this.label3.TabIndex = 17;
+            this.label3.Text = "Höchstgeschwindigkeit (km/h)";
+            // 
+            // tbZugGattung
+            // 
+            this.tbZugGattung.Location = new System.Drawing.Point(335, 15);
+            this.tbZugGattung.Name = "tbZugGattung";
+            this.tbZugGattung.Size = new System.Drawing.Size(88, 20);
+            this.tbZugGattung.TabIndex = 15;
+            this.tbZugGattung.Text = "###";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(17, 42);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(46, 13);
+            this.label1.TabIndex = 13;
+            this.label1.Text = "Nummer";
+            // 
+            // tbZugNummer
+            // 
+            this.tbZugNummer.Location = new System.Drawing.Point(335, 45);
+            this.tbZugNummer.Name = "tbZugNummer";
+            this.tbZugNummer.Size = new System.Drawing.Size(88, 20);
+            this.tbZugNummer.TabIndex = 12;
+            this.tbZugNummer.Text = "###";
+            // 
+            // tbVmax
+            // 
+            this.tbVmax.Location = new System.Drawing.Point(335, 75);
+            this.tbVmax.Name = "tbVmax";
+            this.tbVmax.Size = new System.Drawing.Size(88, 20);
+            this.tbVmax.TabIndex = 16;
+            this.tbVmax.Text = "###";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(17, 12);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(45, 13);
+            this.label2.TabIndex = 14;
+            this.label2.Text = "Gattung";
+            // 
+            // button_zugVerband
+            // 
+            this.button_zugVerband.Location = new System.Drawing.Point(335, 110);
+            this.button_zugVerband.Name = "button_zugVerband";
+            this.button_zugVerband.Size = new System.Drawing.Size(102, 23);
+            this.button_zugVerband.TabIndex = 18;
+            this.button_zugVerband.Text = "LINT - Ändern";
+            this.button_zugVerband.UseVisualStyleBackColor = true;
+            this.button_zugVerband.Click += new System.EventHandler(this.button_zugVerband_Click);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(20, 110);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(68, 13);
+            this.label6.TabIndex = 19;
+            this.label6.Text = "Zugverband:";
+            // 
             // ZugForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -474,8 +464,7 @@
             this.Text = "Zugkonfiguration";
             this.tabControl1.ResumeLayout(false);
             this.tpSetting.ResumeLayout(false);
-            this.tableLayoutPanel3.ResumeLayout(false);
-            this.tableLayoutPanel3.PerformLayout();
+            this.tpSetting.PerformLayout();
             this.tpFaPla.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
@@ -489,7 +478,6 @@
 
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tpSetting;
-        private System.Windows.Forms.TabPage tpFahrzeug;
         private System.Windows.Forms.TabPage tpFaPla;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.ListBox LB_waypoint;
@@ -498,13 +486,6 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.TextBox tbZugNummer;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox tbVmax;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox tbZugGattung;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label_überschrift;
         private System.Windows.Forms.Label label_fahrstraße;
@@ -519,8 +500,16 @@
         private System.Windows.Forms.Button button_WpUmwandlung;
         private System.Windows.Forms.DateTimePicker dateTimePicker_Abfahrt;
         private System.Windows.Forms.DateTimePicker dateTimePicker_Ankunft;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox signalText;
         private System.Windows.Forms.CheckBox checkBox_Abfahrt;
         private System.Windows.Forms.CheckBox checkBox_Ankunft;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button button_zugVerband;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox tbZugGattung;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox tbZugNummer;
+        private System.Windows.Forms.TextBox tbVmax;
+        private System.Windows.Forms.Label label2;
     }
 }

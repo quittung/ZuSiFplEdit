@@ -226,6 +226,7 @@ namespace ZuSiFplEdit
             /// </summary>
             public bool relevant;
             public double fahrdauer;
+            public double fahrzeitÜberschuss;
 
             public DateTime ankunft;
             public DateTime abfahrt;
@@ -278,23 +279,17 @@ namespace ZuSiFplEdit
         /// </summary>
         public int Zugnummer;
         /// <summary>
-        /// Veraltet: Enthält Startsignal der Zugfahrt. Ersetzt durch Wegpunkt-System.
-        /// </summary>
-        [Obsolete]
-        public st3Modul.referenzElement ZstartSignal;
-        /// <summary>
-        /// Veraltet: Enthält Zielsignal der Zugfahrt. Ersetzt durch Wegpunkt-System.
-        /// </summary>
-        [Obsolete]
-        public st3Modul.referenzElement ZzielSignal;
-        /// <summary>
         /// Enthält alle Wegpunkte der Zugfahrt
         /// </summary>
         public List<WayPoint> WayPoints;
 
-        Datensatz datensatz;
+        public Datensatz datensatz;
 
         public float vMax;
+        public double reserve = 0.1;
+
+        public string zugVerbandName;
+        public string zugVerbandXML;
 
         /// <summary>
         /// Länge der gesamten Route
@@ -308,13 +303,6 @@ namespace ZuSiFplEdit
         public List<RoutenPunkt> route;
 
         
-
-        /// <summary>
-        /// </summary>
-        public DateTime[] route_ankunft;
-        /// <summary>
-        /// </summary>
-        public DateTime[] route_abfahrt;
 
         public List<bool> includeSignal; //Signal in Fahrplan aufnehmen in Abhängigkeit von Wichtigkeit/abgehenden Fahrstraßen etc.
 
@@ -386,78 +374,151 @@ namespace ZuSiFplEdit
             route_metadaten_berechen();
         }
 
+        /// <summary>
+        /// Berechnet Metadaten wie Fahrzeiten und Routenlänge
+        /// </summary>
         public void route_metadaten_berechen()
         {
             if (route == null || route.Count == 0)
                 return;
-
-            route[0].relevant = true;
-            route[route.Count - 1].relevant = true;
-               
+                           
             route_dauer = 0;
             route_länge = 0;
 
-            route[0].ankunft = Convert.ToDateTime("2017-02-27 12:00:00");
+            //Werte aus Wegpunkte eintragen
+            foreach (var wegPunkt in WayPoints)
+            {
+                var routenPunkt = wegPunkt.routenPunkt;
+
+                routenPunkt.relevant = true;
+
+                if (wegPunkt.ankunft_gesetzt)
+                    routenPunkt.ankunft = wegPunkt.ankunft;
+
+                if (wegPunkt.abfahrt_gesetzt)
+                    routenPunkt.abfahrt = wegPunkt.abfahrt;
+            }
+
+            if (route[0].ankunft == new DateTime())
+                route[0].ankunft = Convert.ToDateTime("2017-02-27 12:00:00");
 
             for (int i = 1; i < route.Count; i++)
             {
-                //Strecke suchen
+                //Informationen sammeln
+                bool wende = (i < (route.Count - 1)) && (route[i + 1].wende);
+                
+                DateTime letzteZeit;
+                if (route[i - 1].abfahrt == new DateTime())
+                    letzteZeit = route[i - 1].ankunft;
+                else
+                    letzteZeit = route[i - 1].abfahrt;
+                
                 double strecke_cur = route[i].fahrstraße.länge;
-                //Zeit berechnen
-                long zeit_cur = (long)route[i].fahrstraße.berechneFahrdauer(vMax);
-                //Strecke aufaddieren
                 route_länge += strecke_cur;
-                //Zeit aufaddieren
-                route_dauer += zeit_cur;
 
 
-                //Zeiten eintragen
-                if (i != 0)
+                //Fahrzeit für Halte anpassen
+                if (route[i - 1].ankunft != new DateTime())
                 {
-                    DateTime letzteZeit;
-                    if ((route[i - 1].abfahrt == null) || (route[i - 1].abfahrt == new DateTime()))
-                    {
-                        letzteZeit = route[i - 1].ankunft;
-                    }
-                    else
-                    {
-                        letzteZeit = route[i - 1].abfahrt;
-                    }
+                    route[i].fahrdauer += zeitverlustDurchBeschleunigung(0, route[i].fahrstraße.vStart, 0.5);
+                }
+                if ((route[i].wegPunkt != null && route[i].wegPunkt.ankunft_gesetzt) || wende)
+                {
+                    route[i].fahrdauer += zeitverlustDurchBeschleunigung(route[i].fahrstraße.vZiel, 0, 0.5);
+                }
+                route[i].fahrdauer = route[i].fahrdauer * (1 + reserve);
 
-                    if ((i < (route.Count - 1)) && (route[i + 1].wende))
+                //Zeiten berechnen
+                if (wende)
+                {
+                    if(route[i].ankunft == new DateTime())
                     {
-                        route[i].ankunft = letzteZeit.AddSeconds(zeit_cur);
-                        route[i].abfahrt = route[i].ankunft.AddSeconds(30);
+                        if(route[i].abfahrt == new DateTime())
+                        {
+                            route[i].ankunft = letzteZeit.AddSeconds(route[i].fahrdauer);
+                            route[i].abfahrt = route[i].ankunft.AddSeconds(30);
+                        }
+                        else
+                        {
+                            route[i].ankunft = route[i].abfahrt.AddSeconds(-30);
+                        }
                     }
                     else
                     {
-                        route[i].abfahrt = letzteZeit.AddSeconds(zeit_cur);
+                        if (route[i].abfahrt == new DateTime())
+                        {
+                            route[i].abfahrt = route[i].ankunft.AddSeconds(30);
+                        }
                     }
                 }
+                else
+                {
+                    if (route[i].ankunft == new DateTime() && route[i].abfahrt == new DateTime())
+                        route[i].abfahrt = letzteZeit.AddSeconds(route[i].fahrdauer);
+                }
+
+
+                
+
+
+                //Zeit aufaddieren
+                double fahrdauer = 0;
+                if (route[i].ankunft != new DateTime())
+                {
+                    fahrdauer += (route[i].ankunft - letzteZeit).TotalSeconds;
+                    if (route[i].abfahrt != new DateTime())
+                    {
+                        fahrdauer += (route[i].abfahrt - route[i].ankunft).TotalSeconds;
+                    }
+                }
+                else
+                {
+                    if (route[i].abfahrt != new DateTime())
+                    {
+                        fahrdauer += (route[i].abfahrt - letzteZeit).TotalSeconds;
+                    }
+                }
+
+                route_dauer += (long)fahrdauer;
+                route[i].fahrzeitÜberschuss = fahrdauer - route[i].fahrdauer;
             }
 
             //Zeiten mit Wegpunkten synchronisieren
-            for (int i = 0; i < route.Count; i++)
-            {
-                if (route[i].wegPunkt != null)
-                {
-                    route[i].relevant = true;
-                    var wegPunkt = route[i].wegPunkt;
-                    if (!wegPunkt.ankunft_gesetzt && route[i].ankunft != new DateTime())
-                    {
-                        wegPunkt.ankunft = route[i].ankunft;
-                        wegPunkt.ankunft_gesetzt = true;
-                    }
-                    if (!wegPunkt.abfahrt_gesetzt && route[i].abfahrt != new DateTime())
-                    {
-                        wegPunkt.abfahrt = route[i].abfahrt;
-                        wegPunkt.abfahrt_gesetzt = true;
-                    }
+            //for (int i = 0; i < route.Count; i++)
+            //{
+            //    if (route[i].wegPunkt != null)
+            //    {
+            //        var wegPunkt = route[i].wegPunkt;
+            //        if (!wegPunkt.ankunft_gesetzt && route[i].ankunft != new DateTime())
+            //        {
+            //            wegPunkt.ankunft = route[i].ankunft;
+            //            wegPunkt.ankunft_gesetzt = true;
+            //        }
+            //        if (!wegPunkt.abfahrt_gesetzt && route[i].abfahrt != new DateTime())
+            //        {
+            //            wegPunkt.abfahrt = route[i].abfahrt;
+            //            wegPunkt.abfahrt_gesetzt = true;
+            //        }
+            //    }
+            //}
+        }
 
-                    route[i].ankunft = wegPunkt.ankunft;
-                    route[i].abfahrt = wegPunkt.abfahrt;
-                }
+        public static double zeitverlustDurchBeschleunigung(double vStart, double vZiel, double beschleunigung)
+        {
+            if (vZiel > vStart)
+            {
+                var tmp = vZiel;
+                vZiel = vStart;
+                vStart = tmp;
             }
+
+            var vDiff = vStart - vZiel;
+            var zeitBeschleunigung = vDiff / beschleunigung;
+            var strecke = 0.5 * beschleunigung * zeitBeschleunigung * zeitBeschleunigung;
+            var zeitDurchfahrt = strecke / vStart;
+            
+            double zeitverlust = zeitBeschleunigung - zeitDurchfahrt;
+            return zeitverlust;
         }
 
     }

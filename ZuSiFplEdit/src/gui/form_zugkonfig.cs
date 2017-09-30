@@ -369,7 +369,7 @@ namespace ZuSiFplEdit
                 else
                 {
                     //Ankunft muss noch bestimmt werden; Box wurde gerade umgeschaltet
-                    wegPunkt.ankunft = routenPunkt.abfahrt.AddSeconds(streckenModul.zeitverlustDurchBeschleunigung(routenPunkt.fahrstraße.vZiel, 0, 0.5));
+                    wegPunkt.ankunft = routenPunkt.abfahrt.AddSeconds(streckenModul.zeitverlustDurchBeschleunigung(routenPunkt.fahrstraße.vZiel, 0, 0.5) * (1 + Zug.reserve));
                 }
                 wegPunkt.ankunft_gesetzt = true;
             }

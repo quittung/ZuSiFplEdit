@@ -38,10 +38,10 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.ZugFahrtBox = new System.Windows.Forms.ListBox();
             this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
             this.ZF_bearbeiten = new System.Windows.Forms.Button();
+            this.ZugFahrtBox = new System.Windows.Forms.ListBox();
+            this.button4 = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.dateiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.speichernUnterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -58,6 +58,7 @@
             this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ladezeitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.ladenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.mMap)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -193,16 +194,6 @@
             this.tableLayoutPanel2.Size = new System.Drawing.Size(242, 515);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
-            // ZugFahrtBox
-            // 
-            this.ZugFahrtBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ZugFahrtBox.FormattingEnabled = true;
-            this.ZugFahrtBox.Location = new System.Drawing.Point(3, 109);
-            this.ZugFahrtBox.Name = "ZugFahrtBox";
-            this.ZugFahrtBox.Size = new System.Drawing.Size(236, 403);
-            this.ZugFahrtBox.TabIndex = 0;
-            this.ZugFahrtBox.SelectedIndexChanged += new System.EventHandler(this.ZugFahrtBox_SelectedValueChanged);
-            // 
             // button3
             // 
             this.button3.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -214,16 +205,6 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.Neuer_Zug_button_Click);
             // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(3, 73);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(236, 29);
-            this.button4.TabIndex = 5;
-            this.button4.Text = "Zug löschen";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
             // ZF_bearbeiten
             // 
             this.ZF_bearbeiten.Location = new System.Drawing.Point(3, 38);
@@ -232,7 +213,27 @@
             this.ZF_bearbeiten.TabIndex = 6;
             this.ZF_bearbeiten.Text = "Zugfahrt bearbeiten";
             this.ZF_bearbeiten.UseVisualStyleBackColor = true;
-            this.ZF_bearbeiten.Click += new System.EventHandler(this.button5_Click);
+            this.ZF_bearbeiten.Click += new System.EventHandler(this.zugBearbeite_click);
+            // 
+            // ZugFahrtBox
+            // 
+            this.ZugFahrtBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ZugFahrtBox.FormattingEnabled = true;
+            this.ZugFahrtBox.Location = new System.Drawing.Point(3, 109);
+            this.ZugFahrtBox.Name = "ZugFahrtBox";
+            this.ZugFahrtBox.Size = new System.Drawing.Size(236, 403);
+            this.ZugFahrtBox.TabIndex = 0;
+            this.ZugFahrtBox.SelectedIndexChanged += new System.EventHandler(this.ZugFahrtBox_SelectedValueChanged);
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(3, 73);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(236, 29);
+            this.button4.TabIndex = 5;
+            this.button4.Text = "Zug löschen";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.zugLöschen_click);
             // 
             // menuStrip1
             // 
@@ -249,7 +250,8 @@
             // dateiToolStripMenuItem
             // 
             this.dateiToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.speichernUnterToolStripMenuItem});
+            this.speichernUnterToolStripMenuItem,
+            this.ladenToolStripMenuItem});
             this.dateiToolStripMenuItem.Name = "dateiToolStripMenuItem";
             this.dateiToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.dateiToolStripMenuItem.Text = "Datei";
@@ -283,7 +285,7 @@
             this.verbindungenToolStripMenuItem,
             this.punkteToolStripMenuItem});
             this.moduToolStripMenuItem.Name = "moduToolStripMenuItem";
-            this.moduToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.moduToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.moduToolStripMenuItem.Text = "Module";
             this.moduToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
@@ -331,7 +333,7 @@
             this.mToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.signalnamenToolStripMenuItem});
             this.mToolStripMenuItem.Name = "mToolStripMenuItem";
-            this.mToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.mToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.mToolStripMenuItem.Text = "Streckenplan";
             this.mToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
@@ -347,7 +349,7 @@
             // 
             this.fahrstraenToolStripMenuItem.CheckOnClick = true;
             this.fahrstraenToolStripMenuItem.Name = "fahrstraenToolStripMenuItem";
-            this.fahrstraenToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.fahrstraenToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.fahrstraenToolStripMenuItem.Text = "Fahrstraßen";
             this.fahrstraenToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
@@ -357,7 +359,7 @@
             this.routeToolStripMenuItem.CheckOnClick = true;
             this.routeToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.routeToolStripMenuItem.Name = "routeToolStripMenuItem";
-            this.routeToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.routeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.routeToolStripMenuItem.Text = "Route";
             this.routeToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
             // 
@@ -383,6 +385,13 @@
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
             this.toolStripMenuItem1.Text = "Framezeit...";
+            // 
+            // ladenToolStripMenuItem
+            // 
+            this.ladenToolStripMenuItem.Name = "ladenToolStripMenuItem";
+            this.ladenToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.ladenToolStripMenuItem.Text = "Laden";
+            this.ladenToolStripMenuItem.Click += new System.EventHandler(this.ladenToolStripMenuItem_Click);
             // 
             // modSelForm
             // 
@@ -443,6 +452,7 @@
         private System.Windows.Forms.ToolStripMenuItem dateiToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem speichernUnterToolStripMenuItem;
         private System.Windows.Forms.Button ZF_bearbeiten;
+        private System.Windows.Forms.ToolStripMenuItem ladenToolStripMenuItem;
     }
 }
 

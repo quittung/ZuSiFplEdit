@@ -9,6 +9,7 @@ namespace ZuSiFplEdit
 {
     class fileops
     {
+        Fahrplan fahrplan;
         List<streckenModul> mSammlung;
         List<ZugFahrt> Zugfahrten;
         string basePath;
@@ -17,10 +18,11 @@ namespace ZuSiFplEdit
         string fpnSubDir;
         string fpnRelSubDir;
 
-        public fileops(List<streckenModul> mSammlung, List<ZugFahrt> Zugfahrten, string path, string basePath)
+        public fileops(Fahrplan fahrplan, string path, string basePath)
         {
-            this.mSammlung = mSammlung;
-            this.Zugfahrten = Zugfahrten;
+            this.fahrplan = fahrplan;
+            mSammlung = fahrplan.module;
+            Zugfahrten = fahrplan.zugFahrten;
 
             
             if (basePath[basePath.Length - 1] != '\\')
@@ -88,8 +90,8 @@ namespace ZuSiFplEdit
             fpn_file.WriteLine("<Info DateiTyp=\"Fahrplan\" Version=\"A.1\" MinVersion=\"A.1\">");
             fpn_file.WriteLine("<AutorEintrag/>");
             fpn_file.WriteLine("</Info>");
-            fpn_file.WriteLine("<Fahrplan  AnfangsZeit=\"2017-02-27 12:00:00\">");
-            fpn_file.WriteLine("<BefehlsKonfiguration Dateiname=\"Signals\\Deutschland\\Befehle\\408_2003.authority.xml\"/>");
+            fpn_file.WriteLine("<Fahrplan  AnfangsZeit=\"" + fahrplan.anfangszeit.ToString("yy-MM-dd HH:mm:ss") + "\">");
+            fpn_file.WriteLine("<BefehlsKonfiguration Dateiname=\"" + fahrplan.befehlsKonfig + "\"/>");
             fpn_file.WriteLine("<Begruessungsdatei/>");
 
             foreach (var zug in Zugfahrten)
@@ -101,23 +103,20 @@ namespace ZuSiFplEdit
 
             foreach (var mod in mSammlung)
             {
-                if (mod.selected)
-                {
-                    //Vorbereitung zur Berechnung vom Referenzpunkt
-                    mod_Count++;
-                    UTM_NS_avg += (int)mod.ursprung.NS;
-                    UTM_WE_avg += (int)mod.ursprung.WE;
+                //Vorbereitung zur Berechnung vom Referenzpunkt
+                mod_Count++;
+                UTM_NS_avg += (int)mod.ursprung.NS;
+                UTM_WE_avg += (int)mod.ursprung.WE;
 
-                    UTM_Z1 = mod.ursprung.Z1;
-                    UTM_Z2 = mod.ursprung.Z2;
+                UTM_Z1 = mod.ursprung.Z1;
+                UTM_Z2 = mod.ursprung.Z2;
 
-                    //Schreibe XML für aktuelles Modul
-                    fpn_file.WriteLine("<StrModul>");
-                    fpn_file.WriteLine("<Datei Dateiname=\"" + mod.pfad + "\"/>");
-                    fpn_file.WriteLine("<p/>");
-                    fpn_file.WriteLine("<phi/>");
-                    fpn_file.WriteLine("</StrModul>");
-                }
+                //Schreibe XML für aktuelles Modul
+                fpn_file.WriteLine("<StrModul>");
+                fpn_file.WriteLine("<Datei Dateiname=\"" + mod.pfad + "\"/>");
+                fpn_file.WriteLine("<p/>");
+                fpn_file.WriteLine("<phi/>");
+                fpn_file.WriteLine("</StrModul>");
             }
 
             //Abbrechen, wenn nichts ausgewählt.

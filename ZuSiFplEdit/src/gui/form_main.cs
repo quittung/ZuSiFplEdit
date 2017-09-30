@@ -13,6 +13,7 @@ namespace ZuSiFplEdit
 
     public partial class modSelForm : Form
     {
+        bool guiBereit = true;
 
         DataConstructor dataConstructor;
         Datensatz datenFertig;
@@ -28,7 +29,8 @@ namespace ZuSiFplEdit
 
         bool selectRouteStart = false;
         bool selectRouteEnd = false;
-        
+
+        Fahrplan fahrplan;
         List<ZugFahrt> ZugFahrten = new List<ZugFahrt>();
         ZugForm ZugKonfigForm;
 
@@ -86,6 +88,9 @@ namespace ZuSiFplEdit
             {
                 modListBox.Items.Add(modul.name);
             }
+
+            //Fahrplan initialisieren
+            fahrplan = new Fahrplan();
         }
 
 
@@ -175,29 +180,12 @@ namespace ZuSiFplEdit
 
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                List<ZugFahrt> zList = new List<ZugFahrt>();
-                foreach (var Zufa in ZugFahrtBox.Items)
-                {
-                    ZugFahrt Zug = (ZugFahrt)Zufa;
-                    foreach (var routenPunkt in Zug.route) //TODO: Auch alle Module dazwischen markieren
-                    {
-                        routenPunkt.fahrstraße.startSignal.modul.selected = true;
-                        foreach (var nachbar in routenPunkt.fahrstraße.startSignal.modul.nachbarn)
-                        {
-                            nachbar.selected = true;
-                        }
-
-                        routenPunkt.fahrstraße.zielSignal.modul.selected = true;
-                        foreach (var nachbar in routenPunkt.fahrstraße.zielSignal.modul.nachbarn)
-                        {
-                            nachbar.selected = true;
-                        }
-                    }
-                    zList.Add(Zug);
-                }
+                fahrplan.exportVorbereiten();
+                
                 this.Invalidate();
                 Application.DoEvents();
-                new fileops(datenFertig.module, zList, saveFileDialog1.FileName, DirBase);
+
+                new fileops(fahrplan, saveFileDialog1.FileName, DirBase);
             }
         }    
         
@@ -428,6 +416,7 @@ namespace ZuSiFplEdit
             }
             tmpZugfahrt.Zugnummer = ZugNummer;
 
+            fahrplan.zugFahrten.Add(tmpZugfahrt);
             ZugFahrtBox.Items.Add(tmpZugfahrt);
             ZugFahrtBox.SelectedItem = tmpZugfahrt;
         }
@@ -436,7 +425,7 @@ namespace ZuSiFplEdit
         bool ZNBesetzt(int ZN)
         {
             bool ZugNummerBesetzt = false;
-            foreach (ZugFahrt zug in ZugFahrtBox.Items)
+            foreach (ZugFahrt zug in fahrplan.zugFahrten)
             {
                 if (zug.Zugnummer == ZN)
                 {
@@ -447,7 +436,7 @@ namespace ZuSiFplEdit
             return ZugNummerBesetzt;
         }
 
-        void zfbUpdate()
+        public void zfbUpdate()
         {
             ZugFahrtBox.Items[ZugFahrtBox.SelectedIndex] = ZugFahrtBox.SelectedItem;
         }
@@ -455,29 +444,25 @@ namespace ZuSiFplEdit
         
         private void ZugFahrtBox_SelectedValueChanged(object sender, EventArgs e)
         {
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            if (ZugFahrtBox.SelectedItem == null)
+            if (!guiBereit || ZugFahrtBox.SelectedItem == null)
                 return;
-            int löschZug = ZugFahrtBox.SelectedIndex;
-            if(ZugFahrtBox.Items.Count > 1)
-            {
-                if (löschZug == 0)
-                {
-                    ZugFahrtBox.SelectedIndex = 1;
-                }
-                else
-                {
-                    ZugFahrtBox.SelectedIndex = löschZug - 1;
-                }
-            }
-            ZugFahrtBox.Items.RemoveAt(löschZug);
-            
+
+            guiBereit = false;
+            ZugFahrtBox.Items[ZugFahrtBox.SelectedIndex] = ZugFahrtBox.SelectedItem;
+            guiBereit = true;
         }
 
-        private void button5_Click(object sender, EventArgs e)
+        private void zugLöschen_click(object sender, EventArgs e)
+        {
+            ZugFahrt zug = (ZugFahrt)ZugFahrtBox.SelectedItem;
+            if (zug == null)
+                return;
+
+            ZugFahrtBox.Items.Remove(zug);
+            fahrplan.zugFahrten.Remove(zug);            
+        }
+
+        private void zugBearbeite_click(object sender, EventArgs e)
         {
             if (ZugFahrtBox.SelectedItem == null)
                 return;
@@ -486,6 +471,11 @@ namespace ZuSiFplEdit
             ZugKonfigForm.Owner = this;
             ZugKonfigForm.setZug((ZugFahrt)ZugFahrtBox.SelectedItem);
             ZugKonfigForm.Show();
+        }
+
+        private void ladenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //FahrplanLaden.fahrplanÖffnen(datenFertig);
         }
     }
 }

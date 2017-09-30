@@ -457,10 +457,6 @@ namespace ZuSiFplEdit
                         route[i].abfahrt = letzteZeit.AddSeconds(route[i].fahrdauer);
                 }
 
-
-                
-
-
                 //Zeit aufaddieren
                 double fahrdauer = 0;
                 if (route[i].ankunft != new DateTime())
@@ -482,25 +478,6 @@ namespace ZuSiFplEdit
                 route_dauer += (long)fahrdauer;
                 route[i].fahrzeitÜberschuss = fahrdauer - route[i].fahrdauer;
             }
-
-            //Zeiten mit Wegpunkten synchronisieren
-            //for (int i = 0; i < route.Count; i++)
-            //{
-            //    if (route[i].wegPunkt != null)
-            //    {
-            //        var wegPunkt = route[i].wegPunkt;
-            //        if (!wegPunkt.ankunft_gesetzt && route[i].ankunft != new DateTime())
-            //        {
-            //            wegPunkt.ankunft = route[i].ankunft;
-            //            wegPunkt.ankunft_gesetzt = true;
-            //        }
-            //        if (!wegPunkt.abfahrt_gesetzt && route[i].abfahrt != new DateTime())
-            //        {
-            //            wegPunkt.abfahrt = route[i].abfahrt;
-            //            wegPunkt.abfahrt_gesetzt = true;
-            //        }
-            //    }
-            //}
         }
 
         public static double zeitverlustDurchBeschleunigung(double vStart, double vZiel, double beschleunigung)

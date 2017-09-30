@@ -89,6 +89,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\FahrplanLaden.cs" />
     <Compile Include="src\fileops.cs" />
     <Compile Include="src\gui\form_lade.cs">
       <SubType>Form</SubType>
@@ -120,6 +121,7 @@
     <Compile Include="src\mod_data\streckenModul.cs" />
     <Compile Include="src\mod_data\UTM.cs" />
     <Compile Include="src\mod_data\st3Modul.cs" />
+    <Compile Include="src\routing\Fahrplan.cs" />
     <Compile Include="src\routing\ZugFahrt.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -18,6 +18,7 @@ namespace ZuSiFplEdit
             public int nummer, funktion;
             public float kilometer, vMax;
             public Signal[] signale;
+            public Betriebsstelle[] betriebstellen;
             public PunktUTM[] endpunkte;
             public List<Element>[] anschlüsse;
 
@@ -32,6 +33,7 @@ namespace ZuSiFplEdit
                 this.vMax = vMax;
 
                 signale = new Signal[2];
+                betriebstellen = new Betriebsstelle[2];
                 endpunkte = new PunktUTM[2];
                 endpunkte[0] = endpunktB;
                 endpunkte[1] = endpunktG;
@@ -54,7 +56,7 @@ namespace ZuSiFplEdit
             public int nummer;
             public string info;
             public string name;
-            public string betriebsstelle;
+            public Betriebsstelle betriebsstelle;
             public int typ;
 
             /// <summary>
@@ -80,12 +82,13 @@ namespace ZuSiFplEdit
             /// </summary>
             public bool istZiel = false;
 
-            public Signal(int nummer, string info, string name, string betriebsstelle, int typ, streckenModul modul, Element streckenelement, int richtung) //TODO: Informationsumfang für Navigation ausweiten? Vl. besser in Fahrstraßen...
+            public Signal(int nummer, string info, string name, Betriebsstelle betriebsstelle, int typ, streckenModul modul, Element streckenelement, int richtung) //TODO: Informationsumfang für Navigation ausweiten? Vl. besser in Fahrstraßen...
             {
                 this.nummer = nummer;
                 this.info = info;
                 this.name = name;
                 this.betriebsstelle = betriebsstelle;
+                betriebsstelle.signale.Add(this);
                 this.typ = typ;
 
                 this.modul = modul;
@@ -112,9 +115,12 @@ namespace ZuSiFplEdit
             public Signal startSignal;
             public Signal zielSignal;
             public List<Fahrstraße> folgeStraßen;
+            public List<Betriebsstelle> betriebsstellen;
 
             public string name;
             public string typ;
+            //public VzG_Strecke vzgStrecke;
+            //public bool richtung;
             public int RglGgl; //TODO: Information anders darstellen
 
             public double länge;
@@ -139,6 +145,8 @@ namespace ZuSiFplEdit
                 this.vStart = vMin;
                 this.vZiel = vMax;
                 this.wichtung = wichtung;
+
+                betriebsstellen = new List<Betriebsstelle>();
             }
 
             public double berechneFahrdauer(double geschwindigkeit)
@@ -182,6 +190,8 @@ namespace ZuSiFplEdit
         public Element[] elementeLookup;
         public List<Element> elemente;
 
+        public List<Betriebsstelle> betriebsstellen;
+
         public bool signaleBereit = false;
         public Signal[] signaleLookup;
         public List<Signal> signale;
@@ -201,6 +211,7 @@ namespace ZuSiFplEdit
             this.hüllkurve = hüllkurve;
 
             elemente = new List<Element>();
+            betriebsstellen = new List<Betriebsstelle>();
             signale = new List<Signal>();
             signaleStart = new List<Signal>();
             signaleZwischen = new List<Signal>();

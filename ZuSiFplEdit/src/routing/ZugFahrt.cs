@@ -213,6 +213,19 @@ namespace ZuSiFplEdit
 
         public class RoutenPunkt
         {
+            public class zeit_betriebsst
+            {
+                public Betriebsstelle betriebsstelle;
+
+                public DateTime ankunft;
+                public DateTime abfahrt;
+
+                public zeit_betriebsst(Betriebsstelle betriebsstelle)
+                {
+                    this.betriebsstelle = betriebsstelle;
+                }
+            }
+
             public streckenModul.Signal signal;
             public streckenModul.Fahrstraße fahrstraße;
             
@@ -223,8 +236,11 @@ namespace ZuSiFplEdit
             public double fahrdauer;
             public double fahrzeitÜberschuss;
 
+            //[Obsolete]
             public DateTime ankunft;
+            //[Obsolete]
             public DateTime abfahrt;
+            //public List<zeit_betriebsst> fahrplanPunkte;
             public bool wende;
 
             /// <summary>
@@ -259,7 +275,7 @@ namespace ZuSiFplEdit
                 if (wende)
                     beschreibung = "< ";
 
-                beschreibung += signal.betriebsstelle + " " + signal.name;
+                beschreibung += signal.betriebsstelle.name + " " + signal.name;
 
                 return (beschreibung);
             }

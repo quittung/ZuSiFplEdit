@@ -18,11 +18,13 @@ namespace ZuSiFplEdit
         public bool signaleBereit = false;
         public bool fahrstraßenBereit = false;
         public List<streckenModul> module;
+        public List<Betriebsstelle> betriebsstellen;
         public string datenVerzeichnis;
 
         public Datensatz(string datenVerzeichnis)
         {
             module = new List<streckenModul>();
+            betriebsstellen = new List<Betriebsstelle>();
 
             this.datenVerzeichnis = datenVerzeichnis;
         }
@@ -36,6 +38,27 @@ namespace ZuSiFplEdit
                 if (modul.name == name) return modul;
 
             return null;
+        }
+
+        public Betriebsstelle sucheBetriebsstelle(string name)
+        {
+            foreach (var betriebsstelle in betriebsstellen)
+            {
+                if (betriebsstelle.name == name)
+                    return betriebsstelle;
+            }
+            return null;
+        }
+
+        public Betriebsstelle sucheBetriebsstelle(string name, streckenModul modul)
+        {
+            var betriebsstelle = sucheBetriebsstelle(name);
+            if (betriebsstelle == null)
+            {
+                betriebsstelle = new Betriebsstelle(name, modul);
+                betriebsstellen.Add(betriebsstelle);
+            }
+            return betriebsstelle;
         }
 
         public streckenModul.Fahrstraße sucheFahrstraße(string name)
@@ -59,7 +82,7 @@ namespace ZuSiFplEdit
             {
                 foreach (var signal in modul.signale)
                 {
-                    if (signal.betriebsstelle == betriebststelle && signal.name == name)
+                    if (signal.betriebsstelle.name == betriebststelle && signal.name == name)
                     {
                         return signal;
                     }

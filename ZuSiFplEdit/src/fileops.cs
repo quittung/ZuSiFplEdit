@@ -166,7 +166,7 @@ namespace ZuSiFplEdit
                         trn_file.Write(" Ank=\"" + zug.route[i].ankunft.ToString("yy-MM-dd HH:mm:ss") + "\"");
                     if ((zug.route[i].abfahrt != null) && (zug.route[i].abfahrt != new DateTime()))
                         trn_file.Write(" Abf=\"" + zug.route[i].abfahrt.ToString("yy-MM-dd HH:mm:ss") + "\"");
-                    trn_file.Write(" Betrst=\"" + zug.route[i].signal.betriebsstelle + "\"");
+                    trn_file.Write(" Betrst=\"" + zug.route[i].signal.betriebsstelle.name + "\"");
                     if ((i < (zug.route.Count - 1)) && (zug.route[i + 1].wende))
                         trn_file.Write(" FzgVerbandAktion=\"2\" FzgVerbandWendeSignalabstand=\"400\"");
                     trn_file.WriteLine(">");

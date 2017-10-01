@@ -64,6 +64,7 @@
             this.label_überschrift = new System.Windows.Forms.Label();
             this.label_fahrstraße = new System.Windows.Forms.Label();
             this.label_signal = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.tabControl1.SuspendLayout();
             this.tpSetting.SuspendLayout();
             this.tpFaPla.SuspendLayout();
@@ -190,7 +191,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.63523F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.36477F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 227F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 228F));
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.LB_routenPunkte, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel1, 2, 0);
@@ -218,7 +219,7 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(193, 394);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(192, 394);
             this.tableLayoutPanel2.TabIndex = 2;
             // 
             // LB_waypoint
@@ -227,7 +228,7 @@
             this.LB_waypoint.FormattingEnabled = true;
             this.LB_waypoint.Location = new System.Drawing.Point(3, 108);
             this.LB_waypoint.Name = "LB_waypoint";
-            this.LB_waypoint.Size = new System.Drawing.Size(187, 283);
+            this.LB_waypoint.Size = new System.Drawing.Size(186, 283);
             this.LB_waypoint.TabIndex = 0;
             this.LB_waypoint.DragDrop += new System.Windows.Forms.DragEventHandler(this.LB_waypoint_DragDrop);
             this.LB_waypoint.DragOver += new System.Windows.Forms.DragEventHandler(this.LB_waypoint_DragOver);
@@ -238,7 +239,7 @@
             this.button1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button1.Location = new System.Drawing.Point(3, 3);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(187, 29);
+            this.button1.Size = new System.Drawing.Size(186, 29);
             this.button1.TabIndex = 0;
             this.button1.Text = "Wegpunkt einfügen";
             this.button1.UseVisualStyleBackColor = true;
@@ -249,7 +250,7 @@
             this.button2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button2.Location = new System.Drawing.Point(3, 38);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(187, 29);
+            this.button2.Size = new System.Drawing.Size(186, 29);
             this.button2.TabIndex = 1;
             this.button2.Text = "Wegpunkt ändern";
             this.button2.UseVisualStyleBackColor = true;
@@ -260,7 +261,7 @@
             this.button3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.button3.Location = new System.Drawing.Point(3, 73);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(187, 29);
+            this.button3.Size = new System.Drawing.Size(186, 29);
             this.button3.TabIndex = 2;
             this.button3.Text = "Wegpunkt löschen";
             this.button3.UseVisualStyleBackColor = true;
@@ -270,7 +271,7 @@
             // 
             this.LB_routenPunkte.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LB_routenPunkte.FormattingEnabled = true;
-            this.LB_routenPunkte.Location = new System.Drawing.Point(202, 3);
+            this.LB_routenPunkte.Location = new System.Drawing.Point(201, 3);
             this.LB_routenPunkte.Name = "LB_routenPunkte";
             this.LB_routenPunkte.Size = new System.Drawing.Size(204, 394);
             this.LB_routenPunkte.TabIndex = 1;
@@ -278,6 +279,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.comboBox1);
             this.panel1.Controls.Add(this.signalText);
             this.panel1.Controls.Add(this.checkBox_Abfahrt);
             this.panel1.Controls.Add(this.checkBox_Ankunft);
@@ -295,25 +297,25 @@
             this.panel1.Controls.Add(this.label_fahrstraße);
             this.panel1.Controls.Add(this.label_signal);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(412, 3);
+            this.panel1.Location = new System.Drawing.Point(411, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(222, 394);
+            this.panel1.Size = new System.Drawing.Size(223, 394);
             this.panel1.TabIndex = 3;
             // 
             // signalText
             // 
-            this.signalText.Location = new System.Drawing.Point(7, 226);
+            this.signalText.Location = new System.Drawing.Point(7, 252);
             this.signalText.Multiline = true;
             this.signalText.Name = "signalText";
             this.signalText.ReadOnly = true;
-            this.signalText.Size = new System.Drawing.Size(192, 165);
+            this.signalText.Size = new System.Drawing.Size(192, 139);
             this.signalText.TabIndex = 19;
             // 
             // checkBox_Abfahrt
             // 
             this.checkBox_Abfahrt.AutoSize = true;
             this.checkBox_Abfahrt.Enabled = false;
-            this.checkBox_Abfahrt.Location = new System.Drawing.Point(102, 148);
+            this.checkBox_Abfahrt.Location = new System.Drawing.Point(102, 174);
             this.checkBox_Abfahrt.Name = "checkBox_Abfahrt";
             this.checkBox_Abfahrt.Size = new System.Drawing.Size(63, 17);
             this.checkBox_Abfahrt.TabIndex = 18;
@@ -325,7 +327,7 @@
             // 
             this.checkBox_Ankunft.AutoSize = true;
             this.checkBox_Ankunft.Enabled = false;
-            this.checkBox_Ankunft.Location = new System.Drawing.Point(7, 148);
+            this.checkBox_Ankunft.Location = new System.Drawing.Point(7, 174);
             this.checkBox_Ankunft.Name = "checkBox_Ankunft";
             this.checkBox_Ankunft.Size = new System.Drawing.Size(63, 17);
             this.checkBox_Ankunft.TabIndex = 17;
@@ -335,7 +337,7 @@
             // 
             // button_WpUmwandlung
             // 
-            this.button_WpUmwandlung.Location = new System.Drawing.Point(3, 197);
+            this.button_WpUmwandlung.Location = new System.Drawing.Point(3, 223);
             this.button_WpUmwandlung.Name = "button_WpUmwandlung";
             this.button_WpUmwandlung.Size = new System.Drawing.Size(196, 23);
             this.button_WpUmwandlung.TabIndex = 16;
@@ -347,7 +349,7 @@
             // 
             this.dateTimePicker_Abfahrt.Enabled = false;
             this.dateTimePicker_Abfahrt.Format = System.Windows.Forms.DateTimePickerFormat.Time;
-            this.dateTimePicker_Abfahrt.Location = new System.Drawing.Point(102, 171);
+            this.dateTimePicker_Abfahrt.Location = new System.Drawing.Point(102, 197);
             this.dateTimePicker_Abfahrt.Name = "dateTimePicker_Abfahrt";
             this.dateTimePicker_Abfahrt.Size = new System.Drawing.Size(87, 20);
             this.dateTimePicker_Abfahrt.TabIndex = 15;
@@ -358,7 +360,7 @@
             // 
             this.dateTimePicker_Ankunft.Enabled = false;
             this.dateTimePicker_Ankunft.Format = System.Windows.Forms.DateTimePickerFormat.Time;
-            this.dateTimePicker_Ankunft.Location = new System.Drawing.Point(7, 171);
+            this.dateTimePicker_Ankunft.Location = new System.Drawing.Point(7, 197);
             this.dateTimePicker_Ankunft.Name = "dateTimePicker_Ankunft";
             this.dateTimePicker_Ankunft.Size = new System.Drawing.Size(84, 20);
             this.dateTimePicker_Ankunft.TabIndex = 14;
@@ -455,6 +457,15 @@
             this.label_signal.TabIndex = 0;
             this.label_signal.Text = "Signalname";
             // 
+            // comboBox1
+            // 
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(7, 147);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(192, 21);
+            this.comboBox1.TabIndex = 20;
+            // 
             // ZugForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -514,5 +525,6 @@
         private System.Windows.Forms.TextBox tbZugNummer;
         private System.Windows.Forms.TextBox tbVmax;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox comboBox1;
     }
 }

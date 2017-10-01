@@ -127,7 +127,10 @@ namespace ZuSiFplEdit
             public List<Anschluss> AnschlussNorm;
             public List<Anschluss> AnschlussGegen;
 
-            
+            public string betriebstStelleNorm;
+            public string betriebstStelleGegen;
+
+
             public Signal SignalNorm;
             public Signal SignalGegen;
 
@@ -149,6 +152,9 @@ namespace ZuSiFplEdit
 
                 AnschlussNorm = new List<Anschluss>();
                 AnschlussGegen = new List<Anschluss>();
+
+                betriebstStelleNorm = "";
+                betriebstStelleGegen = "";
 
 
                 while (partialXmlReader.Read())
@@ -173,11 +179,11 @@ namespace ZuSiFplEdit
                         }
                         else if (partialXmlReader.Name == "InfoNormRichtung")
                         {
-                            SignalNorm = leseRichtungsInfo(partialXmlReader.ReadSubtree());
+                            SignalNorm = leseRichtungsInfo(partialXmlReader.ReadSubtree(), out betriebstStelleNorm);
                         }
                         else if (partialXmlReader.Name == "InfoGegenRichtung")
                         {
-                            SignalGegen = leseRichtungsInfo(partialXmlReader.ReadSubtree());
+                            SignalGegen = leseRichtungsInfo(partialXmlReader.ReadSubtree(), out betriebstStelleGegen);
                         }
                         else if (partialXmlReader.Name == "NachNorm")
                         {
@@ -213,26 +219,41 @@ namespace ZuSiFplEdit
                 partialXmlReader.Close();
             }
 
-            private Signal leseRichtungsInfo(XmlReader partialXmlReader)
+            private Signal leseRichtungsInfo(XmlReader partialXmlReader, out string betriebstelle)
             {
                 partialXmlReader.Read();
                 Signal tmpSignal = null;
+                betriebstelle = "";
 
                 SigVmax = Convert.ToSingle(partialXmlReader.GetAttribute("vMax"), CultureInfo.InvariantCulture.NumberFormat);
                 km = Convert.ToSingle(partialXmlReader.GetAttribute("km"), CultureInfo.InvariantCulture.NumberFormat);
+                
 
-                partialXmlReader.Read();
-                while ((partialXmlReader.NodeType == XmlNodeType.Whitespace || partialXmlReader.Name == "Ereignis") && partialXmlReader.Read()) { } //Zum Signal-Node vorlaufen
-                if (partialXmlReader.Name == "Signal")
+                while (partialXmlReader.Read())
                 {
-                    tmpSignal = new Signal(partialXmlReader.ReadSubtree());
-                    //string Name = partialXmlReader.GetAttribute("Signalname");
-                    //if (Name == null)
-                    //    Name = "";
-                    //string Stellwerk = partialXmlReader.GetAttribute("Stellwerk");
-                    //string Betriebstelle = partialXmlReader.GetAttribute("NameBetriebsstelle");
-                    //int Signaltyp = Convert.ToInt32(partialXmlReader.GetAttribute("SignalTyp"));
-                    //tmpSignal = new Signal(Name, Stellwerk, Betriebstelle, Signaltyp, false);
+                    if (partialXmlReader.Name == "Ereignis" && partialXmlReader.IsStartElement())
+                    {
+                        if (partialXmlReader.GetAttribute("Er") == "1000007" || partialXmlReader.GetAttribute("Er") == "1000010")
+                        {
+                            betriebstelle = partialXmlReader.GetAttribute("Beschr");
+                            if (betriebstelle == null /*|| betriebstelle.Contains('@')*/)
+                                betriebstelle = "";
+
+                            if (betriebstelle != "")
+                                Console.WriteLine(betriebstelle);
+                        }
+                    }
+                    if (partialXmlReader.Name == "Signal" && partialXmlReader.IsStartElement())
+                    {
+                        tmpSignal = new Signal(partialXmlReader.ReadSubtree());
+                        //string Name = partialXmlReader.GetAttribute("Signalname");
+                        //if (Name == null)
+                        //    Name = "";
+                        //string Stellwerk = partialXmlReader.GetAttribute("Stellwerk");
+                        //string Betriebstelle = partialXmlReader.GetAttribute("NameBetriebsstelle");
+                        //int Signaltyp = Convert.ToInt32(partialXmlReader.GetAttribute("SignalTyp"));
+                        //tmpSignal = new Signal(Name, Stellwerk, Betriebstelle, Signaltyp, false);
+                    } 
                 }
 
                 partialXmlReader.Close();
@@ -645,7 +666,8 @@ namespace ZuSiFplEdit
         public streckenElement[] StreckenElementeNachNr;
         public List<referenzElement> ReferenzElemente;
         public referenzElement[] ReferenzElementeNachNr;
-        public List<fahrStr> FahrStr;
+        public List<string> löschFahrstraßen;
+        public List<fahrStr> FahrStraßen;
         public List<referenzElement> Signale;
         public List<int> AlleSignale;
         public List<int> StartSignale;
@@ -684,7 +706,8 @@ namespace ZuSiFplEdit
             
 
             ReferenzElemente = new List<referenzElement>();
-            FahrStr = new List<fahrStr>();
+            löschFahrstraßen = new List<string>();
+            FahrStraßen = new List<fahrStr>();
             Signale = new List<referenzElement>();
             AlleSignale = new List<int>();
             StartSignale = new List<int>();
@@ -748,6 +771,10 @@ namespace ZuSiFplEdit
                     //if (aktModXml.Name == "Beschreibung")
                     //{
                     //}
+                    if (modXml.Name == "LoeschFahrstrasse")
+                    {
+                        löschFahrstraßen.Add(modXml.GetAttribute("FahrstrName"));
+                    }
                     if (modXml.Name == "UTM")
                     {
                         UTM_NS = Convert.ToInt32(modXml.GetAttribute("UTM_NS"));
@@ -825,7 +852,11 @@ namespace ZuSiFplEdit
                     }
 
                     if (modXml.Name == "Fahrstrasse")
-                        FahrStr.Add(new fahrStr(modXml.ReadSubtree()));
+                    {
+                        var fahrstraße = new fahrStr(modXml.ReadSubtree());
+                        if (!löschFahrstraßen.Contains(fahrstraße.FahrstrName))
+                            FahrStraßen.Add(fahrstraße);
+                    }
                 }
                 //else if (modXml.NodeType == XmlNodeType.EndElement && modXml.Name == "Strecke") break;
 

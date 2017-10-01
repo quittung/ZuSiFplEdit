@@ -33,14 +33,15 @@ namespace ZuSiFplEdit
         /// </summary>
         public void Laden()
         {
-            tbZugGattung.Text = Zug.Gattung;
-            tbZugNummer.Text = Zug.Zugnummer.ToString();
+            tbZugGattung.Text = Zug.gattung;
+            tbZugNummer.Text = Zug.zugnummer.ToString();
             tbVmax.Text = (Zug.vMax * 3.6f).ToString("f0");
-            
+            button_zugVerband.Text = Zug.zugVerbandName + " - Ändern";
+
             LB_waypoint.Items.Clear();
             LB_routenPunkte.Items.Clear();
 
-            foreach (var WP in Zug.WayPoints)
+            foreach (var WP in Zug.wegPunkte)
             {
                 LB_waypoint.Items.Add(WP);
             }
@@ -64,8 +65,8 @@ namespace ZuSiFplEdit
         /// </summary>
         public void setSignal(streckenModul.Signal signal)
         {
-            Zug.WayPoints.Add(new ZugFahrt.WayPoint(signal, Zug));
-            if (Zug.WayPoints.Count > 1)
+            Zug.wegPunkte.Add(new ZugFahrt.WegPunkt(signal, Zug));
+            if (Zug.wegPunkte.Count > 1)
             {
                 Zug.routeBerechnen();
             }
@@ -121,8 +122,8 @@ namespace ZuSiFplEdit
         {
             if (LB_waypoint.SelectedItem == null)
                 return;
-            Zug.WayPoints.RemoveAt(LB_waypoint.SelectedIndex);
-            if (Zug.WayPoints.Count > 1)
+            Zug.wegPunkte.RemoveAt(LB_waypoint.SelectedIndex);
+            if (Zug.wegPunkte.Count > 1)
             {
                 Zug.routeBerechnen();
             }
@@ -176,7 +177,7 @@ namespace ZuSiFplEdit
         /// </summary>
         private void tbZugGattung_TextChanged(object sender, EventArgs e)
         {
-            Zug.Gattung = tbZugGattung.Text;
+            Zug.gattung = tbZugGattung.Text;
             ThreadPool.QueueUserWorkItem(tbColorAck, tbZugGattung);
         }
 
@@ -185,7 +186,7 @@ namespace ZuSiFplEdit
         /// </summary>
         private void tbZugNummer_TextChanged(object sender, EventArgs e)
         {
-            if (int.TryParse(tbZugNummer.Text, out Zug.Zugnummer))
+            if (long.TryParse(tbZugNummer.Text, out Zug.zugnummer))
             {
                 ThreadPool.QueueUserWorkItem(tbColorAck, tbZugNummer);
             }
@@ -222,17 +223,17 @@ namespace ZuSiFplEdit
             Point point = LB_waypoint.PointToClient(new Point(e.X, e.Y));
             int index = LB_waypoint.IndexFromPoint(point);
             if (index < 0) index = LB_waypoint.Items.Count - 1;
-            object data = e.Data.GetData(typeof(ZugFahrt.WayPoint));
+            object data = e.Data.GetData(typeof(ZugFahrt.WegPunkt));
             LB_waypoint.Items.Remove(data);
             LB_waypoint.Items.Insert(index, data);
 
-            Zug.WayPoints.Clear();
+            Zug.wegPunkte.Clear();
             foreach(var WP in LB_waypoint.Items)
             {
-                Zug.WayPoints.Add((ZugFahrt.WayPoint)WP);
+                Zug.wegPunkte.Add((ZugFahrt.WegPunkt)WP);
             }
 
-            if (Zug.WayPoints.Count > 1)
+            if (Zug.wegPunkte.Count > 1)
             {
                 Zug.routeBerechnen();
             }
@@ -328,7 +329,7 @@ namespace ZuSiFplEdit
             if (routenPunkt == null)
                 return;
 
-            var wegPunkt = new ZugFahrt.WayPoint(routenPunkt.signal, Zug);
+            var wegPunkt = new ZugFahrt.WegPunkt(routenPunkt.signal, Zug);
             //wegPunkt.ankunft = routenPunkt.ankunft;
             //wegPunkt.abfahrt = routenPunkt.abfahrt;
 
@@ -337,7 +338,7 @@ namespace ZuSiFplEdit
             //if (wegPunkt.abfahrt != new DateTime())
             //    wegPunkt.abfahrt_gesetzt = true;
 
-            Zug.WayPoints.Insert(Zug.WayPoints.IndexOf(routenPunkt.letzterWegPunkt) + 1, wegPunkt);
+            Zug.wegPunkte.Insert(Zug.wegPunkte.IndexOf(routenPunkt.letzterWegPunkt) + 1, wegPunkt);
 
             neuBerechnen(wegPunkt);
         }
@@ -415,9 +416,9 @@ namespace ZuSiFplEdit
             routenPunktLaden();
         }
 
-        private void neuBerechnen(ZugFahrt.WayPoint auswahl)
+        private void neuBerechnen(ZugFahrt.WegPunkt auswahl)
         {
-            if (Zug.WayPoints.Count > 1)
+            if (Zug.wegPunkte.Count > 1)
             {
                 Zug.routeBerechnen();
             }
@@ -427,7 +428,7 @@ namespace ZuSiFplEdit
             LB_routenPunkte.SelectedItem = routenPunkt;
         }
 
-        private DateTime sucheZeit(ZugFahrt.WayPoint wegPunkt, bool ankunft)
+        private DateTime sucheZeit(ZugFahrt.WegPunkt wegPunkt, bool ankunft)
         {
 
             var zeit = wegPunkt.abfahrt;

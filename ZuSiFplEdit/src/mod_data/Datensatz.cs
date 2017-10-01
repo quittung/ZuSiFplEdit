@@ -37,5 +37,35 @@ namespace ZuSiFplEdit
 
             return null;
         }
+
+        public streckenModul.Fahrstraße sucheFahrstraße(string name)
+        {
+            foreach (var modul in module)
+            {
+                foreach (var fahrstraße in modul.fahrstraßen)
+                {
+                    if (fahrstraße.name == name)
+                    {
+                        return fahrstraße;
+                    }
+                }
+            }
+            return null;
+        }
+
+        public streckenModul.Signal sucheSignal(string betriebststelle, string name)
+        {
+            foreach (var modul in module)
+            {
+                foreach (var signal in modul.signale)
+                {
+                    if (signal.betriebsstelle == betriebststelle && signal.name == name)
+                    {
+                        return signal;
+                    }
+                }
+            }
+            return null;
+        }
     }
 }

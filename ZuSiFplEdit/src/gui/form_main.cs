@@ -77,20 +77,20 @@ namespace ZuSiFplEdit
 
             ladeAnzeige.Hide();
             ladeAnzeige = null;
+            
+            //Fahrplan initialisieren
+            fahrplan = new Fahrplan();
 
             //Modulekarte vorbereiten
             debugX = mMap.Width;
             debugY = mMap.Height;
-            kartenZeichner = new mapDraw(mMap.Width, mMap.Height, datenFertig.module, ZugFahrtBox);
+            kartenZeichner = new mapDraw(mMap.Width, mMap.Height, datenFertig, fahrplan, ZugFahrtBox);
 
             //Module ausgeben
             foreach (streckenModul modul in datenFertig.module)
             {
-                modListBox.Items.Add(modul.name);
+                modListBox.Items.Add(modul);
             }
-
-            //Fahrplan initialisieren
-            fahrplan = new Fahrplan();
         }
 
 
@@ -189,7 +189,6 @@ namespace ZuSiFplEdit
             }
         }    
         
-
         private void mMap_MouseDown(object sender, MouseEventArgs e)
         {
             mMap.Focus();
@@ -257,9 +256,21 @@ namespace ZuSiFplEdit
                         if (kartenZeichner.getModulDistance(nächstesModul, e.X, e.Y) < 10)
                         {
                             nächstesModul.selected = !nächstesModul.selected;
+                            if (fahrplan.module.Contains(nächstesModul))
+                            {
+                                fahrplan.module.Remove(nächstesModul);
+                                modListBox.SelectedItems.Remove(nächstesModul);
+                                nächstesModul.selected = false;
+                            }
+                            else
+                            {
+                                fahrplan.module.Add(nächstesModul);
+                                modListBox.SelectedItems.Add(nächstesModul);
+                                nächstesModul.selected = true;
+                            }
+
                             kartenZeichner.message = dataConstructor.fortschrittMeldung;
                             mMap.Image = kartenZeichner.draw();
-                            modListBox.SetSelected(datenFertig.module.IndexOf(nächstesModul), nächstesModul.selected);
                         }
                     }
                 }
@@ -296,17 +307,15 @@ namespace ZuSiFplEdit
         /// <param name="e"></param>
         private void modListBox_SelectedValueChanged(object sender, EventArgs e)
         {
-            for (int i = 0; i < datenFertig.module.Count; i++)
+            if (!guiBereit)
+                return;
+
+            fahrplan.module.Clear();
+            foreach (streckenModul modul in modListBox.SelectedItems)
             {
-                if (modListBox.SelectedIndices.Contains(i))
-                {
-                    datenFertig.module[i].selected = true;
-                }
-                else
-                {
-                    datenFertig.module[i].selected = false;
-                }
+                fahrplan.modulHinzufügen(modul);
             }
+
             kartenZeichner.message = dataConstructor.fortschrittMeldung;
             mMap.Image = kartenZeichner.draw();
         }
@@ -405,7 +414,7 @@ namespace ZuSiFplEdit
         {
             var tmpZugfahrt = new ZugFahrt(datenFertig);
 
-            tmpZugfahrt.Gattung = "RB";
+            tmpZugfahrt.gattung = "RB";
             
             int ZugNummer = 0;
             bool ZugNummerBesetzt = true;
@@ -414,20 +423,19 @@ namespace ZuSiFplEdit
                 ZugNummer++;
                 ZugNummerBesetzt = ZNBesetzt(ZugNummer);
             }
-            tmpZugfahrt.Zugnummer = ZugNummer;
+            tmpZugfahrt.zugnummer = ZugNummer;
 
             fahrplan.zugFahrten.Add(tmpZugfahrt);
             ZugFahrtBox.Items.Add(tmpZugfahrt);
             ZugFahrtBox.SelectedItem = tmpZugfahrt;
         }
         
-
         bool ZNBesetzt(int ZN)
         {
             bool ZugNummerBesetzt = false;
             foreach (ZugFahrt zug in fahrplan.zugFahrten)
             {
-                if (zug.Zugnummer == ZN)
+                if (zug.zugnummer == ZN)
                 {
                     ZugNummerBesetzt = true;
                     break;
@@ -435,12 +443,6 @@ namespace ZuSiFplEdit
             }
             return ZugNummerBesetzt;
         }
-
-        public void zfbUpdate()
-        {
-            ZugFahrtBox.Items[ZugFahrtBox.SelectedIndex] = ZugFahrtBox.SelectedItem;
-        }
-
         
         private void ZugFahrtBox_SelectedValueChanged(object sender, EventArgs e)
         {
@@ -475,7 +477,21 @@ namespace ZuSiFplEdit
 
         private void ladenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //FahrplanLaden.fahrplanÖffnen(datenFertig);
+            FahrplanLaden.fahrplanÖffnen(fahrplan, datenFertig);
+
+            guiBereit = false;
+            modListBox.SelectedItems.Clear();
+            foreach (var modul in fahrplan.module)
+            {
+                modListBox.SelectedItems.Add(modul);
+            }
+
+            ZugFahrtBox.Items.Clear();
+            foreach (var zug in fahrplan.zugFahrten)
+            {
+                ZugFahrtBox.Items.Add(zug);
+            }
+            guiBereit = true;
         }
     }
 }

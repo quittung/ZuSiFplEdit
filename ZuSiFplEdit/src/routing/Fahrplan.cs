@@ -27,7 +27,7 @@ namespace ZuSiFplEdit
         /// Liste mit allen für den Fahrplan ausgewählten Modulen
         /// </summary>
         public List<streckenModul> module;
-
+        
         /// <summary>
         /// Bereitet die Listen vor und gibt Standardwerte vor
         /// </summary>
@@ -89,10 +89,29 @@ namespace ZuSiFplEdit
         /// Fügt Module zur Liste hinzu, wenn es noch nicht in der Liste vorhanden ist
         /// </summary>
         /// <param name="modul"></param>
-        void modulHinzufügen(streckenModul modul)
+        public void modulHinzufügen(streckenModul modul)
         {
             if (!module.Contains(modul))
                 module.Add(modul);
+        }
+
+        /// <summary>
+        /// Ist eine Zugnummer bereits vergeben?
+        /// </summary>
+        /// <param name="zugnummer"></param>
+        /// <returns></returns>
+        public bool zugnummerVergeben(long zugnummer)
+        {
+            bool ZugNummerBesetzt = false;
+            foreach (ZugFahrt zug in zugFahrten)
+            {
+                if (zug.zugnummer == zugnummer)
+                {
+                    ZugNummerBesetzt = true;
+                    break;
+                }
+            }
+            return ZugNummerBesetzt;
         }
     }
 }

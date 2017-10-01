@@ -63,7 +63,7 @@ namespace ZuSiFplEdit
                     writeTRN(zug);
                 else
                 {
-                    MessageBox.Show("Zug " + zug.Gattung + zug.Zugnummer + " hat keine Route.");
+                    MessageBox.Show("Zug " + zug.gattung + zug.zugnummer + " hat keine Route.");
                     break;
                 }
             }
@@ -97,7 +97,7 @@ namespace ZuSiFplEdit
             foreach (var zug in Zugfahrten)
             {
                 fpn_file.WriteLine("<Zug>");
-                fpn_file.WriteLine("<Datei Dateiname=\"" + Path.Combine(fpnRelSubDir, zug.Gattung + zug.Zugnummer + ".trn") + "\"/>");
+                fpn_file.WriteLine("<Datei Dateiname=\"" + Path.Combine(fpnRelSubDir, zug.gattung + zug.zugnummer + ".trn") + "\"/>");
                 fpn_file.WriteLine("</Zug>");
             }
 
@@ -146,7 +146,7 @@ namespace ZuSiFplEdit
 
         void writeTRN(ZugFahrt zug)
         {
-            string path = Path.Combine(fpnSubDir, zug.Gattung + zug.Zugnummer + ".trn");
+            string path = Path.Combine(fpnSubDir, zug.gattung + zug.zugnummer + ".trn");
             var trn_file = new StreamWriter(path, false);
 
             trn_file.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -154,7 +154,7 @@ namespace ZuSiFplEdit
             trn_file.WriteLine("<Info DateiTyp=\"Zug\" Version=\"A.1\" MinVersion=\"A.1\">");
             trn_file.WriteLine("<AutorEintrag/>");
             trn_file.WriteLine("</Info>");
-            trn_file.WriteLine("<Zug Gattung=\"" + zug.Gattung + "\" Nummer=\"" + zug.Zugnummer + "\" Prio=\"5000\" Bremsstellung=\"4\" Rekursionstiefe=\"5\" FahrstrName=\"" + zug.route[0].fahrstraße.name.Replace(">", "&gt;") + "\" Zugtyp=\"1\" Buchfahrplandll=\"_InstSetup\\lib\\timetable\\Buchfahrplan_DB_2006.dll\">");
+            trn_file.WriteLine("<Zug Gattung=\"" + zug.gattung + "\" Nummer=\"" + zug.zugnummer + "\" Prio=\"5000\" Bremsstellung=\"4\" Rekursionstiefe=\"5\" FahrstrName=\"" + zug.route[0].fahrstraße.name.Replace(">", "&gt;") + "\" Zugtyp=\"1\" Buchfahrplandll=\"_InstSetup\\lib\\timetable\\Buchfahrplan_DB_2006.dll\">");
             trn_file.WriteLine("<Datei Dateiname=\"" + fpnRelPath + "\" NurInfo=\"1\"/>");
 
             for (int i = 0; i < zug.route.Count; i++)

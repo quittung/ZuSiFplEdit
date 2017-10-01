@@ -41,6 +41,8 @@ namespace ZuSiFplEdit
         List<streckenModul> modList;
         List<streckenModul> modVisible;
         ListBox ZFBox;
+        Datensatz datensatz;
+        Fahrplan fahrplan;
         public Bitmap frame;
         Graphics framebuffer;
 
@@ -81,11 +83,13 @@ namespace ZuSiFplEdit
 
 
 
-        public mapDraw(int width, int height, List<streckenModul> mList, ListBox ZFBox)
+        public mapDraw(int width, int height, Datensatz datensatz, Fahrplan fahrplan, ListBox ZFBox)
         {
+            this.datensatz = datensatz;
+            this.fahrplan = fahrplan;
             map_width_p = width;
             map_height_p = height;
-            modList = mList;
+            modList = datensatz.module;
             modVisible = new List<streckenModul>();
             this.ZFBox = ZFBox; 
 
@@ -293,7 +297,7 @@ namespace ZuSiFplEdit
                         int circleSize = 8; //Größe der Modulkreise
                         if ((pixPerGrad > 2) || mod.knotenpunkt || mod.selected)
                         {
-                            if (mod.selected)
+                            if (fahrplan.module.Contains(mod)) //TODO: Effizienter machen
                             {
                                 framebuffer.FillEllipse(Brushes.Red, pixPos.X - circleSize / 2, pixPos.Y - circleSize / 2, circleSize, circleSize);
                                 framebuffer.DrawEllipse(pen_unselected, pixPos.X - circleSize / 2, pixPos.Y - circleSize / 2, circleSize, circleSize);

@@ -116,7 +116,7 @@
             this.button_zugVerband.Name = "button_zugVerband";
             this.button_zugVerband.Size = new System.Drawing.Size(102, 23);
             this.button_zugVerband.TabIndex = 18;
-            this.button_zugVerband.Text = "LINT - Ändern";
+            this.button_zugVerband.Text = "Laden";
             this.button_zugVerband.UseVisualStyleBackColor = true;
             this.button_zugVerband.Click += new System.EventHandler(this.button_zugVerband_Click);
             // 
@@ -190,7 +190,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.63523F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.36477F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 226F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 227F));
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.LB_routenPunkte, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel1, 2, 0);
@@ -272,7 +272,7 @@
             this.LB_routenPunkte.FormattingEnabled = true;
             this.LB_routenPunkte.Location = new System.Drawing.Point(202, 3);
             this.LB_routenPunkte.Name = "LB_routenPunkte";
-            this.LB_routenPunkte.Size = new System.Drawing.Size(205, 394);
+            this.LB_routenPunkte.Size = new System.Drawing.Size(204, 394);
             this.LB_routenPunkte.TabIndex = 1;
             this.LB_routenPunkte.SelectedIndexChanged += new System.EventHandler(this.LB_signal_SelectedIndexChanged);
             // 
@@ -295,9 +295,9 @@
             this.panel1.Controls.Add(this.label_fahrstraße);
             this.panel1.Controls.Add(this.label_signal);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(413, 3);
+            this.panel1.Location = new System.Drawing.Point(412, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(221, 394);
+            this.panel1.Size = new System.Drawing.Size(222, 394);
             this.panel1.TabIndex = 3;
             // 
             // signalText

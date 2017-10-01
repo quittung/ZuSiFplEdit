@@ -14,7 +14,7 @@ namespace ZuSiFplEdit
         /// <summary>
         /// Enthält Informationen zu einem Wegpunkt und Funktionen zur Wegfindung
         /// </summary>
-        public class WayPoint
+        public class WegPunkt
         {
             public class aStarNode
             {
@@ -90,7 +90,7 @@ namespace ZuSiFplEdit
             /// <summary>
             /// Konstruktor für Wegpunkt von Signal
             /// </summary>
-            public WayPoint(streckenModul.Signal signal, ZugFahrt zug)
+            public WegPunkt(streckenModul.Signal signal, ZugFahrt zug)
             {
                 this.signal = signal;
                 this.zug = zug;
@@ -143,12 +143,7 @@ namespace ZuSiFplEdit
 
 
                 teilRoute = new List<streckenModul.Fahrstraße>();
-
-                Console.WriteLine("");
-                Console.WriteLine("");
-                Console.WriteLine("Geschätzte Fahrzeit: " + new DateTime().AddSeconds(CurrentNode.OverallDistance).ToString("HH:mm:ss"));
-
-
+                
                 int legStartIndex = route.Count;
                 int routenPunktZähler = 0;
 
@@ -161,8 +156,8 @@ namespace ZuSiFplEdit
                     //Endpunkte mit nächstem Waypoint verlinken
                     if(routenPunktZähler == 0)
                     {
-                        int eigenerIndex = zug.WayPoints.IndexOf(this);
-                        var nächsterWegPunkt = zug.WayPoints[eigenerIndex + 1];
+                        int eigenerIndex = zug.wegPunkte.IndexOf(this);
+                        var nächsterWegPunkt = zug.wegPunkte[eigenerIndex + 1];
                         tmp_routenPunkt.wegPunkt = nächsterWegPunkt;
                         nächsterWegPunkt.routenPunkt = tmp_routenPunkt;
                     }
@@ -172,7 +167,7 @@ namespace ZuSiFplEdit
                     routenPunktZähler++;
 
                     //Ersten Startpunkt verlinken
-                    if (CurrentNode.PreviousNode == null && zug.WayPoints.IndexOf(this) == 0)
+                    if (CurrentNode.PreviousNode == null && zug.wegPunkte.IndexOf(this) == 0)
                     {
                         tmp_routenPunkt.wegPunkt = this;
                         routenPunkt = tmp_routenPunkt;
@@ -235,14 +230,14 @@ namespace ZuSiFplEdit
             /// <summary>
             /// Wenn zutreffend, verlinkt den Wegpunkt, der diesem Routenpunkt exakt entspricht 
             /// </summary>
-            public WayPoint wegPunkt;
+            public WegPunkt wegPunkt;
             /// <summary>
             /// Wegpunkt, nach dem dieser Punkt nach einer Umwandlung einsortiert wird
             /// </summary>
-            public WayPoint letzterWegPunkt;
+            public WegPunkt letzterWegPunkt;
 
 
-            public RoutenPunkt(streckenModul.Signal signal, streckenModul.Fahrstraße anfahrt, bool relevant, bool wende, double fahrdauer, WayPoint letzterWegPunkt)
+            public RoutenPunkt(streckenModul.Signal signal, streckenModul.Fahrstraße anfahrt, bool relevant, bool wende, double fahrdauer, WegPunkt letzterWegPunkt)
             {
                 this.signal = signal;
                 this.fahrstraße = anfahrt;
@@ -273,15 +268,19 @@ namespace ZuSiFplEdit
         /// <summary>
         /// Enthält die Zuggattung (z.B. RB, IC)
         /// </summary>
-        public string Gattung;
+        public string gattung;
         /// <summary>
         /// Enthält eine im Fahplankontext einmalige Zugnummer
         /// </summary>
-        public int Zugnummer;
+        public long zugnummer;
+        /// <summary>
+        /// Zugpriorität in Meter
+        /// </summary>
+        public int prio;
         /// <summary>
         /// Enthält alle Wegpunkte der Zugfahrt
         /// </summary>
-        public List<WayPoint> WayPoints;
+        public List<WegPunkt> wegPunkte;
 
         public Datensatz datensatz;
 
@@ -313,15 +312,17 @@ namespace ZuSiFplEdit
         {
             this.datensatz = datensatz;
 
-            WayPoints = new List<WayPoint>();
+            wegPunkte = new List<WegPunkt>();
             route = new List<RoutenPunkt>();
             includeSignal = new List<bool>();
             vMax = 160f / 3.6f;
+            zugVerbandName = "LINT";
+            prio = 2500;
         }
 
         public override string ToString()
         {
-            return (Gattung + " " + Zugnummer.ToString());
+            return (gattung + " " + zugnummer.ToString());
         }
 
         /// <summary>
@@ -333,7 +334,7 @@ namespace ZuSiFplEdit
             route.Clear();
 
 
-            if (WayPoints.Count < 2)
+            if (wegPunkte.Count < 2)
             {
                 MessageBox.Show("Weniger als zwei Wegpunkte sind bekannt.\nFahrweg kann nicht berechnet werden.");
                 return;
@@ -345,12 +346,12 @@ namespace ZuSiFplEdit
                 return;
             }
 
-            for (int i = 0; i < WayPoints.Count - 1; i++)
+            for (int i = 0; i < wegPunkte.Count - 1; i++)
             {
-                WayPoints[i].streckeBerechnen(WayPoints[i].signal, WayPoints[i + 1].signal, route);
-                if (WayPoints[i].teilRoute != null) //TODO: Abbruch anders erkennen
+                wegPunkte[i].streckeBerechnen(wegPunkte[i].signal, wegPunkte[i + 1].signal, route);
+                if (wegPunkte[i].teilRoute != null) //TODO: Abbruch anders erkennen
                 {
-                    for (int b = 1; b < WayPoints[i].teilRoute.Count; b++)
+                    for (int b = 1; b < wegPunkte[i].teilRoute.Count; b++)
                     {
                         includeSignal.Add(false);
                     }
@@ -386,7 +387,7 @@ namespace ZuSiFplEdit
             route_länge = 0;
 
             //Werte aus Wegpunkte eintragen
-            foreach (var wegPunkt in WayPoints)
+            foreach (var wegPunkt in wegPunkte)
             {
                 var routenPunkt = wegPunkt.routenPunkt;
 
@@ -422,7 +423,7 @@ namespace ZuSiFplEdit
                 {
                     route[i].fahrdauer += zeitverlustDurchBeschleunigung(0, route[i].fahrstraße.vStart, 0.5);
                 }
-                if ((route[i].wegPunkt != null && route[i].wegPunkt.ankunft_gesetzt) || wende)
+                if ((route[i].wegPunkt != null && route[i].wegPunkt.ankunft_gesetzt) || wende) //TODO: Warum nicht bei Wegpunkten? (zzz)
                 {
                     route[i].fahrdauer += zeitverlustDurchBeschleunigung(route[i].fahrstraße.vZiel, 0, 0.5);
                 }
@@ -478,6 +479,8 @@ namespace ZuSiFplEdit
                 route_dauer += (long)fahrdauer;
                 route[i].fahrzeitÜberschuss = fahrdauer - route[i].fahrdauer;
             }
+
+            Console.WriteLine("Planzeit " + gattung + zugnummer + ": " + new DateTime().AddSeconds(route_dauer).ToString("HH:mm:ss"));
         }
 
         public static double zeitverlustDurchBeschleunigung(double vStart, double vZiel, double beschleunigung)
@@ -495,8 +498,8 @@ namespace ZuSiFplEdit
             var zeitDurchfahrt = strecke / vStart;
             
             double zeitverlust = zeitBeschleunigung - zeitDurchfahrt;
+            //Console.WriteLine(vStart.ToString("f0") + "->" + vZiel.ToString("f0") + "(" + vDiff.ToString("f0") + ") = " + zeitverlust.ToString("f0") + "s (" + strecke.ToString("f0") + "m)");
             return zeitverlust;
         }
-
     }
 }

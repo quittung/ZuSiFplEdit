@@ -308,11 +308,17 @@ namespace ZuSiFplEdit
             
             if (dateTimePicker_Ankunft.Visible)
             {
-                signalText.Text = "Planhalt";
+                signalText.Text = "Planhalt\r\n";
             }
             else
             {
-                signalText.Text = "Durchfahrt";
+                signalText.Text = "Durchfahrt\r\n";
+            }
+
+            signalText.Text += "Betriebsstellen: \r\n";
+            foreach (var betriebsstelle in routenPunkt.fahrstraße.betriebsstellen)
+            {
+                signalText.Text += betriebsstelle.name + "\r\n";
             }
 
             guiBereit = true;

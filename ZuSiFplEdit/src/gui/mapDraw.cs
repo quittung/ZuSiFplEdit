@@ -353,11 +353,14 @@ namespace ZuSiFplEdit
                         {
                             pen = Pens.LightGray;
                         }
-                        //if (strE.hervorheben)
-                        //{
-                        //    pen = Pens.Red;
-                        //    textManager.Add(new textField(pixB.X, pixB.Y, strE.ToString()));
-                        //}
+                        if (strE.betriebstellen[0] != null || strE.betriebstellen[1] != null)
+                        {
+                            pen = Pens.Red;
+                            if (strE.betriebstellen[0] != null)
+                                textManager.Add(new textField(pixB.X, pixB.Y, strE.betriebstellen[0].name));
+                            if (strE.betriebstellen[1] != null)
+                                textManager.Add(new textField(pixB.X, pixB.Y, strE.betriebstellen[1].name));
+                        }
 
                         framebuffer.DrawLine(pen, pixB.X, pixB.Y, pixG.X, pixG.Y);
                     }

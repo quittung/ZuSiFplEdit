@@ -24,6 +24,7 @@ Gleisfunktionen (Binär):
 8 - Keine Schulter Rechts
 16 - Keine Schulter Links
 
+
 RefElTypen:
 0 - Aufgleispunkte
 1 - Modulgrenzen
@@ -32,11 +33,29 @@ RefElTypen:
 4 - Signale
 5 - Auflösepunkt
 
+
+Ereignisse:
+40 - VzG-Nummer
+6 - Buchfahrplaneintrag
+	Bahnsteige:
+		Rechts
+			1000007 - Bahnsteigstart
+			1000008 - Bahnsteigmitte?
+			1000009 - Bahnsteigende?
+		Links
+			1000010 - Bahnsteigstart
+			1000011 - Bahnsteigmitte?
+			1000012 - Bahnsteigende?
+
+			
 Fahrstraßen: RglGgl
-0 - Viele gleichwetige Fahrwege, z.B. Bahnhof
+0 - Viele gleichwertige Fahrwege, z.B. Bahnhof
 1 - Eingleisige strecke
 2 - Endet im Regelgleis
 3 - Endet im Gegengleis
+
+LöschFahrstraßen:
+Verzeichnet gelöschte Fahrstraßen, die nicht mehr in der st3-Datei vorhanden sind. Verarabeitung ist nicht notwendig.
 
 Streckenelemente:
 NachGegenModul und Gegenstück sind oftmals nicht aktuell 

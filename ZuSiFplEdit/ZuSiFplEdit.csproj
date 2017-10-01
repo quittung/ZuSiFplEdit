@@ -91,6 +91,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\FahrplanLaden.cs" />
     <Compile Include="src\fileops.cs" />
+    <Compile Include="src\gui\form_bildfahrplancs.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\gui\form_bildfahrplancs.Designer.cs">
+      <DependentUpon>form_bildfahrplancs.cs</DependentUpon>
+    </Compile>
     <Compile Include="src\gui\form_lade.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -116,11 +122,13 @@
       <DependentUpon>form_zugkonfig.cs</DependentUpon>
     </Compile>
     <Compile Include="src\gui\mapDraw.cs" />
+    <Compile Include="src\mod_data\Betriebsstelle.cs" />
     <Compile Include="src\mod_data\Datensatz.cs" />
     <Compile Include="src\mod_data\DataConstructor.cs" />
     <Compile Include="src\mod_data\streckenModul.cs" />
     <Compile Include="src\mod_data\UTM.cs" />
     <Compile Include="src\mod_data\st3Modul.cs" />
+    <Compile Include="src\mod_data\VzG_Strecke.cs" />
     <Compile Include="src\routing\Fahrplan.cs" />
     <Compile Include="src\routing\ZugFahrt.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">

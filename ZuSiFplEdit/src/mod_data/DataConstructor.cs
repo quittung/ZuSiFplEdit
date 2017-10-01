@@ -130,6 +130,11 @@ namespace ZuSiFplEdit
                     var endpunktG = new PunktUTM(elementRoh.g_X, elementRoh.g_Y);
 
                     var element = new streckenModul.Element(elementRoh.Nr, elementRoh.Funktion, elementRoh.km, elementRoh.spTrass, endpunktB, endpunktG);
+                    if (elementRoh.betriebstStelleNorm != "")
+                        element.betriebstellen[0] = datenFertig.sucheBetriebsstelle(elementRoh.betriebstStelleNorm, modulFertig);
+                    if (elementRoh.betriebstStelleGegen != "")
+                        element.betriebstellen[1] = datenFertig.sucheBetriebsstelle(elementRoh.betriebstStelleGegen, modulFertig);
+
                     modulFertig.elemente.Add(element);
                     
                     if (element.nummer > refNrMax)
@@ -251,7 +256,7 @@ namespace ZuSiFplEdit
 
                 //Erstelle Liste mit allen verwendeten Signalen
                 //TODO: Fahrstraßen, die in anderen Modulen starten und hier komplett enden, werden nicht eingelesen.
-                foreach (var fahrstraßeRoh in modulRoh.FahrStr)
+                foreach (var fahrstraßeRoh in modulRoh.FahrStraßen)
                 {
                     var signalRef = fahrstraßeRoh.StartRef;
                     var signalModul = findeModulRoh(fahrstraßeRoh.StartMod_Str);
@@ -317,7 +322,7 @@ namespace ZuSiFplEdit
                     if (typ == 13) //Unsichtbare Signale aussortieren
                         continue;
 
-                    var signalFertig = new streckenModul.Signal(signalReferenz, signalRoh.ToString(), name, betriebsstelle, typ, modulFertig, modulFertig.elementeLookup[signalRoh.StrElementNr], 1 - Convert.ToInt32(signalRoh.StrNorm));
+                    var signalFertig = new streckenModul.Signal(signalReferenz, signalRoh.ToString(), name, datenFertig.sucheBetriebsstelle(betriebsstelle, modulFertig), typ, modulFertig, modulFertig.elementeLookup[signalRoh.StrElementNr], 1 - Convert.ToInt32(signalRoh.StrNorm));
                     
                     modulFertig.signale.Add(signalFertig);
                 }
@@ -368,7 +373,7 @@ namespace ZuSiFplEdit
             {
                 var modulRoh = findeModulRoh(modulFertig.name);
 
-                foreach (var fahrstraßeRoh in modulRoh.FahrStr)
+                foreach (var fahrstraßeRoh in modulRoh.FahrStraßen)
                 {
                     var startModul = datenFertig.sucheModul(fahrstraßeRoh.StartMod_Str);
                     if (startModul == null)
@@ -386,7 +391,9 @@ namespace ZuSiFplEdit
 
                     double länge = fahrstraßeRoh.Laenge;
 
-                    double längeWeichenBereich = ermittleLängeAWB(fahrstraßeRoh, modulRoh, startSignal, länge);
+                    var betriebsstellen = new List<Betriebsstelle>();
+                    double längeWeichenBereich;
+                    ermittleLängeAWB(fahrstraßeRoh, modulRoh, startSignal, zielSignal, länge, out längeWeichenBereich, betriebsstellen); 
 
                     //vStart bestimmen
                     double vStart = 40 / 3.6;
@@ -417,7 +424,11 @@ namespace ZuSiFplEdit
 
                     double vZiel = zielSignal.streckenelement.vMax;
 
+                    if (!betriebsstellen.Contains(zielSignal.betriebsstelle))
+                        betriebsstellen.Add(zielSignal.betriebsstelle);
+
                     var fahrstraßeFertig = new streckenModul.Fahrstraße(startSignal, zielSignal, fahrstraßeRoh.FahrstrName, fahrstraßeRoh.FahrstrTyp, fahrstraßeRoh.RglGgl, länge, längeWeichenBereich, vStart, vZiel, fahrstraßeRoh.wichtung);
+                    fahrstraßeFertig.betriebsstellen = betriebsstellen;
                     modulFertig.fahrstraßen.Add(fahrstraßeFertig);
                 }
             }
@@ -514,12 +525,20 @@ namespace ZuSiFplEdit
         /// <param name="startSignal"></param>
         /// <param name="längeFahrstraße"></param>
         /// <returns></returns>
-        double ermittleLängeAWB(st3Modul.fahrStr fahrstraßeRoh, st3Modul modulRoh, streckenModul.Signal startSignal, double längeFahrstraße)
+        void ermittleLängeAWB(st3Modul.fahrStr fahrstraßeRoh, st3Modul modulRoh, streckenModul.Signal startSignal, streckenModul.Signal zielSignal, double längeFahrstraße, out double längeWeichenBereich, List<Betriebsstelle> betriebsstellen)
         {
-            if (startSignal.typ == 5 || startSignal.typ == 7 || startSignal.typ == 8 || startSignal.istZiel == false)
-                return längeFahrstraße;
+            längeWeichenBereich = 0;
+            double längePfad = 0;
+            bool längeBestimmt = false;
 
-            double längeWeichenBereich = 0;
+            if (startSignal.typ == 5 || startSignal.typ == 7 || startSignal.typ == 8 || startSignal.istZiel == false)
+            {
+                längeWeichenBereich = längeFahrstraße;
+                längeBestimmt = true;
+            }
+
+
+
             int suchrichtung = 0;
             if (startSignal.streckenelement.signale[1] == startSignal)
                 suchrichtung = 1;
@@ -538,33 +557,51 @@ namespace ZuSiFplEdit
 
             while (true)
             {
-                //Wurden alle Weichen des AWBs bereits abgefahren?
-                if (weichenÜberfahren == fahrstraßeRoh.weichen.Count)
-                {
-                    return längeWeichenBereich;
-                }
-
-                //Ist der erkannte AWB bereits länger als die Fahrstraße selbst?
-                //Dieser Fall tritt häufig aufgrund von (fehlerhaft eingetragenen?) Flankenschutzweichen auf
-                if (längeWeichenBereich > längeFahrstraße)
-                {
-                    //Console.WriteLine("LUe " + fahrstraßeRoh.FahrstrName + " | " + weichenPfad);
-                    if (längeBisLetzteWeiche == 0)
-                        return längeFahrstraße / 2;
-                    else
-                        return längeBisLetzteWeiche;
-                }
-
-
                 //Orientierung
                 suchrichtung = 0;
                 if (aktuellesElement.anschlüsse[0].Contains(letztesElement))
                     suchrichtung = 1;
 
+                //Betriebsstellen eintragen
+                if (aktuellesElement.betriebstellen[suchrichtung] != null && !betriebsstellen.Contains(aktuellesElement.betriebstellen[suchrichtung]))
+                    betriebsstellen.Add(aktuellesElement.betriebstellen[suchrichtung]);
+
+                //Wurden alle Weichen des AWBs bereits abgefahren?
+                if (weichenÜberfahren == fahrstraßeRoh.weichen.Count)
+                {
+                    längeBestimmt = true;
+                }
+
+                //Wurde das Zielsignal erreicht?
+                if (aktuellesElement.signale[suchrichtung] != null && aktuellesElement.signale[suchrichtung] == zielSignal) { }
+                    return;
+
+                //Ist der erkannte AWB bereits länger als die Fahrstraße selbst?
+                //Dieser Fall tritt häufig aufgrund von (fehlerhaft eingetragenen?) Flankenschutzweichen auf
+                if (längePfad > längeFahrstraße || aktuellesElement.anschlüsse[suchrichtung].Count == 0)
+                {
+                    //Console.WriteLine("LUe " + fahrstraßeRoh.FahrstrName + " | " + weichenPfad);
+                    if (längeBestimmt)
+                        return;
+                    if (längeBisLetzteWeiche == 0)
+                    {
+                        längeWeichenBereich = längeFahrstraße / 2;
+                        return;
+                    }
+                    else
+                    {
+                        längeWeichenBereich = längeBisLetzteWeiche;
+                        return;
+                    }
+                }
+
+
                 //Länge integrieren:
-                längeWeichenBereich += aktuellesElement.endpunkte[0].distanceTo(aktuellesElement.endpunkte[1]) * 1000;
-                
-                                
+                längePfad += aktuellesElement.endpunkte[0].distanceTo(aktuellesElement.endpunkte[1]) * 1000;
+                if (!längeBestimmt)
+                    längeWeichenBereich += aktuellesElement.endpunkte[0].distanceTo(aktuellesElement.endpunkte[1]) * 1000;
+
+
                 //Ist das aktuelle Element eine spitz befahrene Weiche?
                 if (aktuellesElement.anschlüsse[suchrichtung].Count() > 1)
                 {
@@ -578,14 +615,15 @@ namespace ZuSiFplEdit
                         if (weichenModul == null)
                         {
                             Console.WriteLine("MU  " + fahrstraßeRoh.FahrstrName);
-                            return längeFahrstraße / 2;
+                            längeFahrstraße = längeFahrstraße / 2;
+                            return;
                         }
 
                         //Existiert Referenzelement des Weichenvermerks?
                         if (weiche.referenzIndex >= weichenModul.ReferenzElementeNachNr.Count() || weichenModul.ReferenzElementeNachNr[weiche.referenzIndex] == null)
                         {
-                            Console.WriteLine("RU  " + fahrstraßeRoh.FahrstrName);
-                            return längeFahrstraße / 2;
+                            längeFahrstraße = längeFahrstraße / 2;
+                            return;
                         }
                         weiche.strEInt = weichenModul.ReferenzElementeNachNr[weiche.referenzIndex].StrElementNr;
 
@@ -606,8 +644,9 @@ namespace ZuSiFplEdit
                     //Dieser Fehler wird durch in falscher Reihenfolge eingelesene Elemente erzeugt
                     if (weichenAbfragen == fahrstraßeRoh.weichen.Count)
                     {
-                        //Console.WriteLine("WU" + weichenÜberfahren + " " + fahrstraßeRoh.FahrstrName + " | " + weichenPfad);
-                        return längeFahrstraße / 2;
+                        Console.WriteLine("WU" + weichenÜberfahren + " " + fahrstraßeRoh.FahrstrName + " | " + weichenPfad);
+                        längeFahrstraße = längeFahrstraße / 2;
+                        return;
                     }
                 }
                 else //Element war keine spitz befahrene Weiche
@@ -620,16 +659,22 @@ namespace ZuSiFplEdit
                         weichenPfad += ">" + aktuellesElement.nummer + " ";
                     }
 
-                    
-                    //Endet die Strecke mit dem aktuellen Element?
-                    if (aktuellesElement.anschlüsse[suchrichtung].Count == 0)
-                    {
-                        //Console.WriteLine("SE  " + fahrstraßeRoh.FahrstrName);
-                        if (längeBisLetzteWeiche == 0)
-                            return längeFahrstraße / 2;
-                        else
-                            return längeBisLetzteWeiche;
-                    }
+
+                    ////Endet die Strecke mit dem aktuellen Element?
+                    //if (aktuellesElement.anschlüsse[suchrichtung].Count == 0)
+                    //{
+                    //    //Console.WriteLine("SE  " + fahrstraßeRoh.FahrstrName);
+                    //    if (längeBisLetzteWeiche == 0)
+                    //    {
+                    //        längeFahrstraße = längeFahrstraße / 2;
+                    //        return;
+                    //    }
+                    //    else
+                    //    {
+                    //        längeFahrstraße = längeBisLetzteWeiche;
+                    //        return;
+                    //    }
+                    //}
 
                     //Vorbereiten auf nächsten Durchlauf
                     letztesElement = aktuellesElement;

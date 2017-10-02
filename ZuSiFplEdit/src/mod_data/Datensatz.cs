@@ -19,12 +19,14 @@ namespace ZuSiFplEdit
         public bool fahrstraßenBereit = false;
         public List<streckenModul> module;
         public List<Betriebsstelle> betriebsstellen;
+        public List<VzG_Strecke> strecken;
         public string datenVerzeichnis;
 
         public Datensatz(string datenVerzeichnis)
         {
             module = new List<streckenModul>();
             betriebsstellen = new List<Betriebsstelle>();
+            strecken = new List<VzG_Strecke>();
 
             this.datenVerzeichnis = datenVerzeichnis;
         }
@@ -48,6 +50,18 @@ namespace ZuSiFplEdit
                     return betriebsstelle;
             }
             return null;
+        }
+
+        public VzG_Strecke sucheStrecke(int nummer)
+        {
+            foreach (var strecke in strecken)
+            {
+                if (strecke.nummer == nummer)
+                    return strecke;
+            }
+            var strecke_neu = new VzG_Strecke(nummer);
+            strecken.Add(strecke_neu);
+            return strecke_neu;
         }
 
         public Betriebsstelle sucheBetriebsstelle(string name, streckenModul modul)

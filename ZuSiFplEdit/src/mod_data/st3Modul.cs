@@ -233,14 +233,14 @@ namespace ZuSiFplEdit
                 {
                     if (partialXmlReader.Name == "Ereignis" && partialXmlReader.IsStartElement())
                     {
-                        if (partialXmlReader.GetAttribute("Er") == "1000007" || partialXmlReader.GetAttribute("Er") == "1000010")
+                        if ((partialXmlReader.GetAttribute("Er") == "1000007" || partialXmlReader.GetAttribute("Er") == "1000010") && partialXmlReader.GetAttribute("Beschr") != "")
                         {
                             betriebstelle = partialXmlReader.GetAttribute("Beschr");
                             if (betriebstelle == null /*|| betriebstelle.Contains('@')*/)
                                 betriebstelle = "";
 
-                            if (betriebstelle != "")
-                                Console.WriteLine(betriebstelle);
+                            //if (betriebstelle != "")
+                            //    Console.WriteLine(betriebstelle);
                         }
                     }
                     if (partialXmlReader.Name == "Signal" && partialXmlReader.IsStartElement())

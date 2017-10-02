@@ -1,4 +1,4 @@
-﻿namespace ZuSiFplEdit.src.gui
+﻿namespace ZuSiFplEdit
 {
     partial class form_bildfahrplancs
     {
@@ -28,11 +28,35 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.BFP = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.BFP)).BeginInit();
+            this.SuspendLayout();
+            // 
+            // BFP
+            // 
+            this.BFP.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.BFP.Location = new System.Drawing.Point(0, 0);
+            this.BFP.Name = "BFP";
+            this.BFP.Size = new System.Drawing.Size(921, 515);
+            this.BFP.TabIndex = 0;
+            this.BFP.TabStop = false;
+            this.BFP.Click += new System.EventHandler(this.BFP_Click);
+            // 
+            // form_bildfahrplancs
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(921, 515);
+            this.Controls.Add(this.BFP);
+            this.Name = "form_bildfahrplancs";
             this.Text = "form_bildfahrplancs";
+            ((System.ComponentModel.ISupportInitialize)(this.BFP)).EndInit();
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private System.Windows.Forms.PictureBox BFP;
     }
 }

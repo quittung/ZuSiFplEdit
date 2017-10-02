@@ -322,7 +322,11 @@ namespace ZuSiFplEdit
                     if (typ == 13) //Unsichtbare Signale aussortieren
                         continue;
 
-                    var signalFertig = new streckenModul.Signal(signalReferenz, signalRoh.ToString(), name, datenFertig.sucheBetriebsstelle(betriebsstelle, modulFertig), typ, modulFertig, modulFertig.elementeLookup[signalRoh.StrElementNr], 1 - Convert.ToInt32(signalRoh.StrNorm));
+                    Betriebsstelle betriebsstelle_ref = null;
+                    if (betriebsstelle != "")
+                        betriebsstelle_ref = datenFertig.sucheBetriebsstelle(betriebsstelle, modulFertig);
+
+                    var signalFertig = new streckenModul.Signal(signalReferenz, signalRoh.ToString(), name, betriebsstelle_ref, typ, modulFertig, modulFertig.elementeLookup[signalRoh.StrElementNr], 1 - Convert.ToInt32(signalRoh.StrNorm));
                     
                     modulFertig.signale.Add(signalFertig);
                 }
@@ -429,6 +433,19 @@ namespace ZuSiFplEdit
 
                     var fahrstraßeFertig = new streckenModul.Fahrstraße(startSignal, zielSignal, fahrstraßeRoh.FahrstrName, fahrstraßeRoh.FahrstrTyp, fahrstraßeRoh.RglGgl, länge, längeWeichenBereich, vStart, vZiel, fahrstraßeRoh.wichtung);
                     fahrstraßeFertig.betriebsstellen = betriebsstellen;
+                    
+                    if (fahrstraßeRoh.FahrstrStrecke != null && fahrstraßeRoh.FahrstrStrecke != "")
+                    {
+                        int VzG_nummer;
+                        if (int.TryParse(fahrstraßeRoh.FahrstrStrecke.Substring(0, fahrstraßeRoh.FahrstrStrecke.Length - 1), out VzG_nummer))
+                        {
+                            fahrstraßeFertig.vzgStrecke = datenFertig.sucheStrecke(VzG_nummer);
+                            fahrstraßeFertig.richtung = fahrstraßeRoh.FahrstrStrecke.Last() == 'a';
+                            fahrstraßeFertig.vzgStrecke.fahrstraßeEintragen(fahrstraßeFertig);
+                        }
+                    }
+                    
+
                     modulFertig.fahrstraßen.Add(fahrstraßeFertig);
                 }
             }

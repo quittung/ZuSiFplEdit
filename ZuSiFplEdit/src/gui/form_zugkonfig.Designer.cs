@@ -48,6 +48,7 @@
             this.button3 = new System.Windows.Forms.Button();
             this.LB_routenPunkte = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.signalText = new System.Windows.Forms.TextBox();
             this.checkBox_Abfahrt = new System.Windows.Forms.CheckBox();
             this.checkBox_Ankunft = new System.Windows.Forms.CheckBox();
@@ -64,7 +65,7 @@
             this.label_überschrift = new System.Windows.Forms.Label();
             this.label_fahrstraße = new System.Windows.Forms.Label();
             this.label_signal = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.button4 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tpSetting.SuspendLayout();
             this.tpFaPla.SuspendLayout();
@@ -86,6 +87,7 @@
             // 
             // tpSetting
             // 
+            this.tpSetting.Controls.Add(this.button4);
             this.tpSetting.Controls.Add(this.label6);
             this.tpSetting.Controls.Add(this.button_zugVerband);
             this.tpSetting.Controls.Add(this.label3);
@@ -191,7 +193,7 @@
             this.tableLayoutPanel1.ColumnCount = 3;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.63523F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 51.36477F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 228F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 229F));
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.LB_routenPunkte, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.panel1, 2, 0);
@@ -273,7 +275,7 @@
             this.LB_routenPunkte.FormattingEnabled = true;
             this.LB_routenPunkte.Location = new System.Drawing.Point(201, 3);
             this.LB_routenPunkte.Name = "LB_routenPunkte";
-            this.LB_routenPunkte.Size = new System.Drawing.Size(204, 394);
+            this.LB_routenPunkte.Size = new System.Drawing.Size(203, 394);
             this.LB_routenPunkte.TabIndex = 1;
             this.LB_routenPunkte.SelectedIndexChanged += new System.EventHandler(this.LB_signal_SelectedIndexChanged);
             // 
@@ -297,10 +299,19 @@
             this.panel1.Controls.Add(this.label_fahrstraße);
             this.panel1.Controls.Add(this.label_signal);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(411, 3);
+            this.panel1.Location = new System.Drawing.Point(410, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(223, 394);
+            this.panel1.Size = new System.Drawing.Size(224, 394);
             this.panel1.TabIndex = 3;
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(7, 147);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(192, 21);
+            this.comboBox1.TabIndex = 20;
             // 
             // signalText
             // 
@@ -457,14 +468,15 @@
             this.label_signal.TabIndex = 0;
             this.label_signal.Text = "Signalname";
             // 
-            // comboBox1
+            // button4
             // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(7, 147);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(192, 21);
-            this.comboBox1.TabIndex = 20;
+            this.button4.Location = new System.Drawing.Point(23, 184);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(75, 23);
+            this.button4.TabIndex = 20;
+            this.button4.Text = "BFP";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // ZugForm
             // 
@@ -526,5 +538,6 @@
         private System.Windows.Forms.TextBox tbVmax;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.Button button4;
     }
 }

@@ -88,7 +88,8 @@ namespace ZuSiFplEdit
                 this.info = info;
                 this.name = name;
                 this.betriebsstelle = betriebsstelle;
-                betriebsstelle.signale.Add(this);
+                if (betriebsstelle != null)
+                    betriebsstelle.signale.Add(this);
                 this.typ = typ;
 
                 this.modul = modul;
@@ -119,8 +120,8 @@ namespace ZuSiFplEdit
 
             public string name;
             public string typ;
-            //public VzG_Strecke vzgStrecke;
-            //public bool richtung;
+            public VzG_Strecke vzgStrecke;
+            public bool richtung;
             public int RglGgl; //TODO: Information anders darstellen
 
             public double länge;

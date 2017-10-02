@@ -491,5 +491,11 @@ namespace ZuSiFplEdit
                 }
             }
         }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            var bfp = new form_bildfahrplancs(Zug);
+            bfp.Show();
+        }
     }
 }

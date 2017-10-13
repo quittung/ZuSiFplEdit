@@ -60,20 +60,20 @@ namespace ZuSiFplEdit
         double border_west;
 
         //Drawing layers:
-        bool drawModule = true;
-        bool drawModule_Punkte = true;
-        bool drawModule_Namen = true;
-        bool drawModule_Verbindungen = true;
-        bool drawModule_Grenzen = false;
+        public bool drawModule = true;
+        public bool drawModule_Punkte = true;
+        public bool drawModule_Namen = true;
+        public bool drawModule_Verbindungen = true;
+        public bool drawModule_Grenzen = false;
 
-        bool drawStrecke = false;
-        bool drawSignal_Start = true;
-        bool drawSignal_Ziel = true;
-        bool drawSignal_Namen = false;
+        public bool drawStrecke = false;
+        public bool drawSignal_Start = true;
+        public bool drawSignal_Ziel = true;
+        public bool drawSignal_Namen = false;
 
-        bool drawFahrstrassen = false;
+        public bool drawFahrstrassen = false;
 
-        bool drawRoute = true;
+        public bool drawRoute = true;
 
         /// <summary>
         /// Zusätzlicher String, der in der Karte angezeigt wird.
@@ -736,55 +736,6 @@ namespace ZuSiFplEdit
 
             double dist = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
             return dist;
-        }
-
-        [Obsolete]
-        public void setLayers(string layer, bool drawLayer)
-        {
-            if (layer == "module")
-            {
-                drawModule = drawLayer;
-            }
-            else if (layer == "module_punkte")
-            {
-                drawModule_Punkte = drawLayer;
-            }
-            else if (layer == "module_namen")
-            {
-                drawModule_Namen = drawLayer;
-            }
-            else if (layer == "module_verbindungen")
-            {
-                drawModule_Verbindungen = drawLayer;
-            }
-            else if (layer == "module_grenzen")
-            {
-                drawModule_Grenzen = drawLayer;
-            }
-            else if (layer == "strecke")
-            {
-                drawStrecke = drawLayer;
-            }
-            else if (layer == "signal_namen")
-            {
-                drawSignal_Namen = drawLayer;
-            }
-            else if (layer == "signal_start")
-            {
-                drawSignal_Start = drawLayer;
-            }
-            else if (layer == "signal_ziel")
-            {
-                drawSignal_Ziel = drawLayer;
-            }
-            else if (layer == "fahrstr")
-            {
-                drawFahrstrassen = drawLayer;
-            }
-            else if (layer == "route")
-            {
-                drawRoute = drawLayer;
-            }
         }
     }
 }

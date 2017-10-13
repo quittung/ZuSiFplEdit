@@ -331,14 +331,21 @@ namespace ZuSiFplEdit
             wegPunkte = new List<WegPunkt>();
             route = new List<RoutenPunkt>();
             includeSignal = new List<bool>();
-            vMax = 160f / 3.6f;
+            vMax = 120f / 3.6f;
             zugVerbandName = "LINT";
             prio = 2500;
         }
 
         public override string ToString()
         {
-            return (gattung + " " + zugnummer.ToString());
+            if (route.Count == 0)
+            {
+                return (gattung + " " + zugnummer.ToString());
+            }
+            else
+            {
+                return (gattung + " " + zugnummer.ToString() + " (" + route[0].fahrstraße.startSignal.betriebsstelle.name + " -> " + route[0].fahrstraße.zielSignal.betriebsstelle.name + ")");
+            }
         }
 
         /// <summary>

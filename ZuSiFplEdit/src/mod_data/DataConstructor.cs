@@ -406,10 +406,10 @@ namespace ZuSiFplEdit
                     double längeWeichenBereich;
                     ermittleLängeAWB(fahrstraßeRoh, modulRoh, startSignal, zielSignal, länge, out längeWeichenBereich, out streckenmarkierung, betriebsstellen); 
 
-                    if (streckenmarkierung != "")
-                    {
-                        Console.WriteLine(fahrstraßeRoh.FahrstrName + " -> " + streckenmarkierung);
-                    }
+                    //if (streckenmarkierung != "")
+                    //{
+                    //    Console.WriteLine(fahrstraßeRoh.FahrstrName + " -> " + streckenmarkierung);
+                    //}
 
                     //vStart bestimmen
                     double vStart = 40 / 3.6;

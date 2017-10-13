@@ -344,7 +344,14 @@ namespace ZuSiFplEdit
             }
             else
             {
-                return (gattung + " " + zugnummer.ToString() + " (" + route[0].fahrstraße.startSignal.betriebsstelle.name + " -> " + route[0].fahrstraße.zielSignal.betriebsstelle.name + ")");
+                if (route[0].fahrstraße.startSignal.betriebsstelle == null)
+                {
+                    return (gattung + " " + zugnummer.ToString() + " (" + route[0].fahrstraße.zielSignal.betriebsstelle.name + " -> " + route.Last().fahrstraße.zielSignal.betriebsstelle.name + ")");
+                }
+                else
+                {
+                    return (gattung + " " + zugnummer.ToString() + " (" + route[0].fahrstraße.startSignal.betriebsstelle.name + " -> " + route.Last().fahrstraße.zielSignal.betriebsstelle.name + ")");
+                }
             }
         }
 

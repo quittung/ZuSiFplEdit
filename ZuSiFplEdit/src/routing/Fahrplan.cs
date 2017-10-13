@@ -8,7 +8,7 @@ namespace ZuSiFplEdit
     /// <summary>
     /// Sammelklasse für den Fahrplan mit allen zugehörigen Informationen
     /// </summary>
-    class Fahrplan
+    public class Fahrplan
     {
         /// <summary>
         /// Simulationsstartpunkt

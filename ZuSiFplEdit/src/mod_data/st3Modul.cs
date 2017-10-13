@@ -130,6 +130,9 @@ namespace ZuSiFplEdit
             public string betriebstStelleNorm;
             public string betriebstStelleGegen;
 
+            public string streckenWechselNorm;
+            public string streckenWechselGegen;
+
 
             public Signal SignalNorm;
             public Signal SignalGegen;
@@ -141,6 +144,7 @@ namespace ZuSiFplEdit
                 partialXmlReader.Read();
 
                 Nr = Convert.ToInt32(partialXmlReader.GetAttribute("Nr"));
+                km = 0;
 
                 spTrass = Convert.ToSingle(partialXmlReader.GetAttribute("spTrass"), CultureInfo.InvariantCulture.NumberFormat);
                 SigVmax = spTrass;
@@ -155,6 +159,9 @@ namespace ZuSiFplEdit
 
                 betriebstStelleNorm = "";
                 betriebstStelleGegen = "";
+
+                streckenWechselNorm = "";
+                streckenWechselGegen = "";
 
 
                 while (partialXmlReader.Read())
@@ -179,11 +186,11 @@ namespace ZuSiFplEdit
                         }
                         else if (partialXmlReader.Name == "InfoNormRichtung")
                         {
-                            SignalNorm = leseRichtungsInfo(partialXmlReader.ReadSubtree(), out betriebstStelleNorm);
+                            SignalNorm = leseRichtungsInfo(partialXmlReader.ReadSubtree(), out betriebstStelleNorm, out streckenWechselNorm);
                         }
                         else if (partialXmlReader.Name == "InfoGegenRichtung")
                         {
-                            SignalGegen = leseRichtungsInfo(partialXmlReader.ReadSubtree(), out betriebstStelleGegen);
+                            SignalGegen = leseRichtungsInfo(partialXmlReader.ReadSubtree(), out betriebstStelleGegen, out streckenWechselGegen);
                         }
                         else if (partialXmlReader.Name == "NachNorm")
                         {
@@ -219,17 +226,20 @@ namespace ZuSiFplEdit
                 partialXmlReader.Close();
             }
 
-            private Signal leseRichtungsInfo(XmlReader partialXmlReader, out string betriebstelle)
+            private Signal leseRichtungsInfo(XmlReader partialXmlReader, out string betriebstelle, out string streckenWechsel)
             {
                 partialXmlReader.Read();
                 Signal tmpSignal = null;
                 betriebstelle = "";
+                streckenWechsel = "";
 
                 SigVmax = Convert.ToSingle(partialXmlReader.GetAttribute("vMax"), CultureInfo.InvariantCulture.NumberFormat);
-                km = Convert.ToSingle(partialXmlReader.GetAttribute("km"), CultureInfo.InvariantCulture.NumberFormat);
-                
+                var km_tmp = Convert.ToSingle(partialXmlReader.GetAttribute("km"), CultureInfo.InvariantCulture.NumberFormat);
+                if (km_tmp > 0)
+                    km = km_tmp;
 
-                while (partialXmlReader.Read())
+
+                    while (partialXmlReader.Read())
                 {
                     if (partialXmlReader.Name == "Ereignis" && partialXmlReader.IsStartElement())
                     {
@@ -241,6 +251,13 @@ namespace ZuSiFplEdit
 
                             //if (betriebstelle != "")
                             //    Console.WriteLine(betriebstelle);
+                        }
+
+                        if (partialXmlReader.GetAttribute("Er") == "40" && partialXmlReader.GetAttribute("Beschr") != "")
+                        {
+                            streckenWechsel = partialXmlReader.GetAttribute("Beschr");
+                            if (streckenWechsel == null)
+                                streckenWechsel = "";
                         }
                     }
                     if (partialXmlReader.Name == "Signal" && partialXmlReader.IsStartElement())

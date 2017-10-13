@@ -96,7 +96,7 @@ namespace ZuSiFplEdit
             {
                 foreach (var signal in modul.signale)
                 {
-                    if (signal.betriebsstelle.name == betriebststelle && signal.name == name)
+                    if (signal.betriebsstelle != null && signal.betriebsstelle.name == betriebststelle && signal.name == name)
                     {
                         return signal;
                     }

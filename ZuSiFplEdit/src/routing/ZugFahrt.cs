@@ -115,7 +115,7 @@ namespace ZuSiFplEdit
                 {
                     ClosedNodes.Add(CurrentNode);
 
-                    foreach (var AdjacentVertex in CurrentNode.Node.abgehendeFahrstraßen)
+                    foreach (var AdjacentVertex in CurrentNode.Node.fahrstraßenStartend)
                     {
                         if ((AdjacentVertex.zielSignal != null) && (findDuplicateAStarByNode(AdjacentVertex.zielSignal, ClosedNodes) == null))
                         {
@@ -194,7 +194,7 @@ namespace ZuSiFplEdit
             {
                 var signal = fahrstraße.zielSignal;
 
-                bool relevant = (fahrstraße.startSignal.abgehendeFahrstraßen.Count > 1);
+                bool relevant = (fahrstraße.startSignal.fahrstraßenStartend.Count > 1);
 
                 bool wende = fahrstraße.typ == "TypWende";
 

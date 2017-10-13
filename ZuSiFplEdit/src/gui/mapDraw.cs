@@ -353,13 +353,21 @@ namespace ZuSiFplEdit
                         {
                             pen = Pens.LightGray;
                         }
-                        if (strE.betriebstellen[0] != null || strE.betriebstellen[1] != null)
+                        //if (strE.betriebstellen[0] != null || strE.betriebstellen[1] != null)
+                        //{
+                        //    pen = Pens.Red;
+                        //    if (strE.betriebstellen[0] != null)
+                        //        textManager.Add(new textField(pixB.X, pixB.Y, strE.betriebstellen[0].name));
+                        //    if (strE.betriebstellen[1] != null)
+                        //        textManager.Add(new textField(pixG.X, pixG.Y, strE.betriebstellen[1].name));
+                        //}
+                        if (strE.streckenmarkierung[0] != "" || strE.streckenmarkierung[1] != "")
                         {
                             pen = Pens.Red;
-                            if (strE.betriebstellen[0] != null)
-                                textManager.Add(new textField(pixB.X, pixB.Y, strE.betriebstellen[0].name));
-                            if (strE.betriebstellen[1] != null)
-                                textManager.Add(new textField(pixB.X, pixB.Y, strE.betriebstellen[1].name));
+                            if (strE.streckenmarkierung[0] != "")
+                                textManager.Add(new textField(pixB.X, pixB.Y, strE.streckenmarkierung[0]));
+                            if (strE.streckenmarkierung[1] != "")
+                                textManager.Add(new textField(pixG.X, pixG.Y, strE.streckenmarkierung[1]));
                         }
 
                         framebuffer.DrawLine(pen, pixB.X, pixB.Y, pixG.X, pixG.Y);
@@ -405,10 +413,7 @@ namespace ZuSiFplEdit
                         {
                             var start = UtmToPix(fstr.startSignal.streckenelement.endpunkte[fstr.startSignal.richtung]);
                             var ziel = UtmToPix(fstr.zielSignal.streckenelement.endpunkte[fstr.zielSignal.richtung]);
-
-                            //framebuffer.DrawString("Fstr:" + fstr.FahrstrName, new Font("Verdana", 8), Brushes.Black, start_x + 3, start_y + 3);
-
-
+                            
                             var pen = Pens.Violet;
 
                             if (fstr.RglGgl == 0)
@@ -472,6 +477,7 @@ namespace ZuSiFplEdit
             double p1Xcoord = signal.streckenelement.endpunkte[signalRichtung].WE;
             double p1Ycoord = signal.streckenelement.endpunkte[signalRichtung].NS;
 
+            
             //Signaldreieck berechnen
             //Spitze
             int p1X = coordToPix(p1Xcoord, false);
@@ -482,14 +488,21 @@ namespace ZuSiFplEdit
                 return;
 
             //Namen zeichnen
+            string vzgString = "";
+            foreach (var streckenPunkt in signal.streckenPunkte)
+            {
+                vzgString += streckenPunkt.strecke.ToString() + " Km " + streckenPunkt.km.ToString("f1") + "   ";
+            }
+            if (vzgString == "")
+                vzgString += "VzG #### Km " + signal.streckenelement.kilometer.ToString("f1") + "   ";
+            textManager.Add(new textField(p1X, p1Y, vzgString));
+
             if (drawSignal_Namen)
                 textManager.Add(new textField(p1X, p1Y, signal.ToString()));
 
             //Vorbereitung für andere Punkte:
 
             //Vektor zeigt zum anderen Ende
-            
-
             double VX = signal.streckenelement.endpunkte[antiSignalRichtung].WE - p1Xcoord;
             double VY = signal.streckenelement.endpunkte[antiSignalRichtung].NS - p1Ycoord;
             

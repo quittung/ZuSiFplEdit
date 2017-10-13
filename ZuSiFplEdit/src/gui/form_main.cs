@@ -43,7 +43,7 @@ namespace ZuSiFplEdit
         {
             InitializeComponent();
 
-            ZugKonfigForm = new ZugForm();
+            ZugKonfigForm = new ZugForm(fahrplan);
             ZugKonfigForm.Owner = this;
             ZugForm.signalSelectionEvent += new SignalSelectEventHandler(signalSelect);
 
@@ -469,7 +469,7 @@ namespace ZuSiFplEdit
             if (ZugFahrtBox.SelectedItem == null)
                 return;
 
-            ZugKonfigForm = new ZugForm();
+            ZugKonfigForm = new ZugForm(fahrplan);
             ZugKonfigForm.Owner = this;
             ZugKonfigForm.setZug((ZugFahrt)ZugFahrtBox.SelectedItem);
             ZugKonfigForm.Show();

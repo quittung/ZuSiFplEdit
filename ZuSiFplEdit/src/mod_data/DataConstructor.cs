@@ -48,6 +48,8 @@ namespace ZuSiFplEdit
             verlinkeFolgestraßen();
             datenFertig.fahrstraßenBereit = true;
 
+            verbindeVzGStrecken();
+
             datenRohform.Clear();
             datenRohform = null;
 
@@ -130,10 +132,14 @@ namespace ZuSiFplEdit
                     var endpunktG = new PunktUTM(elementRoh.g_X, elementRoh.g_Y);
 
                     var element = new streckenModul.Element(elementRoh.Nr, elementRoh.Funktion, elementRoh.km, elementRoh.spTrass, endpunktB, endpunktG);
+
                     if (elementRoh.betriebstStelleNorm != "")
                         element.betriebstellen[0] = datenFertig.sucheBetriebsstelle(elementRoh.betriebstStelleNorm, modulFertig);
                     if (elementRoh.betriebstStelleGegen != "")
                         element.betriebstellen[1] = datenFertig.sucheBetriebsstelle(elementRoh.betriebstStelleGegen, modulFertig);
+                    
+                    element.streckenmarkierung[0] = elementRoh.streckenWechselNorm;
+                    element.streckenmarkierung[1] = elementRoh.streckenWechselGegen;
 
                     modulFertig.elemente.Add(element);
                     
@@ -396,8 +402,14 @@ namespace ZuSiFplEdit
                     double länge = fahrstraßeRoh.Laenge;
 
                     var betriebsstellen = new List<Betriebsstelle>();
+                    string streckenmarkierung = "";
                     double längeWeichenBereich;
-                    ermittleLängeAWB(fahrstraßeRoh, modulRoh, startSignal, zielSignal, länge, out längeWeichenBereich, betriebsstellen); 
+                    ermittleLängeAWB(fahrstraßeRoh, modulRoh, startSignal, zielSignal, länge, out längeWeichenBereich, out streckenmarkierung, betriebsstellen); 
+
+                    if (streckenmarkierung != "")
+                    {
+                        Console.WriteLine(fahrstraßeRoh.FahrstrName + " -> " + streckenmarkierung);
+                    }
 
                     //vStart bestimmen
                     double vStart = 40 / 3.6;
@@ -422,7 +434,7 @@ namespace ZuSiFplEdit
                     if (startSignalRoh.Signal != null && startSignalRoh.Signal.Betriebstelle != null)
                         vStart = startSignalRoh.Signal.vSig[signalZeile];
 
-                    if (vStart == -1)
+                    if (vStart < 0)
                         vStart = startSignal.streckenelement.vMax;
 
 
@@ -433,7 +445,7 @@ namespace ZuSiFplEdit
 
                     var fahrstraßeFertig = new streckenModul.Fahrstraße(startSignal, zielSignal, fahrstraßeRoh.FahrstrName, fahrstraßeRoh.FahrstrTyp, fahrstraßeRoh.RglGgl, länge, längeWeichenBereich, vStart, vZiel, fahrstraßeRoh.wichtung);
                     fahrstraßeFertig.betriebsstellen = betriebsstellen;
-                    
+
                     if (fahrstraßeRoh.FahrstrStrecke != null && fahrstraßeRoh.FahrstrStrecke != "")
                     {
                         int VzG_nummer;
@@ -443,6 +455,15 @@ namespace ZuSiFplEdit
                             fahrstraßeFertig.richtung = fahrstraßeRoh.FahrstrStrecke.Last() == 'a';
                             fahrstraßeFertig.vzgStrecke.fahrstraßeEintragen(fahrstraßeFertig);
                         }
+                    }
+
+                    //Streckenmarkierung eintragen
+                    int streckenNummer;
+                    if (streckenmarkierung != "" && int.TryParse(streckenmarkierung.Substring(0, streckenmarkierung.Length - 1), out streckenNummer))
+                    {
+                        fahrstraßeFertig.streckenmarkierung = datenFertig.sucheStrecke(streckenNummer);
+                        fahrstraßeFertig.richtung = streckenmarkierung.Last() == 'a';
+                        fahrstraßeFertig.streckenmarkierung.fahrstraßeEintragen(fahrstraßeFertig);
                     }
                     
 
@@ -513,9 +534,17 @@ namespace ZuSiFplEdit
                 weiterführendeModule.Add(ausgangsModul);
                 weiterführendeModule.AddRange(ausgangsModul.nachbarn);
 
-                foreach (var ausgangsFahrstraße in ausgangsModul.fahrstraßen)
+                foreach (var fahrstraße in ausgangsModul.fahrstraßen)
                 {
-                    ausgangsFahrstraße.startSignal.abgehendeFahrstraßen.Add(ausgangsFahrstraße);
+
+                    fahrstraße.startSignal.fahrstraßenStartend.Add(fahrstraße);
+                    fahrstraße.zielSignal.fahrstraßenEndend.Add(fahrstraße);
+
+                    if (fahrstraße.vzgStrecke != null)
+                    {
+                        var streckenPunkt = new VzG_Strecke.streckenPunkt(fahrstraße.vzgStrecke, fahrstraße.richtung ,fahrstraße.zielSignal.streckenelement.kilometer);
+                        fahrstraße.zielSignal.streckenPunkte.Add(streckenPunkt);
+                    }
 
                     //Durchlaufe alle möglichen Folgestraßen
                     foreach (var weiterführendesModul in weiterführendeModule)
@@ -523,9 +552,9 @@ namespace ZuSiFplEdit
                         foreach (var weiterführendeFahrstraße in weiterführendesModul.fahrstraßen)
                         {
                             //Verlinke passende Fahrstraßen
-                            if (ausgangsFahrstraße.zielSignal == weiterführendeFahrstraße.startSignal)
+                            if (fahrstraße.zielSignal == weiterführendeFahrstraße.startSignal)
                             {
-                                ausgangsFahrstraße.folgeStraßen.Add(weiterführendeFahrstraße);
+                                fahrstraße.folgeStraßen.Add(weiterführendeFahrstraße);
                             }
                         }
                     }
@@ -536,15 +565,199 @@ namespace ZuSiFplEdit
         }
 
         /// <summary>
+        ///  Trägt die passenden VzG-Strecken bei Fahrstraßen in Übergangspunkten ein
+        /// </summary>
+        void verbindeVzGStrecken()
+        {
+            fortschrittMeldung = "Vernetze VzG-Strecken...";
+
+            int signaleVerortet = 1;
+            while (signaleVerortet != 0)
+            {
+                signaleVerortet = 0;
+                foreach (var modul in datenFertig.module)
+                {
+                    foreach (var signal in modul.signale)
+                    {
+                        if (signal.betriebsstelle != null) //Nur für Debug
+                        {
+                            if (signal.betriebsstelle.name == "Bk Ksl-Harlesh Hp")
+                            {
+
+                            }
+                        }
+                        signal.streckenPunkte = streckenPunkteDeduplizieren(signal.streckenPunkte);
+
+                        //Ist die Strecke des Signals noch unbekannt?
+                        if (signal.streckenPunkte.Count == 0)
+                        {
+                            //Strecke und Kilometer unbekannt, erst Strecke suchen und prüfen, dann Kilometer für jede Strecke weiterführen
+                            fortschrittMeldung = "VzG -> " + signal.info;
+                            signal.streckenPunkte.AddRange(sucheNächsteStrecke(signal, true, signal.streckenelement.kilometer, 0));
+                            signal.streckenPunkte.AddRange(sucheNächsteStrecke(signal, false, signal.streckenelement.kilometer, 0));
+
+                            signal.streckenPunkte = streckenPunkteDeduplizieren(signal.streckenPunkte);
+                            if (signal.streckenPunkte.Count != 0)
+                                signaleVerortet++;
+                        }
+
+                        //Ist der Kilometer des Signals noch unbekannt?
+                        foreach (var streckenPunkt in signal.streckenPunkte)
+                        {
+                            if (streckenPunkt.km == 0)
+                            {
+                                //Signal kann mehreren Strecken zugeordnet werden
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gibt eine Liste mit allen an ein Signal anschließenden Strecken zurück
+        /// </summary>
+        /// <param name="signal">Ausgangssignal</param>
+        /// <param name="vorwärts">Suchrichtung</param>
+        /// <returns></returns>
+        List<VzG_Strecke.streckenPunkt> sucheNächsteStrecke(streckenModul.Signal signal, bool vorwärts, double km, double abstand)
+        {
+            //TODO: Plausibilitätscheck in der Funktion durchführen
+            var streckenPunkte = new List<VzG_Strecke.streckenPunkt>();
+
+            //Ist die Strecke des aktuellen Signals bereits bekannt?
+            if (signal.streckenPunkte.Count != 0)
+            {
+                foreach (var streckenPunkt in signal.streckenPunkte)
+                {
+                    if (km != 0)
+                    {
+                        if (streckenPunkt.km != 0)
+                        {
+                            //Beide Kilometer bekannt; Plausibilitätsprüfung
+                            var wegdifferenz = streckenPunkt.km - km;
+                            if (Math.Abs(wegdifferenz - abstand) < abstand * 0.025)
+                            {
+                                //Console.WriteLine("Diff " + Math.Abs(wegdifferenz - abstand).ToString("f2") + " über " + abstand.ToString("f2") + " (" + (Math.Abs(wegdifferenz - abstand) / abstand).ToString("f2") + "%)");
+                                streckenPunkte.Add(new VzG_Strecke.streckenPunkt(streckenPunkt.strecke, true, km));
+                            }
+                            else if (Math.Abs(wegdifferenz + abstand) < abstand * 0.025)
+                            {
+                                //Console.WriteLine("Diff " + Math.Abs(wegdifferenz + abstand).ToString("f2") + " über " + abstand.ToString("f2") + " (" + (Math.Abs(wegdifferenz - abstand) / abstand).ToString("f2") + "%)");
+                                streckenPunkte.Add(new VzG_Strecke.streckenPunkt(streckenPunkt.strecke, false, km));
+                            }
+                        }
+                        else
+                        {
+                            //Zielkilometer unbekannt; Startkilometer eintragen
+                            streckenPunkte.Add(new VzG_Strecke.streckenPunkt(streckenPunkt.strecke, streckenPunkt.aufwärts, km));
+                        }
+                    }
+                    else
+                    {
+                        if (streckenPunkt.km != 0)
+                        {
+                            //Zielkilometer bekannt; Kilometrierungsrekonstruktion
+                            if (streckenPunkt.aufwärts)
+                            {
+                                streckenPunkte.Add(new VzG_Strecke.streckenPunkt(streckenPunkt.strecke, true, km + abstand));
+                            }
+                            else
+                            {
+                                streckenPunkte.Add(new VzG_Strecke.streckenPunkt(streckenPunkt.strecke, true, km - abstand));
+                            }
+                        }
+                        else
+                        {
+                            //Kilometrierung vollends unbekannt
+                            streckenPunkte.Add(new VzG_Strecke.streckenPunkt(streckenPunkt.strecke, streckenPunkt.aufwärts));
+                        }
+                    }
+                }
+                return streckenPunkte;
+            }
+
+            //Liste mit weiterführenden Signalen vorbereiten
+            var nächsteFahrstraßen = new List<streckenModul.Fahrstraße>();
+            if (vorwärts)
+            {
+                foreach (var fahrstraße in signal.fahrstraßenStartend)
+                {
+                    if (fahrstraße.typ != "TypWende")
+                    {
+                        nächsteFahrstraßen.Add(fahrstraße);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var fahrstraße in signal.fahrstraßenEndend)
+                {
+                    if (fahrstraße.typ != "TypWende")
+                    {
+                        nächsteFahrstraßen.Add(fahrstraße);
+                    }
+                }
+            }
+
+            //Bei Sackgassen aufhören
+            if (nächsteFahrstraßen.Count == 0)
+                return streckenPunkte;
+
+            //Bei weiterführenden Signalen weitersuchen
+            foreach (var nächsteFahrstraße in nächsteFahrstraßen)
+            {
+                if (nächsteFahrstraße.streckenmarkierung != null)
+                {
+                    streckenPunkte.Add(new VzG_Strecke.streckenPunkt(nächsteFahrstraße.streckenmarkierung, true, km + abstand));
+                    return streckenPunkte;
+                }
+                var nächsterAbstand = abstand + nächsteFahrstraße.länge / 1000;
+
+                if (vorwärts)
+                    streckenPunkte.AddRange(sucheNächsteStrecke(nächsteFahrstraße.zielSignal, vorwärts, km, nächsterAbstand));
+                else
+                    streckenPunkte.AddRange(sucheNächsteStrecke(nächsteFahrstraße.startSignal, vorwärts, km, nächsterAbstand));
+            }
+
+            //Duplikate entfernen
+            return streckenPunkteDeduplizieren(streckenPunkte);
+        }
+
+        List<VzG_Strecke.streckenPunkt> streckenPunkteDeduplizieren(List<VzG_Strecke.streckenPunkt> sPListe)
+        {
+            if (sPListe.Count == 0)
+                return new List<VzG_Strecke.streckenPunkt>();
+
+            if (sPListe.Count == 1)
+                return sPListe;
+
+            int intStart = sPListe.Count;
+            var tmpListe = new List<VzG_Strecke.streckenPunkt>();
+            foreach (var sP in sPListe)
+            {
+                if (!tmpListe.Contains(sP))
+                    tmpListe.Add(sP);
+            }
+            return tmpListe;
+        }
+
+        /// <summary>
         /// Ermittelt die Länge des anschließenden Weichenbereichs durch Ablaufen der Fahrstraße
         /// </summary>
         /// <param name="fahrstraßeRoh"></param>
         /// <param name="startSignal"></param>
         /// <param name="längeFahrstraße"></param>
         /// <returns></returns>
-        void ermittleLängeAWB(st3Modul.fahrStr fahrstraßeRoh, st3Modul modulRoh, streckenModul.Signal startSignal, streckenModul.Signal zielSignal, double längeFahrstraße, out double längeWeichenBereich, List<Betriebsstelle> betriebsstellen)
+        void ermittleLängeAWB(st3Modul.fahrStr fahrstraßeRoh, st3Modul modulRoh, streckenModul.Signal startSignal, streckenModul.Signal zielSignal, double längeFahrstraße, out double längeWeichenBereich, out string streckenWechsel, List<Betriebsstelle> betriebsstellen)
         {
+            if (fahrstraßeRoh.FahrstrName == "Lindholm B -> Lindholm G") //Debug
+            {
+
+            }
+
             längeWeichenBereich = 0;
+            streckenWechsel = "";
             double längePfad = 0;
             bool längeBestimmt = false;
 
@@ -583,6 +796,20 @@ namespace ZuSiFplEdit
                 if (aktuellesElement.betriebstellen[suchrichtung] != null && !betriebsstellen.Contains(aktuellesElement.betriebstellen[suchrichtung]))
                     betriebsstellen.Add(aktuellesElement.betriebstellen[suchrichtung]);
 
+                //Streckenwechsel eintragen
+                if (aktuellesElement.streckenmarkierung[suchrichtung] != "")
+                {
+                    streckenWechsel = aktuellesElement.streckenmarkierung[suchrichtung];
+                }
+                else if (aktuellesElement.streckenmarkierung[1 - suchrichtung] != "")
+                {
+                    streckenWechsel = aktuellesElement.streckenmarkierung[1 - suchrichtung];
+                    if (streckenWechsel.Last() == 'a')
+                        streckenWechsel.Replace('a', 'b');
+                    else
+                        streckenWechsel.Replace('b', 'a');
+                }
+
                 //Wurden alle Weichen des AWBs bereits abgefahren?
                 if (weichenÜberfahren == fahrstraßeRoh.weichen.Count)
                 {
@@ -590,7 +817,7 @@ namespace ZuSiFplEdit
                 }
 
                 //Wurde das Zielsignal erreicht?
-                if (aktuellesElement.signale[suchrichtung] != null && aktuellesElement.signale[suchrichtung] == zielSignal) { }
+                if (aktuellesElement.signale[suchrichtung] != null && aktuellesElement.signale[suchrichtung] == zielSignal)
                     return;
 
                 //Ist der erkannte AWB bereits länger als die Fahrstraße selbst?

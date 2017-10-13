@@ -19,6 +19,7 @@ namespace ZuSiFplEdit
             public float kilometer, vMax;
             public Signal[] signale;
             public Betriebsstelle[] betriebstellen;
+            public string[] streckenmarkierung;
             public PunktUTM[] endpunkte;
             public List<Element>[] anschlüsse;
 
@@ -34,6 +35,7 @@ namespace ZuSiFplEdit
 
                 signale = new Signal[2];
                 betriebstellen = new Betriebsstelle[2];
+                streckenmarkierung = new string[2];
                 endpunkte = new PunktUTM[2];
                 endpunkte[0] = endpunktB;
                 endpunkte[1] = endpunktG;
@@ -57,6 +59,7 @@ namespace ZuSiFplEdit
             public string info;
             public string name;
             public Betriebsstelle betriebsstelle;
+            public List<VzG_Strecke.streckenPunkt> streckenPunkte;
             public int typ;
 
             /// <summary>
@@ -71,7 +74,8 @@ namespace ZuSiFplEdit
 
             public streckenModul modul;
 
-            public List<Fahrstraße> abgehendeFahrstraßen;
+            public List<Fahrstraße> fahrstraßenEndend;
+            public List<Fahrstraße> fahrstraßenStartend;
 
             /// <summary>
             /// Signal ist Start einer Fahrstraße
@@ -99,7 +103,35 @@ namespace ZuSiFplEdit
                 streckenelement.signale[richtung] = this;
                 position = streckenelement.endpunkte[richtung];
 
-                abgehendeFahrstraßen = new List<Fahrstraße>();
+                fahrstraßenEndend = new List<Fahrstraße>();
+                fahrstraßenStartend = new List<Fahrstraße>();
+
+                streckenPunkte = new List<VzG_Strecke.streckenPunkt>();
+            }
+
+            public VzG_Strecke.streckenPunkt findeStreckenPunkt(List<form_bildfahrplancs.StreckenAbschnitt> streckenAbschnitte)
+            {
+                foreach (var streckenPunkt in streckenPunkte)
+                {
+                    foreach (var streckenAbschnitt in streckenAbschnitte)
+                    {
+                        if (streckenPunkt.strecke == streckenAbschnitt.strecke)
+                            return streckenPunkt;
+                    }
+                }
+
+                return null;
+            }
+
+            public VzG_Strecke.streckenPunkt findeStreckenPunkt(VzG_Strecke strecke)
+            {
+                foreach (var streckenPunkt in streckenPunkte)
+                {
+                    if (streckenPunkt.strecke == strecke)
+                        return streckenPunkt;
+                }
+
+                return null;
             }
 
             public override string ToString()
@@ -120,7 +152,14 @@ namespace ZuSiFplEdit
 
             public string name;
             public string typ;
+            /// <summary>
+            /// VzG-Strecke, auf der das Zielsignal steht
+            /// </summary>
             public VzG_Strecke vzgStrecke;
+            public VzG_Strecke streckenmarkierung;
+            /// <summary>
+            /// Läuft die Fahrstraße in positiver Kilometirerrichtung?
+            /// </summary>
             public bool richtung;
             public int RglGgl; //TODO: Information anders darstellen
 

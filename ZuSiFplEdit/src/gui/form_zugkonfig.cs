@@ -17,14 +17,16 @@ namespace ZuSiFplEdit
     public partial class ZugForm : Form
     {
         ZugFahrt Zug;
+        Fahrplan fahrplan;
         bool guiBereit = true;
 
         public static event SignalSelectEventHandler signalSelectionEvent;
 
-        public ZugForm()
+        public ZugForm(Fahrplan fahrplan)
         {
             InitializeComponent();
 
+            this.fahrplan = fahrplan;
             LB_waypoint.AllowDrop = true;
         }
 
@@ -494,7 +496,7 @@ namespace ZuSiFplEdit
 
         private void button4_Click(object sender, EventArgs e)
         {
-            var bfp = new form_bildfahrplancs(Zug);
+            var bfp = new form_bildfahrplancs(Zug, fahrplan);
             bfp.Show();
         }
     }

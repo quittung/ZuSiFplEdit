@@ -46,15 +46,15 @@
             this.dateiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.speichernUnterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.karteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.moduToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.modulgrenzenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.namenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.verbindungenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.punkteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.signalnamenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.fahrstraenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.routeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsModule = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsModule_Grenzen = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsModule_Namen = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsModule_Verbindungen = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsModule_Punkte = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsStrecke = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsSignalnamen = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsFahrstraßen = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsRoute = new System.Windows.Forms.ToolStripMenuItem();
             this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ladezeitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -266,102 +266,102 @@
             // karteToolStripMenuItem
             // 
             this.karteToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.moduToolStripMenuItem,
-            this.mToolStripMenuItem,
-            this.fahrstraenToolStripMenuItem,
-            this.routeToolStripMenuItem});
+            this.tsModule,
+            this.tsStrecke,
+            this.tsFahrstraßen,
+            this.tsRoute});
             this.karteToolStripMenuItem.Name = "karteToolStripMenuItem";
             this.karteToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.karteToolStripMenuItem.Text = "Layer";
             // 
             // moduToolStripMenuItem
             // 
-            this.moduToolStripMenuItem.Checked = true;
-            this.moduToolStripMenuItem.CheckOnClick = true;
-            this.moduToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.moduToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.modulgrenzenToolStripMenuItem,
-            this.namenToolStripMenuItem,
-            this.verbindungenToolStripMenuItem,
-            this.punkteToolStripMenuItem});
-            this.moduToolStripMenuItem.Name = "moduToolStripMenuItem";
-            this.moduToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.moduToolStripMenuItem.Text = "Module";
-            this.moduToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
+            this.tsModule.Checked = true;
+            this.tsModule.CheckOnClick = true;
+            this.tsModule.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.tsModule.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsModule_Grenzen,
+            this.tsModule_Namen,
+            this.tsModule_Verbindungen,
+            this.tsModule_Punkte});
+            this.tsModule.Name = "moduToolStripMenuItem";
+            this.tsModule.Size = new System.Drawing.Size(152, 22);
+            this.tsModule.Text = "Module";
+            this.tsModule.Click += new System.EventHandler(this.kartenLayerÄndern);
             // 
             // modulgrenzenToolStripMenuItem
             // 
-            this.modulgrenzenToolStripMenuItem.CheckOnClick = true;
-            this.modulgrenzenToolStripMenuItem.Name = "modulgrenzenToolStripMenuItem";
-            this.modulgrenzenToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
-            this.modulgrenzenToolStripMenuItem.Text = "Modulgrenzen";
-            this.modulgrenzenToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
+            this.tsModule_Grenzen.CheckOnClick = true;
+            this.tsModule_Grenzen.Name = "modulgrenzenToolStripMenuItem";
+            this.tsModule_Grenzen.Size = new System.Drawing.Size(151, 22);
+            this.tsModule_Grenzen.Text = "Modulgrenzen";
+            this.tsModule_Grenzen.Click += new System.EventHandler(this.kartenLayerÄndern);
             // 
             // namenToolStripMenuItem
             // 
-            this.namenToolStripMenuItem.Checked = true;
-            this.namenToolStripMenuItem.CheckOnClick = true;
-            this.namenToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.namenToolStripMenuItem.Name = "namenToolStripMenuItem";
-            this.namenToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
-            this.namenToolStripMenuItem.Text = "Namen";
-            this.namenToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
+            this.tsModule_Namen.Checked = true;
+            this.tsModule_Namen.CheckOnClick = true;
+            this.tsModule_Namen.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.tsModule_Namen.Name = "namenToolStripMenuItem";
+            this.tsModule_Namen.Size = new System.Drawing.Size(151, 22);
+            this.tsModule_Namen.Text = "Namen";
+            this.tsModule_Namen.Click += new System.EventHandler(this.kartenLayerÄndern);
             // 
             // verbindungenToolStripMenuItem
             // 
-            this.verbindungenToolStripMenuItem.Checked = true;
-            this.verbindungenToolStripMenuItem.CheckOnClick = true;
-            this.verbindungenToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.verbindungenToolStripMenuItem.Name = "verbindungenToolStripMenuItem";
-            this.verbindungenToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
-            this.verbindungenToolStripMenuItem.Text = "Verbindungen";
-            this.verbindungenToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
+            this.tsModule_Verbindungen.Checked = true;
+            this.tsModule_Verbindungen.CheckOnClick = true;
+            this.tsModule_Verbindungen.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.tsModule_Verbindungen.Name = "verbindungenToolStripMenuItem";
+            this.tsModule_Verbindungen.Size = new System.Drawing.Size(151, 22);
+            this.tsModule_Verbindungen.Text = "Verbindungen";
+            this.tsModule_Verbindungen.Click += new System.EventHandler(this.kartenLayerÄndern);
             // 
             // punkteToolStripMenuItem
             // 
-            this.punkteToolStripMenuItem.Checked = true;
-            this.punkteToolStripMenuItem.CheckOnClick = true;
-            this.punkteToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.punkteToolStripMenuItem.Name = "punkteToolStripMenuItem";
-            this.punkteToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
-            this.punkteToolStripMenuItem.Text = "Punkte";
-            this.punkteToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
+            this.tsModule_Punkte.Checked = true;
+            this.tsModule_Punkte.CheckOnClick = true;
+            this.tsModule_Punkte.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.tsModule_Punkte.Name = "punkteToolStripMenuItem";
+            this.tsModule_Punkte.Size = new System.Drawing.Size(151, 22);
+            this.tsModule_Punkte.Text = "Punkte";
+            this.tsModule_Punkte.Click += new System.EventHandler(this.kartenLayerÄndern);
             // 
             // mToolStripMenuItem
             // 
-            this.mToolStripMenuItem.CheckOnClick = true;
-            this.mToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.signalnamenToolStripMenuItem});
-            this.mToolStripMenuItem.Name = "mToolStripMenuItem";
-            this.mToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.mToolStripMenuItem.Text = "Streckenplan";
-            this.mToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
+            this.tsStrecke.CheckOnClick = true;
+            this.tsStrecke.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsSignalnamen});
+            this.tsStrecke.Name = "mToolStripMenuItem";
+            this.tsStrecke.Size = new System.Drawing.Size(152, 22);
+            this.tsStrecke.Text = "Streckenplan";
+            this.tsStrecke.Click += new System.EventHandler(this.kartenLayerÄndern);
             // 
             // signalnamenToolStripMenuItem
             // 
-            this.signalnamenToolStripMenuItem.CheckOnClick = true;
-            this.signalnamenToolStripMenuItem.Name = "signalnamenToolStripMenuItem";
-            this.signalnamenToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
-            this.signalnamenToolStripMenuItem.Text = "Signalnamen";
-            this.signalnamenToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
+            this.tsSignalnamen.CheckOnClick = true;
+            this.tsSignalnamen.Name = "signalnamenToolStripMenuItem";
+            this.tsSignalnamen.Size = new System.Drawing.Size(143, 22);
+            this.tsSignalnamen.Text = "Signalnamen";
+            this.tsSignalnamen.Click += new System.EventHandler(this.kartenLayerÄndern);
             // 
             // fahrstraenToolStripMenuItem
             // 
-            this.fahrstraenToolStripMenuItem.CheckOnClick = true;
-            this.fahrstraenToolStripMenuItem.Name = "fahrstraenToolStripMenuItem";
-            this.fahrstraenToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.fahrstraenToolStripMenuItem.Text = "Fahrstraßen";
-            this.fahrstraenToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
+            this.tsFahrstraßen.CheckOnClick = true;
+            this.tsFahrstraßen.Name = "fahrstraenToolStripMenuItem";
+            this.tsFahrstraßen.Size = new System.Drawing.Size(152, 22);
+            this.tsFahrstraßen.Text = "Fahrstraßen";
+            this.tsFahrstraßen.Click += new System.EventHandler(this.kartenLayerÄndern);
             // 
             // routeToolStripMenuItem
             // 
-            this.routeToolStripMenuItem.Checked = true;
-            this.routeToolStripMenuItem.CheckOnClick = true;
-            this.routeToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.routeToolStripMenuItem.Name = "routeToolStripMenuItem";
-            this.routeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.routeToolStripMenuItem.Text = "Route";
-            this.routeToolStripMenuItem.Click += new System.EventHandler(this.LayerChange_Click);
+            this.tsRoute.Checked = true;
+            this.tsRoute.CheckOnClick = true;
+            this.tsRoute.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.tsRoute.Name = "routeToolStripMenuItem";
+            this.tsRoute.Size = new System.Drawing.Size(152, 22);
+            this.tsRoute.Text = "Route";
+            this.tsRoute.Click += new System.EventHandler(this.kartenLayerÄndern);
             // 
             // debugToolStripMenuItem
             // 
@@ -430,15 +430,15 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem karteToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem moduToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem modulgrenzenToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem namenToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem mToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tsModule;
+        private System.Windows.Forms.ToolStripMenuItem tsModule_Grenzen;
+        private System.Windows.Forms.ToolStripMenuItem tsModule_Namen;
+        private System.Windows.Forms.ToolStripMenuItem tsStrecke;
         private System.Windows.Forms.ToolStripMenuItem debugToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ladezeitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem verbindungenToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem punkteToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem fahrstraenToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tsModule_Verbindungen;
+        private System.Windows.Forms.ToolStripMenuItem tsModule_Punkte;
+        private System.Windows.Forms.ToolStripMenuItem tsFahrstraßen;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TabPage tabPage1;
@@ -446,8 +446,8 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.ListBox ZugFahrtBox;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.ToolStripMenuItem signalnamenToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem routeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tsSignalnamen;
+        private System.Windows.Forms.ToolStripMenuItem tsRoute;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.ToolStripMenuItem dateiToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem speichernUnterToolStripMenuItem;

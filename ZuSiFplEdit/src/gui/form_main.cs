@@ -16,7 +16,7 @@ namespace ZuSiFplEdit
         bool guiBereit = true;
 
         DataConstructor dataConstructor;
-        Datensatz datenFertig;
+        public Datensatz datenFertig;
         mapDraw kartenZeichner;
 
         int mouseDownX_rel = 0;
@@ -30,7 +30,7 @@ namespace ZuSiFplEdit
         bool selectRouteStart = false;
         bool selectRouteEnd = false;
 
-        Fahrplan fahrplan;
+        public Fahrplan fahrplan;
         List<ZugFahrt> ZugFahrten = new List<ZugFahrt>();
         ZugForm ZugKonfigForm;
 
@@ -137,12 +137,12 @@ namespace ZuSiFplEdit
             if (signalSelectType == "start")
             {
                 selectRouteStart = true;
-                kartenZeichner.setLayers("signal_ziel", false);
+                kartenZeichner.drawSignal_Ziel = false;
             }
             if (signalSelectType == "ziel")
             {
                 selectRouteEnd = true;
-                kartenZeichner.setLayers("signal_start", false);
+                kartenZeichner.drawSignal_Start = false;
             }
 
             this.Invalidate();
@@ -223,14 +223,14 @@ namespace ZuSiFplEdit
                     if (selectRouteStart)
                     {
                         ZugKonfigForm.setSignal(kartenZeichner.findeNächstesSignal(new mapDraw.PunktPix(e.X, e.Y), 1));
-                        kartenZeichner.setLayers("signal_ziel", true);
+                        kartenZeichner.drawSignal_Ziel = true;
                         this.Invalidate();
                         selectRouteStart = false;
                     }
                     else
                     {
                         ZugKonfigForm.setSignal(kartenZeichner.findeNächstesSignal(new mapDraw.PunktPix(e.X, e.Y), 2));
-                        kartenZeichner.setLayers("signal_start", true); 
+                        kartenZeichner.drawSignal_Start = true;
                         this.Invalidate();
                         selectRouteEnd = false;
                     }
@@ -250,7 +250,7 @@ namespace ZuSiFplEdit
                 } else if (!mouseMoved) 
                 {
                     //Modulauswahl
-                    if (moduToolStripMenuItem.Checked && punkteToolStripMenuItem.Checked)
+                    if (tsModule.Checked && tsModule_Punkte.Checked)
                     {
                         var nächstesModul = kartenZeichner.getNearestStation(e.X, e.Y);
                         if (kartenZeichner.getModulDistance(nächstesModul, e.X, e.Y) < 10)
@@ -333,44 +333,21 @@ namespace ZuSiFplEdit
             kartenZeichner.updateMapSize(mMap.Width, mMap.Height);
         }
 
-        private void LayerChange_Click(object sender, EventArgs e)
+        private void kartenLayerÄndern(object sender, EventArgs e)
         {
-            if (sender == moduToolStripMenuItem)
-            {
-                kartenZeichner.setLayers("module", moduToolStripMenuItem.Checked); 
-            }
-            else if (sender == punkteToolStripMenuItem)
-            {
-                kartenZeichner.setLayers("module_punkte", punkteToolStripMenuItem.Checked);
-            }
-            else if (sender == namenToolStripMenuItem)
-            {
-                kartenZeichner.setLayers("module_namen", namenToolStripMenuItem.Checked);
-            }
-            else if (sender == verbindungenToolStripMenuItem)
-            {
-                kartenZeichner.setLayers("module_verbindungen", verbindungenToolStripMenuItem.Checked);
-            }
-            else if (sender == modulgrenzenToolStripMenuItem)
-            {
-                kartenZeichner.setLayers("module_grenzen", modulgrenzenToolStripMenuItem.Checked);
-            }
-            else if (sender == mToolStripMenuItem)
-            {
-                kartenZeichner.setLayers("strecke", mToolStripMenuItem.Checked);
-            }
-            else if (sender == signalnamenToolStripMenuItem)
-            {
-                kartenZeichner.setLayers("signal_namen", signalnamenToolStripMenuItem.Checked);
-            }
-            else if (sender == fahrstraenToolStripMenuItem)
-            {
-                kartenZeichner.setLayers("fahrstr", fahrstraenToolStripMenuItem.Checked);
-            }
-            else if (sender == routeToolStripMenuItem)
-            {
-                kartenZeichner.setLayers("route", routeToolStripMenuItem.Checked);
-            }
+            kartenZeichner.drawModule = tsModule.Checked;
+            kartenZeichner.drawModule_Punkte = tsModule_Punkte.Checked;
+            kartenZeichner.drawModule_Namen = tsModule_Namen.Checked;
+            kartenZeichner.drawModule_Verbindungen = tsModule_Verbindungen.Checked;
+            kartenZeichner.drawModule_Grenzen = tsModule_Grenzen.Checked;
+
+            kartenZeichner.drawStrecke = tsStrecke.Checked;
+            kartenZeichner.drawSignal_Namen = tsSignalnamen.Checked;
+
+            kartenZeichner.drawFahrstrassen = tsFahrstraßen.Checked;
+
+            kartenZeichner.drawRoute = tsRoute.Checked;
+
 
             kartenZeichner.message = dataConstructor.fortschrittMeldung;
             mMap.Image = kartenZeichner.draw();

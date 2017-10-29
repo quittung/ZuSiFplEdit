@@ -43,6 +43,7 @@ namespace ZuSiFplEdit
         ListBox ZFBox;
         Datensatz datensatz;
         Fahrplan fahrplan;
+        PictureBox map;
         public Bitmap frame;
         Graphics framebuffer;
 
@@ -83,12 +84,13 @@ namespace ZuSiFplEdit
 
 
 
-        public mapDraw(int width, int height, Datensatz datensatz, Fahrplan fahrplan, ListBox ZFBox)
+        public mapDraw(PictureBox map, Datensatz datensatz, Fahrplan fahrplan, ListBox ZFBox)
         {
             this.datensatz = datensatz;
             this.fahrplan = fahrplan;
-            map_width_p = width;
-            map_height_p = height;
+            this.map = map;
+            map_width_p = map.Width;
+            map_height_p = map.Height;
             modList = datensatz.module;
             modVisible = new List<streckenModul>();
             this.ZFBox = ZFBox; 
@@ -101,8 +103,14 @@ namespace ZuSiFplEdit
 
         public void updateMapSize(int width, int height)
         {
+            double factorX = width / map_width_p;
+            double factorY = height / map_height_p;
+
             map_width_p = width;
             map_height_p = height;
+
+            
+
             frame = new Bitmap(width, height);
             framebuffer = Graphics.FromImage(frame);
             updateBorders();
@@ -174,10 +182,8 @@ namespace ZuSiFplEdit
                 if (mod.ursprung.WE > border_east) border_east = mod.ursprung.WE;
                 if (mod.ursprung.WE < border_west) border_west = mod.ursprung.WE;
             }
-
-            center_NS = (border_north + border_south) / 2f;
-            center_WE = (border_west + border_east) / 2f;
-            center = new PunktUTM(center_WE, center_NS);
+            
+            center = new PunktUTM((border_west + border_east) / 2f, (border_north + border_south) / 2f);
 
 
             if (map_width_p > map_height_p) pixPerGrad = map_height_p / (border_north - border_south);
@@ -196,12 +202,15 @@ namespace ZuSiFplEdit
 
         public void move (int pix_NS, int pix_WE)
         {
-            center_NS += (double)pix_NS / pixPerGrad;
-            center_WE -= (double)pix_WE / pixPerGrad;
-            center.NS = center_NS;
-            center.WE = center_WE;
+            center.NS += (double)pix_NS / pixPerGrad;
+            center.WE -= (double)pix_WE / pixPerGrad;
 
             updateBorders();
+        }
+
+        public void moveTo(PunktUTM center)
+        {
+            this.center = center;
         }
 
         void updateBorders()
@@ -209,10 +218,10 @@ namespace ZuSiFplEdit
             double halfLen_NS = (double)map_height_p / (pixPerGrad * 2f);
             double halfLen_WE = (double)map_width_p / (pixPerGrad * 2f);
 
-            border_north = center_NS + halfLen_NS;
-            border_east = center_WE + halfLen_WE;
-            border_south = center_NS - halfLen_NS;
-            border_west = center_WE - halfLen_NS;
+            border_north = center.NS + halfLen_NS;
+            border_east = center.WE + halfLen_WE;
+            border_south = center.NS - halfLen_NS;
+            border_west = center.WE - halfLen_WE;
 
             modVisible.Clear();
             foreach (streckenModul mod in modList)
@@ -259,15 +268,22 @@ namespace ZuSiFplEdit
             return !((mod.ursprung.NS > border_north) || (mod.ursprung.NS < border_south) || (mod.ursprung.WE > border_east) || (mod.ursprung.WE < border_west));
         }
 
+        public void drawMap()
+        {
+            map.Image = generateMap();
+        }
 
         /// <summary>
         /// Zeichnet die Karte mit den aktuellen Parametern
         /// </summary>
         /// <returns>Fertige Karte als Bitmap</returns>
-        public Bitmap draw()
+        public Bitmap generateMap()
         {
             var frameTime = new System.Diagnostics.Stopwatch();
             frameTime.Start();
+
+
+            updateBorders();
 
             framebuffer.Clear(Color.White);
 
@@ -463,7 +479,7 @@ namespace ZuSiFplEdit
 
 
             frameTime.Stop();
-            framebuffer.DrawString("N" + center_NS.ToString("F2") + " - E" + center_WE.ToString("F2") + " - " + pixPerGrad.ToString("F1") + "pix/km - " + frameTime.ElapsedMilliseconds + " ms/frame " + message, new Font("Verdana", 10), new SolidBrush(Color.Red), 20, map_height_p - 20);
+            framebuffer.DrawString("N" + center.NS.ToString("F2") + " - E" + center.WE.ToString("F2") + " - " + pixPerGrad.ToString("F1") + "pix/km - " + frameTime.ElapsedMilliseconds + " ms/frame " + message, new Font("Verdana", 10), new SolidBrush(Color.Red), 20, map_height_p - 20);
 
             return (frame);
         }

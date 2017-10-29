@@ -84,7 +84,7 @@ namespace ZuSiFplEdit
             //Modulekarte vorbereiten
             debugX = mMap.Width;
             debugY = mMap.Height;
-            kartenZeichner = new mapDraw(mMap.Width, mMap.Height, datenFertig, fahrplan, ZugFahrtBox);
+            kartenZeichner = new mapDraw(mMap, datenFertig, fahrplan, ZugFahrtBox);
 
             //Module ausgeben
             foreach (streckenModul modul in datenFertig.module)
@@ -161,7 +161,7 @@ namespace ZuSiFplEdit
                 kartenZeichner.updateScale(0.8);
 
             kartenZeichner.message = dataConstructor.fortschrittMeldung;
-            mMap.Image = kartenZeichner.draw();
+            mMap.Image = kartenZeichner.generateMap();
         }
 
         /// <summary>
@@ -236,7 +236,7 @@ namespace ZuSiFplEdit
                     }
 
                     kartenZeichner.message = dataConstructor.fortschrittMeldung;
-                    mMap.Image = kartenZeichner.draw();
+                    mMap.Image = kartenZeichner.generateMap();
                     return;
                 }
 
@@ -246,7 +246,7 @@ namespace ZuSiFplEdit
                 {
                     kartenZeichner.move(deltaY, deltaX);
                     kartenZeichner.message = dataConstructor.fortschrittMeldung;
-                    mMap.Image = kartenZeichner.draw();
+                    mMap.Image = kartenZeichner.generateMap();
                 } else if (!mouseMoved) 
                 {
                     //Modulauswahl
@@ -270,7 +270,7 @@ namespace ZuSiFplEdit
                             }
 
                             kartenZeichner.message = dataConstructor.fortschrittMeldung;
-                            mMap.Image = kartenZeichner.draw();
+                            mMap.Image = kartenZeichner.generateMap();
                         }
                     }
                 }
@@ -317,14 +317,14 @@ namespace ZuSiFplEdit
             }
 
             kartenZeichner.message = dataConstructor.fortschrittMeldung;
-            mMap.Image = kartenZeichner.draw();
+            mMap.Image = kartenZeichner.generateMap();
         }
 
         private void modSelForm_Paint(object sender, PaintEventArgs e)
         {
             Application.DoEvents();
             kartenZeichner.message = dataConstructor.fortschrittMeldung;
-            mMap.Image = kartenZeichner.draw();
+            mMap.Image = kartenZeichner.generateMap();
         }
 
         private void mMap_Resize(object sender, EventArgs e)
@@ -350,7 +350,7 @@ namespace ZuSiFplEdit
 
 
             kartenZeichner.message = dataConstructor.fortschrittMeldung;
-            mMap.Image = kartenZeichner.draw();
+            mMap.Image = kartenZeichner.generateMap();
         }
 
         private void mMap_MouseMove(object sender, MouseEventArgs e)

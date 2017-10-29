@@ -470,5 +470,12 @@ namespace ZuSiFplEdit
             }
             guiBereit = true;
         }
+
+        private void fahrplanStartenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            fahrplan.exportVorbereiten();
+            new fileops(fahrplan, DirBase + "Timetables\\tmp\\tmp.fpn", DirBase);
+            Process.Start(DirBase + "Timetables\\tmp\\tmp.fpn");
+        }
     }
 }

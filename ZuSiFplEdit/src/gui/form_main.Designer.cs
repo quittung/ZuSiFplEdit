@@ -45,6 +45,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.dateiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.speichernUnterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ladenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.karteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tsModule = new System.Windows.Forms.ToolStripMenuItem();
             this.tsModule_Grenzen = new System.Windows.Forms.ToolStripMenuItem();
@@ -58,7 +59,7 @@
             this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ladezeitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.ladenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fahrplanStartenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.mMap)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -251,7 +252,8 @@
             // 
             this.dateiToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.speichernUnterToolStripMenuItem,
-            this.ladenToolStripMenuItem});
+            this.ladenToolStripMenuItem,
+            this.fahrplanStartenToolStripMenuItem});
             this.dateiToolStripMenuItem.Name = "dateiToolStripMenuItem";
             this.dateiToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.dateiToolStripMenuItem.Text = "Datei";
@@ -262,6 +264,13 @@
             this.speichernUnterToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.speichernUnterToolStripMenuItem.Text = "Speichern unter...";
             this.speichernUnterToolStripMenuItem.Click += new System.EventHandler(this.fahrplanAusgeben);
+            // 
+            // ladenToolStripMenuItem
+            // 
+            this.ladenToolStripMenuItem.Name = "ladenToolStripMenuItem";
+            this.ladenToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.ladenToolStripMenuItem.Text = "Laden";
+            this.ladenToolStripMenuItem.Click += new System.EventHandler(this.ladenToolStripMenuItem_Click);
             // 
             // karteToolStripMenuItem
             // 
@@ -274,7 +283,7 @@
             this.karteToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.karteToolStripMenuItem.Text = "Layer";
             // 
-            // moduToolStripMenuItem
+            // tsModule
             // 
             this.tsModule.Checked = true;
             this.tsModule.CheckOnClick = true;
@@ -284,82 +293,82 @@
             this.tsModule_Namen,
             this.tsModule_Verbindungen,
             this.tsModule_Punkte});
-            this.tsModule.Name = "moduToolStripMenuItem";
-            this.tsModule.Size = new System.Drawing.Size(152, 22);
+            this.tsModule.Name = "tsModule";
+            this.tsModule.Size = new System.Drawing.Size(142, 22);
             this.tsModule.Text = "Module";
             this.tsModule.Click += new System.EventHandler(this.kartenLayerÄndern);
             // 
-            // modulgrenzenToolStripMenuItem
+            // tsModule_Grenzen
             // 
             this.tsModule_Grenzen.CheckOnClick = true;
-            this.tsModule_Grenzen.Name = "modulgrenzenToolStripMenuItem";
+            this.tsModule_Grenzen.Name = "tsModule_Grenzen";
             this.tsModule_Grenzen.Size = new System.Drawing.Size(151, 22);
             this.tsModule_Grenzen.Text = "Modulgrenzen";
             this.tsModule_Grenzen.Click += new System.EventHandler(this.kartenLayerÄndern);
             // 
-            // namenToolStripMenuItem
+            // tsModule_Namen
             // 
             this.tsModule_Namen.Checked = true;
             this.tsModule_Namen.CheckOnClick = true;
             this.tsModule_Namen.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.tsModule_Namen.Name = "namenToolStripMenuItem";
+            this.tsModule_Namen.Name = "tsModule_Namen";
             this.tsModule_Namen.Size = new System.Drawing.Size(151, 22);
             this.tsModule_Namen.Text = "Namen";
             this.tsModule_Namen.Click += new System.EventHandler(this.kartenLayerÄndern);
             // 
-            // verbindungenToolStripMenuItem
+            // tsModule_Verbindungen
             // 
             this.tsModule_Verbindungen.Checked = true;
             this.tsModule_Verbindungen.CheckOnClick = true;
             this.tsModule_Verbindungen.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.tsModule_Verbindungen.Name = "verbindungenToolStripMenuItem";
+            this.tsModule_Verbindungen.Name = "tsModule_Verbindungen";
             this.tsModule_Verbindungen.Size = new System.Drawing.Size(151, 22);
             this.tsModule_Verbindungen.Text = "Verbindungen";
             this.tsModule_Verbindungen.Click += new System.EventHandler(this.kartenLayerÄndern);
             // 
-            // punkteToolStripMenuItem
+            // tsModule_Punkte
             // 
             this.tsModule_Punkte.Checked = true;
             this.tsModule_Punkte.CheckOnClick = true;
             this.tsModule_Punkte.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.tsModule_Punkte.Name = "punkteToolStripMenuItem";
+            this.tsModule_Punkte.Name = "tsModule_Punkte";
             this.tsModule_Punkte.Size = new System.Drawing.Size(151, 22);
             this.tsModule_Punkte.Text = "Punkte";
             this.tsModule_Punkte.Click += new System.EventHandler(this.kartenLayerÄndern);
             // 
-            // mToolStripMenuItem
+            // tsStrecke
             // 
             this.tsStrecke.CheckOnClick = true;
             this.tsStrecke.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsSignalnamen});
-            this.tsStrecke.Name = "mToolStripMenuItem";
-            this.tsStrecke.Size = new System.Drawing.Size(152, 22);
+            this.tsStrecke.Name = "tsStrecke";
+            this.tsStrecke.Size = new System.Drawing.Size(142, 22);
             this.tsStrecke.Text = "Streckenplan";
             this.tsStrecke.Click += new System.EventHandler(this.kartenLayerÄndern);
             // 
-            // signalnamenToolStripMenuItem
+            // tsSignalnamen
             // 
             this.tsSignalnamen.CheckOnClick = true;
-            this.tsSignalnamen.Name = "signalnamenToolStripMenuItem";
+            this.tsSignalnamen.Name = "tsSignalnamen";
             this.tsSignalnamen.Size = new System.Drawing.Size(143, 22);
             this.tsSignalnamen.Text = "Signalnamen";
             this.tsSignalnamen.Click += new System.EventHandler(this.kartenLayerÄndern);
             // 
-            // fahrstraenToolStripMenuItem
+            // tsFahrstraßen
             // 
             this.tsFahrstraßen.CheckOnClick = true;
-            this.tsFahrstraßen.Name = "fahrstraenToolStripMenuItem";
-            this.tsFahrstraßen.Size = new System.Drawing.Size(152, 22);
+            this.tsFahrstraßen.Name = "tsFahrstraßen";
+            this.tsFahrstraßen.Size = new System.Drawing.Size(142, 22);
             this.tsFahrstraßen.Text = "Fahrstraßen";
             this.tsFahrstraßen.Click += new System.EventHandler(this.kartenLayerÄndern);
             // 
-            // routeToolStripMenuItem
+            // tsRoute
             // 
             this.tsRoute.Checked = true;
             this.tsRoute.CheckOnClick = true;
             this.tsRoute.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.tsRoute.Name = "routeToolStripMenuItem";
-            this.tsRoute.Size = new System.Drawing.Size(152, 22);
+            this.tsRoute.Name = "tsRoute";
+            this.tsRoute.Size = new System.Drawing.Size(142, 22);
             this.tsRoute.Text = "Route";
             this.tsRoute.Click += new System.EventHandler(this.kartenLayerÄndern);
             // 
@@ -386,12 +395,12 @@
             this.toolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
             this.toolStripMenuItem1.Text = "Framezeit...";
             // 
-            // ladenToolStripMenuItem
+            // fahrplanStartenToolStripMenuItem
             // 
-            this.ladenToolStripMenuItem.Name = "ladenToolStripMenuItem";
-            this.ladenToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
-            this.ladenToolStripMenuItem.Text = "Laden";
-            this.ladenToolStripMenuItem.Click += new System.EventHandler(this.ladenToolStripMenuItem_Click);
+            this.fahrplanStartenToolStripMenuItem.Name = "fahrplanStartenToolStripMenuItem";
+            this.fahrplanStartenToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.fahrplanStartenToolStripMenuItem.Text = "Fahrplan starten";
+            this.fahrplanStartenToolStripMenuItem.Click += new System.EventHandler(this.fahrplanStartenToolStripMenuItem_Click);
             // 
             // modSelForm
             // 
@@ -453,6 +462,7 @@
         private System.Windows.Forms.ToolStripMenuItem speichernUnterToolStripMenuItem;
         private System.Windows.Forms.Button ZF_bearbeiten;
         private System.Windows.Forms.ToolStripMenuItem ladenToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fahrplanStartenToolStripMenuItem;
     }
 }
 

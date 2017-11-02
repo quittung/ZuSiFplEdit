@@ -9,19 +9,8 @@ using System.Windows.Forms;
 
 namespace ZuSiFplEdit
 {
-    class mapDraw
+    public class mapDraw
     {
-        public class PunktPix
-        {
-            public int X, Y;
-
-            public PunktPix(int X, int Y)
-            {
-                this.X = X;
-                this.Y = Y;
-            }
-        }
-
         class textField
         {
             public int X;
@@ -151,15 +140,15 @@ namespace ZuSiFplEdit
             }
         }
 
-        public PunktPix UtmToPix(PunktUTM UTM)
+        public Point UtmToPix(PunktUTM UTM)
         {
             int X = coordToPix(UTM.WE, false);
             int Y = coordToPix(UTM.NS, true);
 
-            return (new PunktPix(X, Y));
+            return (new Point(X, Y));
         }
 
-        public PunktUTM PixToUtm(PunktPix pix)
+        public PunktUTM PixToUtm(Point pix)
         {
             double WE = pixToCoord(pix.X, false);
             double NS = pixToCoord(pix.Y, true);
@@ -194,13 +183,18 @@ namespace ZuSiFplEdit
             updateBorders();
         }
 
-        public void updateScale (double factor)
+        public void updateScale (double factor, Point cursorPos)
         {
+            var cursorUTM = PixToUtm(cursorPos);
+
             pixPerGrad = pixPerGrad * factor;
             updateBorders();
+
+            var targetPos = UtmToPix(cursorUTM);
+            move(cursorPos.X - targetPos.X, cursorPos.Y - targetPos.Y);
         }
 
-        public void move (int pix_NS, int pix_WE)
+        public void move(int pix_WE, int pix_NS)
         {
             center.NS += (double)pix_NS / pixPerGrad;
             center.WE -= (double)pix_WE / pixPerGrad;
@@ -211,6 +205,7 @@ namespace ZuSiFplEdit
         public void moveTo(PunktUTM center)
         {
             this.center = center;
+            drawMap();
         }
 
         void updateBorders()
@@ -240,12 +235,12 @@ namespace ZuSiFplEdit
         /// <returns></returns>
         bool shouldBeDrawn(streckenModul mod)
         {
-            if (isVisible(mod))
+            if (isVisible(mod.ursprung))
                 return true;
 
             foreach (var verbindung in mod.nachbarn)
             {
-                if (isVisible(verbindung))
+                if (isVisible(verbindung.ursprung))
                     return true;
             }
 
@@ -259,13 +254,13 @@ namespace ZuSiFplEdit
         }
 
         /// <summary>
-        /// Ermittelt, ob der Modulursprung im Zeichenfeld liegt
+        /// Ermittelt, ob der UTM-Punkt im Zeichenfeld liegt
         /// </summary>
         /// <param name="mod"></param>
         /// <returns></returns>
-        bool isVisible (streckenModul mod)
+        bool isVisible (PunktUTM point)
         {
-            return !((mod.ursprung.NS > border_north) || (mod.ursprung.NS < border_south) || (mod.ursprung.WE > border_east) || (mod.ursprung.WE < border_west));
+            return !((point.NS > border_north) || (point.NS < border_south) || (point.WE > border_east) || (point.WE < border_west));
         }
 
         public void drawMap()
@@ -597,7 +592,7 @@ namespace ZuSiFplEdit
         /// <param name="punktPix">Punkt im Pixel-Koordinatensystem der Karte</param>
         /// <param name="signalAuswahl">0 = alle, 1 = start, 2 = ziel, 3 = zwischen</param>
         /// <returns></returns>
-        public streckenModul.Signal findeNächstesSignal(PunktPix punktPix, int signalAuswahl)
+        public streckenModul.Signal findeNächstesSignal(Point punktPix, int signalAuswahl)
         {
             var punktUTM = PixToUtm(punktPix);
             double kleinsteDistanz = modList[0].signale[0].streckenelement.endpunkte[modList[0].signale[0].richtung].distanceTo(punktUTM);

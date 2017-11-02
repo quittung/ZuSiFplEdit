@@ -11,13 +11,13 @@ namespace ZuSiFplEdit
 {
     public delegate void SignalSelectEventHandler(string text);
 
-    public partial class modSelForm : Form
+    public partial class ControlHub : Form
     {
         bool guiBereit = true;
 
         DataConstructor dataConstructor;
         public Datensatz datenFertig;
-        mapDraw kartenZeichner;
+        public mapDraw kartenZeichner;
 
         int mouseDownX_rel = 0;
         int mouseDownY_rel = 0;
@@ -39,15 +39,15 @@ namespace ZuSiFplEdit
 
         string DirBase;
 
-        public modSelForm()
+        public ControlHub()
         {
             InitializeComponent();
 
-            ZugKonfigForm = new ZugForm(fahrplan);
+            ZugKonfigForm = new ZugForm(this);
             ZugKonfigForm.Owner = this;
             ZugForm.signalSelectionEvent += new SignalSelectEventHandler(signalSelect);
 
-            this.MouseWheel += new MouseEventHandler(mMap_MouseWheel);
+            mMap.MouseWheel += new MouseEventHandler(mMap_MouseWheel);
             modListBox.SelectedIndexChanged += new EventHandler(modListBox_SelectedValueChanged);
 
 #if DEBUG
@@ -155,10 +155,12 @@ namespace ZuSiFplEdit
         /// <param name="e"></param>
         private void mMap_MouseWheel(object sender, MouseEventArgs e)
         {
+            var cursorPosForm = new Point(e.X, e.Y);
+
             if (e.Delta > 0)
-                kartenZeichner.updateScale(1.25);
+                kartenZeichner.updateScale(1.25, cursorPosForm);
             if (e.Delta < 0)
-                kartenZeichner.updateScale(0.8);
+                kartenZeichner.updateScale(0.8, cursorPosForm);
 
             kartenZeichner.message = dataConstructor.fortschrittMeldung;
             mMap.Image = kartenZeichner.generateMap();
@@ -222,14 +224,14 @@ namespace ZuSiFplEdit
                 {
                     if (selectRouteStart)
                     {
-                        ZugKonfigForm.setSignal(kartenZeichner.findeNächstesSignal(new mapDraw.PunktPix(e.X, e.Y), 1));
+                        ZugKonfigForm.setSignal(kartenZeichner.findeNächstesSignal(new Point(e.X, e.Y), 1));
                         kartenZeichner.drawSignal_Ziel = true;
                         this.Invalidate();
                         selectRouteStart = false;
                     }
                     else
                     {
-                        ZugKonfigForm.setSignal(kartenZeichner.findeNächstesSignal(new mapDraw.PunktPix(e.X, e.Y), 2));
+                        ZugKonfigForm.setSignal(kartenZeichner.findeNächstesSignal(new Point(e.X, e.Y), 2));
                         kartenZeichner.drawSignal_Start = true;
                         this.Invalidate();
                         selectRouteEnd = false;
@@ -244,7 +246,7 @@ namespace ZuSiFplEdit
 
                 if ((Math.Abs(deltaX) > movementThreshold) || (Math.Abs(deltaY) > movementThreshold))
                 {
-                    kartenZeichner.move(deltaY, deltaX);
+                    kartenZeichner.move(deltaX, deltaY);
                     kartenZeichner.message = dataConstructor.fortschrittMeldung;
                     mMap.Image = kartenZeichner.generateMap();
                 } else if (!mouseMoved) 
@@ -281,15 +283,17 @@ namespace ZuSiFplEdit
             //Debug-Menü
             if (e.Button == MouseButtons.Right) 
             {
-                var punktPix = new mapDraw.PunktPix(e.X, e.Y);
+                var punktPix = new Point(e.X, e.Y);
+                var cursorPosMap = mMap.PointToClient(punktPix);
                 var punktUTM = kartenZeichner.PixToUtm(punktPix);
 
-                var tmpSignal = kartenZeichner.findeNächstesSignal(new mapDraw.PunktPix(e.X, e.Y), 0);
+                var tmpSignal = kartenZeichner.findeNächstesSignal(new Point(e.X, e.Y), 0);
                 if (tmpSignal == null)
                     return;
                 
                 MenuItem[] menuItems = new MenuItem[]{
                     new MenuItem("Pixel: X" + punktPix.X + " - Y" + punktPix.Y),
+                    new MenuItem("Pixel: X" + cursorPosMap.X + " - Y" + cursorPosMap.Y),
                     new MenuItem("Koordinaten: X" + punktUTM.WE.ToString("F1") + " - Y" + punktUTM.NS.ToString("F1")),
                     
                     new MenuItem("Nächstes Signal: " + tmpSignal.name)
@@ -375,7 +379,7 @@ namespace ZuSiFplEdit
 
                 var frameTime = new System.Diagnostics.Stopwatch();
                 frameTime.Start();
-                kartenZeichner.move(deltaY, deltaX);
+                kartenZeichner.move(deltaX, deltaY);
 
                 this.Invalidate();
                 Application.DoEvents();//Zeichnen
@@ -446,7 +450,7 @@ namespace ZuSiFplEdit
             if (ZugFahrtBox.SelectedItem == null)
                 return;
 
-            ZugKonfigForm = new ZugForm(fahrplan);
+            ZugKonfigForm = new ZugForm(this);
             ZugKonfigForm.Owner = this;
             ZugKonfigForm.setZug((ZugFahrt)ZugFahrtBox.SelectedItem);
             ZugKonfigForm.Show();

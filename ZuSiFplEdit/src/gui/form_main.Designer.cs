@@ -1,6 +1,6 @@
 ﻿namespace ZuSiFplEdit
 {
-    partial class modSelForm
+    partial class ControlHub
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(modSelForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ControlHub));
             this.mMap = new System.Windows.Forms.PictureBox();
             this.modListBox = new System.Windows.Forms.ListBox();
             this.ButtonExport = new System.Windows.Forms.Button();

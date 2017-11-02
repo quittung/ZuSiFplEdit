@@ -16,17 +16,19 @@ namespace ZuSiFplEdit
     /// </summary>
     public partial class ZugForm : Form
     {
+        ControlHub controller;
         ZugFahrt Zug;
         Fahrplan fahrplan;
         bool guiBereit = true;
 
         public static event SignalSelectEventHandler signalSelectionEvent;
 
-        public ZugForm(Fahrplan fahrplan)
+        public ZugForm(ControlHub controller)
         {
             InitializeComponent();
 
-            this.fahrplan = fahrplan;
+            this.controller = controller;
+            fahrplan = controller.fahrplan;
             LB_waypoint.AllowDrop = true;
         }
 
@@ -217,7 +219,11 @@ namespace ZuSiFplEdit
         private void LB_waypoint_MouseDown(object sender, MouseEventArgs e)
         {
             if (LB_waypoint.SelectedItem == null) return;
-            LB_waypoint.DoDragDrop(LB_waypoint.SelectedItem, DragDropEffects.Move);
+
+            markiereRoutenPunkt();
+            routenPunktLaden();
+
+            LB_waypoint.DoDragDrop(LB_waypoint.SelectedItem, DragDropEffects.Move); //TODO: Nur initiieren, wenn der Cursor sich ein bisschen bewegt hat.
         }
 
         private void LB_waypoint_DragDrop(object sender, DragEventArgs e)
@@ -240,6 +246,7 @@ namespace ZuSiFplEdit
                 Zug.routeBerechnen();
             }
             Laden();
+            LB_waypoint.SelectedItem = data;
         }
 
         private void LB_waypoint_DragOver(object sender, DragEventArgs e)
@@ -268,6 +275,7 @@ namespace ZuSiFplEdit
 
             ZugFahrt.RoutenPunkt routenPunkt = (ZugFahrt.RoutenPunkt)LB_routenPunkte.SelectedItem;
             var wegPunkt = routenPunkt.wegPunkt;
+            LB_waypoint.SelectedItem = wegPunkt;
 
             label_signal.Text = routenPunkt.ToString();
             label_fahrstraße.Text = routenPunkt.fahrstraße.name;
@@ -283,17 +291,10 @@ namespace ZuSiFplEdit
             checkBox_Ankunft.Enabled = istWegPunkt;
             checkBox_Abfahrt.Enabled = istWegPunkt;
             button_WpUmwandlung.Visible = !istWegPunkt;
+            
 
-            if (istWegPunkt)
-            {
-                checkBox_Ankunft.Checked = wegPunkt.ankunft_gesetzt;
-                checkBox_Abfahrt.Checked = wegPunkt.abfahrt_gesetzt;
-            }
-            else
-            {
-                checkBox_Ankunft.Checked = false;
-                checkBox_Abfahrt.Checked = false;
-            }
+            checkBox_Ankunft.Checked = istWegPunkt && wegPunkt.ankunft_gesetzt;
+            checkBox_Abfahrt.Checked = istWegPunkt && wegPunkt.abfahrt_gesetzt;
 
 
             dateTimePicker_Ankunft.Enabled = checkBox_Ankunft.Enabled && checkBox_Ankunft.Checked;
@@ -498,6 +499,40 @@ namespace ZuSiFplEdit
         {
             var bfp = new form_bildfahrplancs(Zug, fahrplan);
             bfp.Show();
+        }
+
+        private void LB_waypoint_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            markiereRoutenPunkt();
+        }
+
+        private void markiereRoutenPunkt()
+        {
+            if (LB_waypoint.SelectedItem == null || !guiBereit)
+            {
+                return;
+            }
+
+            guiBereit = false;
+
+            try
+            {
+                var wegpunkt = (ZugFahrt.WegPunkt)LB_waypoint.SelectedItem;
+                LB_routenPunkte.SelectedItem = wegpunkt.routenPunkt;
+            }
+            catch (InvalidCastException)
+            {
+            }
+
+            guiBereit = true;
+        }
+
+        private void LB_routenPunkte_DoubleClick(object sender, EventArgs e)
+        {
+            var signal = ((ZugFahrt.RoutenPunkt)LB_routenPunkte.SelectedItem).signal;
+            if (signal == null) return;
+
+            controller.kartenZeichner.moveTo(signal.streckenelement.endpunkte[signal.richtung].cc());
         }
     }
 }

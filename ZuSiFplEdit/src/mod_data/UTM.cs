@@ -48,5 +48,19 @@ namespace ZuSiFplEdit
 
             return (Math.Sqrt(distX * distX + distY * distY));
         }
+
+        /// <summary>
+        /// Creates carbon copy of point
+        /// </summary>
+        /// <returns></returns>
+        public PunktUTM cc()
+        {
+            return new PunktUTM(WE, NS, Z1, Z2);
+        }
+
+        public override string ToString()
+        {
+            return "UTM " + WE + "|" + NS;
+        }
     }
 }

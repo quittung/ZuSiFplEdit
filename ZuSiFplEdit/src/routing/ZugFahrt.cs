@@ -419,6 +419,9 @@ namespace ZuSiFplEdit
             //Werte aus Wegpunkte eintragen
             foreach (var wegPunkt in wegPunkte)
             {
+                if (wegPunkt.routenPunkt == null)
+                    return;
+
                 var routenPunkt = wegPunkt.routenPunkt;
 
                 routenPunkt.relevant = true;
